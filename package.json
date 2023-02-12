@@ -7,14 +7,17 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "postinstall": "xstate typegen \"./src/**/*.ts?(x)\"",
     "lint": "eslint  --ignore-path .gitignore --ext .js,.ts .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
   "dependencies": {
+    "@xstate/react": "^3.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
-    "styled-components": "^5.3.6"
+    "styled-components": "^5.3.6",
+    "xstate": "^4.35.4"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
@@ -23,6 +26,7 @@
     "@typescript-eslint/eslint-plugin": "^5.51.0",
     "@typescript-eslint/parser": "^5.51.0",
     "@vitejs/plugin-react-swc": "^3.0.0",
+    "@xstate/cli": "^0.4.2",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "prettier": "^2.8.4",
