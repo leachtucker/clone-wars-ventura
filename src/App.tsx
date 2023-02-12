@@ -1,10 +1,11 @@
 import GlobalStyles from './shared/GlobalStyling';
+import Desktop from './Desktop';
 
 function App() {
   return (
     <>
       <GlobalStyles />
-      <div className="App"></div>
+      <Desktop />
     </>
   );
 }

@@ -2,6 +2,9 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyling = createGlobalStyle`
   /* CSS Reset */
+  * {
+    box-sizing: border-box;
+  }
   html, body, div, span, applet, object, iframe,
   h1, h2, h3, h4, h5, h6, p, blockquote, pre,
   a, abbr, acronym, address, big, cite, code,
@@ -45,6 +48,19 @@ const GlobalStyling = createGlobalStyle`
   table {
     border-collapse: collapse;
     border-spacing: 0;
+  }
+  textarea {
+    caret-color: transparent;
+  }
+
+  /* General Global Styles */
+  html {
+    font-size: 62.5%;
+    /* defaults to 10px on most devices */
+  }
+  html, body, #root { height: 100% }
+  body {
+    font-family: -apple-system,BlinkMacSystemFont,'Inter','Helvetica Neue','Helvetica','Arial',sans-serif;
   }
 `;
 
