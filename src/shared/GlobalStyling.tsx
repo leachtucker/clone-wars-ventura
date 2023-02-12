@@ -4,7 +4,12 @@ const GlobalStyling = createGlobalStyle`
   /* CSS Reset */
   * {
     box-sizing: border-box;
+    animation: fadein 1s;
   }
+  @keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
   html, body, div, span, applet, object, iframe,
   h1, h2, h3, h4, h5, h6, p, blockquote, pre,
   a, abbr, acronym, address, big, cite, code,
