@@ -1,6 +1,5 @@
 import { createMachine, assign } from 'xstate';
 import * as Ramda from 'ramda';
-import { isNotEmpty } from '../shared/utils/fp';
 
 export type MachineContext = {
   password: string;
@@ -75,7 +74,7 @@ export const loginMachine =
         }),
       },
       guards: {
-        valid: Ramda.propSatisfies(isNotEmpty, 'password'),
+        valid: Ramda.propSatisfies(Ramda.equals('root'), 'password'),
       },
     }
   );

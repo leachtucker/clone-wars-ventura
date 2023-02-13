@@ -1,14 +1,16 @@
 import React, { FormEvent } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { useMachine } from '@xstate/react';
+
+import { loginMachine } from '../machines/login.machine';
 
 import { FiArrowRightCircle, FiXCircle } from 'react-icons/fi';
-import { Button } from '../components/Button';
 
 import avatar from '../assets/avatar.png';
 
-import { useMachine } from '@xstate/react';
-import { loginMachine } from '../machines/login.machine';
+import Button from '../components/Button';
 import { Show } from '../components/Show';
+import { shake } from '../shared/keyframes';
 
 function LockedView() {
   const [state, send] = useMachine(loginMachine);
@@ -27,18 +29,20 @@ function LockedView() {
       <form onSubmit={handleSubmit}>
         <PasswordInputWrapper>
           <PasswordInput
-            placeholder="Enter Password"
             value={state.context.password}
             onChange={(e) =>
               send('PASSWORD.CHANGE', { payload: e.target.value })
             }
+            autoFocus
+            $invalid={state.matches('invalid')}
           />
 
-          <Show when={isPasswordInput}>
+          <Show when={isPasswordInput && state.matches('idle')}>
             <PasswordInputArrow />
           </Show>
         </PasswordInputWrapper>
       </form>
+      <PasswordHint>Hint: root</PasswordHint>
 
       <ActionsContainer>
         <ActionWrapper>
@@ -88,6 +92,7 @@ const Username = styled.span`
 
 const PasswordInput = styled.input.attrs({
   type: 'password',
+  placeholder: 'Enter Password',
 })`
   border-radius: 24px;
   padding-left: 15px;
@@ -118,6 +123,13 @@ const PasswordInput = styled.input.attrs({
   &::placeholder {
     color: rgba(255, 255, 255, 0.7);
   }
+
+  animation: ${(props: { $invalid?: boolean }) =>
+    props.$invalid
+      ? css`
+          ${shake} 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both
+        `
+      : 'initial'};
 `;
 
 const PasswordInputWrapper = styled.div`
@@ -134,6 +146,10 @@ const PasswordInputArrow = styled(FiArrowRightCircle)`
 
   font-size: 2.4rem;
   stroke-width: 1.5px;
+`;
+
+const PasswordHint = styled.span`
+  margin-top: 8px;
 `;
 
 const ActionsContainer = styled.div`
