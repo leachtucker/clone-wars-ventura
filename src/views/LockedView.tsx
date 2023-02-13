@@ -1,3 +1,4 @@
+import React, { FormEvent } from 'react';
 import styled from 'styled-components';
 
 import { FiArrowRightCircle, FiXCircle } from 'react-icons/fi';
@@ -5,22 +6,46 @@ import { Button } from '../components/Button';
 
 import avatar from '../assets/avatar.png';
 
+import { useMachine } from '@xstate/react';
+import { loginMachine } from '../machines/login.machine';
+import { Show } from '../components/Show';
+
 function LockedView() {
+  const [state, send] = useMachine(loginMachine);
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    send('submit');
+  }
+
+  const isPasswordInput = state.context.password.length > 0;
   return (
     <Container>
       <Avatar src={avatar} />
       <Username>Tucker</Username>
-      <PasswordInputWrapper>
-        <PasswordInput placeholder="Enter Password" />
-        <PasswordInputArrow />
-      </PasswordInputWrapper>
+
+      <form onSubmit={handleSubmit}>
+        <PasswordInputWrapper>
+          <PasswordInput
+            placeholder="Enter Password"
+            value={state.context.password}
+            onChange={(e) =>
+              send('PASSWORD.CHANGE', { payload: e.target.value })
+            }
+          />
+
+          <Show when={isPasswordInput}>
+            <PasswordInputArrow />
+          </Show>
+        </PasswordInputWrapper>
+      </form>
 
       <ActionsContainer>
         <ActionWrapper>
-          <RoundIconButton style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+          <RoundIconButton>
             <FiXCircle />
           </RoundIconButton>
-          <span>Cancel</span>
+          <ActionLabel>Cancel</ActionLabel>
         </ActionWrapper>
       </ActionsContainer>
     </Container>
@@ -123,11 +148,15 @@ const ActionWrapper = styled.div`
   gap: 8px;
 `;
 
+const ActionLabel = styled.span`
+  font-size: 1.2rem;
+`;
+
 const RoundIconButton = styled(Button)`
   background-color: rgba(255, 255, 255, 0.35);
 
+  color: rgba(255, 255, 255, 0.6);
   font-size: 2rem;
-  color: white;
 
   border-radius: 50%;
 
