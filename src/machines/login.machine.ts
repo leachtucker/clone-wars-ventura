@@ -17,12 +17,12 @@ export const loginMachine =
   /** @xstate-layout N4IgpgJg5mDOIC5QBsD2UCWA7AdBiyYAxLAK4BGAthgC4DaADALqKgAOqstGqWrIAD0QBGACzCANCACeIhgFYcAdlEBOVQA4AzKIBMq3duGqAvialpMufIRIVq9YSyQgOXGjz4uhCMZJmIugxaymqaOvqGWrpmFujYeFgAbgCGyPhEArA0KTRgOCkAZnkATgAU8gwMAJRElgnYqekQjM7snNy8-D66WsLKwcK68lKyvvIAbDi6Ydp6BtoxsSBYqBBw-PVe7e6e3YgAtBOjh1NVVVpaGqIT8qKiChPLW3gEYPxunduCiHonvqoQloVOF5lElnErDgmvgPh0PF1vIgtBMlModMCRgEEBp+mFQZEjKZzCAXo00rCXJ8Ed8fGp+ndblpJqolHdxFp-oYNNMlCjhJUBVdAWYzEA */
   createMachine(
     {
+      id: 'login',
       tsTypes: {} as import('./login.machine.typegen').Typegen0,
       schema: {
         context: {} as MachineContext,
         events: {} as Event,
       },
-      id: 'login',
       initial: 'idle',
       states: {
         idle: {
