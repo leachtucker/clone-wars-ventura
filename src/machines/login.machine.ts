@@ -1,7 +1,7 @@
 import { createMachine, assign } from 'xstate';
 import * as Ramda from 'ramda';
 
-export type MachineContext = {
+type MachineContext = {
   password: string;
 };
 
@@ -9,9 +9,9 @@ const initialContext = {
   password: '',
 } as const;
 
-export type Event =
-  | { type: 'submit' }
-  | { type: 'PASSWORD.CHANGE'; payload: string };
+type Event = { type: 'submit' } | { type: 'PASSWORD.CHANGE'; payload: string };
+
+export type LoginMachine = typeof loginMachine;
 
 export const loginMachine =
   /** @xstate-layout N4IgpgJg5mDOIC5QBsD2UCWA7AdBiyYAxLAK4BGAthgC4DaADALqKgAOqstGqWrIAD0QBGACzCANCACeIhgFYcAdlEBOVQA4AzKIBMq3duGqAvialpMufIRIVq9YSyQgOXGjz4uhCMZJmIugxaymqaOvqGWrpmFujYeFgAbgCGyPhEArA0KTRgOCkAZnkATgAU8gwMAJRElgnYqekQjM7snNy8-D66WsLKwcK68lKyvvIAbDi6Ydp6BtoxsSBYqBBw-PVe7e6e3YgAtBOjh1NVVVpaGqIT8qKiChPLW3gEYPxunduCiHonvqoQloVOF5lElnErDgmvgPh0PF1vIgtBMlModMCRgEEBp+mFQZEjKZzCAXo00rCXJ8Ed8fGp+ndblpJqolHdxFp-oYNNMlCjhJUBVdAWYzEA */
@@ -19,10 +19,13 @@ export const loginMachine =
     {
       id: 'login',
       tsTypes: {} as import('./login.machine.typegen').Typegen0,
+      predictableActionArguments: true,
+      preserveActionOrder: true,
       schema: {
         context: {} as MachineContext,
         events: {} as Event,
       },
+      context: initialContext,
       initial: 'idle',
       states: {
         idle: {
@@ -57,10 +60,6 @@ export const loginMachine =
           actions: ['updatePassword'],
         },
       },
-
-      context: initialContext,
-      predictableActionArguments: true,
-      preserveActionOrder: true,
     },
     {
       actions: {
