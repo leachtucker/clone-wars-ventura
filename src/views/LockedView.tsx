@@ -1,8 +1,6 @@
-import React, { FormEvent } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
-import { useMachine } from '@xstate/react';
-
-import { loginMachine } from '../machines/login.machine';
+import { useActor } from '@xstate/react';
 
 import { FiArrowRightCircle, FiXCircle } from 'react-icons/fi';
 
@@ -11,13 +9,24 @@ import avatar from '../assets/avatar.png';
 import Button from '../components/Button';
 import { Show } from '../components/Show';
 import { shake } from '../shared/keyframes';
+import { ActorRef, EventFrom, StateFrom } from 'xstate';
 
-function LockedView() {
-  const [state, send] = useMachine(loginMachine);
+import { LoginMachine } from '../machines/login.machine';
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+function LockedView({
+  service,
+}: {
+  service: ActorRef<EventFrom<LoginMachine>, StateFrom<LoginMachine>>;
+}) {
+  const [state, send] = useActor(service);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     send('submit');
+  }
+
+  function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
+    send({ type: 'PASSWORD.CHANGE', payload: e.target.value });
   }
 
   const isPasswordInput = state.context.password.length > 0;
@@ -30,9 +39,7 @@ function LockedView() {
         <PasswordInputWrapper>
           <PasswordInput
             value={state.context.password}
-            onChange={(e) =>
-              send('PASSWORD.CHANGE', { payload: e.target.value })
-            }
+            onChange={handlePasswordChange}
             autoFocus
             $invalid={state.matches('invalid')}
           />
