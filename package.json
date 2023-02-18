@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "postinstall": "xstate typegen \"./src/**/*.ts?(x)\"",
+    "xstate:typegen": "xstate typegen \"./src/**/*.ts?(x)\"",
     "lint": "eslint  --ignore-path .gitignore --ext .js,.ts .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
