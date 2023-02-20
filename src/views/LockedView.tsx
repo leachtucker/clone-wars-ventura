@@ -1,24 +1,25 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { useActor } from '@xstate/react';
-
-import { FiArrowRightCircle, FiXCircle } from 'react-icons/fi';
-
-import avatar from '../assets/avatar.png';
+import { useActor, useSelector } from '@xstate/react';
+import { StateFrom } from 'xstate';
 
 import Button from '../components/Button';
 import { Show } from '../components/Show';
 import { shake } from '../shared/keyframes';
-import { ActorRef, EventFrom, StateFrom } from 'xstate';
+import { FiArrowRightCircle, FiXCircle } from 'react-icons/fi';
+import avatar from '../assets/avatar.png';
 
-import { LoginMachine } from '../machines/login.machine';
+import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
+import { DesktopMachine } from '../machines/desktop.machine';
 
-function LockedView({
-  service,
-}: {
-  service: ActorRef<EventFrom<LoginMachine>, StateFrom<LoginMachine>>;
-}) {
-  const [state, send] = useActor(service);
+const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
+  state.children.loginService;
+
+function LockedView() {
+  const { desktopService } = useGlobalServices();
+  const loginService = useSelector(desktopService, loginServiceSelector);
+
+  const [state, send] = useActor(loginService);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

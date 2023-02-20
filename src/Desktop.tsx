@@ -11,14 +11,12 @@ import { DesktopMachine } from './machines/desktop.machine';
 
 function Desktop() {
   const { desktopService } = useGlobalServices();
-
   const isAuthenticated = useSelector(desktopService, isAuthenticatedSelector);
-  const loginService = useSelector(desktopService, loginServiceSelector);
 
   return (
     <ViewContainer>
       <Show when={!isAuthenticated}>
-        <LockedView service={loginService} />
+        <LockedView />
       </Show>
 
       <Show when={isAuthenticated}>
@@ -32,9 +30,6 @@ export default Desktop;
 
 const isAuthenticatedSelector = (state: StateFrom<DesktopMachine>) =>
   state.matches('authenticated');
-
-const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
-  state.children.loginService;
 
 const ViewContainer = styled.div`
   width: 100%;
