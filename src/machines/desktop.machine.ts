@@ -1,4 +1,4 @@
-import { createMachine } from 'xstate';
+import { assign, createMachine } from 'xstate';
 import { loginMachine } from './login.machine';
 
 type DisplayMode = 'dark' | 'light';
@@ -7,12 +7,16 @@ type MachineContext = {
   theme: DisplayMode;
 };
 
-type Event = { type: 'AUTHENTICATION.TOGGLE' };
-
 const initialContext: MachineContext = {
   theme: 'light',
 };
 
+type LogoutEvent = { type: 'logout' };
+type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
+
+type MachineEvent = LogoutEvent | ToggleThemeEvent;
+
+export type DesktopMachine = typeof desktopMachine;
 export const desktopMachine =
   /** @xstate-layout N4IgpgJg5mDOIC5QTgawC4HsAOA6ArgHYCG+6AFmIegJYDGx6kAxBJoWLjYQG6aqcANpijcAymABOPemADaABgC6iUNkywatdqpAAPRAGYALACZcAdgCcANgAcVgIwBWO46vGLhgDQgAnoiOhuYKoQqmVuFOzgo2AL5xviiwGDi4pBRUtAxMEMwAggCqACoAEgCiAHLFAJIAwvm1APKVuMVNAOIdADLliipIIOqa2oS6Bggm5tb20W4eXr4BCG64MaGOjg6OpnY2NlYJiSCEmMm6yanYusNaNDqDEwC0NkuILwlJaFh4RBmU1HojEgNw0dweoAmZjeCE2xlwhgUVmirgUhlmzk+IEuP3SZAB2WBEFBI3uY0eiBsCmcuDM7gUxj2FgsdmcjhhjkZuE5wUcXlMFn2dkFRziQA */
   createMachine(
@@ -23,13 +27,11 @@ export const desktopMachine =
       preserveActionOrder: true,
       schema: {
         context: {} as MachineContext,
-        events: {} as Event,
+        events: {} as MachineEvent,
       },
       context: initialContext,
       initial: 'unauthenticated',
       states: {
-        idle: {},
-
         unauthenticated: {
           invoke: {
             id: 'loginService',
@@ -42,17 +44,31 @@ export const desktopMachine =
 
         authenticated: {
           on: {
-            'AUTHENTICATION.TOGGLE': {
+            logout: {
               target: 'unauthenticated',
             },
           },
         },
       },
+      on: {
+        'THEME.TOGGLE': {
+          actions: 'toggleTheme',
+        },
+      },
     },
     {
-      actions: {},
+      actions: {
+        toggleTheme: assign({
+          theme: (context) => getNextTheme(context.theme),
+        }),
+      },
       services: {
         loginService: loginMachine,
       },
     }
   );
+
+function getNextTheme(theme: DisplayMode): DisplayMode {
+  const nextTheme = theme == 'light' ? 'dark' : 'light';
+  return nextTheme;
+}

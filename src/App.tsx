@@ -1,11 +1,14 @@
 import GlobalStyles from './shared/GlobalStyling';
 import Desktop from './Desktop';
+import GlobalServicesProvider from './shared/providers/GlobalServicesProvider';
 
 function App() {
   return (
     <>
       <GlobalStyles />
-      <Desktop />
+      <GlobalServicesProvider>
+        <Desktop />
+      </GlobalServicesProvider>
     </>
   );
 }

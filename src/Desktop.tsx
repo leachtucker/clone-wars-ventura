@@ -1,29 +1,27 @@
 import styled from 'styled-components';
-
-import { useMachine } from '@xstate/react';
-
-import { desktopMachine } from './machines/desktop.machine';
+import { useSelector } from '@xstate/react';
 
 import { Show } from './components/Show';
 
 import wallpaper from './assets/wallpaper.jpg';
 import LockedView from './views/LockedView';
+import { useGlobalServices } from './shared/providers/GlobalServicesProvider';
+import { StateFrom } from 'xstate';
+import { DesktopMachine } from './machines/desktop.machine';
 
 function Desktop() {
-  const [state, send] = useMachine(desktopMachine);
+  const { desktopService } = useGlobalServices();
 
-  console.log({
-    desktopState: state,
-    loginService: state.children.loginService,
-  });
+  const isAuthenticated = useSelector(desktopService, isAuthenticatedSelector);
+  const loginService = useSelector(desktopService, loginServiceSelector);
 
   return (
     <ViewContainer>
-      <Show when={state.matches('unauthenticated')}>
-        <LockedView service={state.children.loginService} />
+      <Show when={!isAuthenticated}>
+        <LockedView service={loginService} />
       </Show>
 
-      <Show when={state.matches('authenticated')}>
+      <Show when={isAuthenticated}>
         <h1>Authenticated!</h1>
       </Show>
     </ViewContainer>
@@ -31,6 +29,12 @@ function Desktop() {
 }
 
 export default Desktop;
+
+const isAuthenticatedSelector = (state: StateFrom<DesktopMachine>) =>
+  state.matches('authenticated');
+
+const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
+  state.children.loginService;
 
 const ViewContainer = styled.div`
   width: 100%;

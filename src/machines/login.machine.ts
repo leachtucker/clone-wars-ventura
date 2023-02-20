@@ -9,10 +9,12 @@ const initialContext = {
   password: '',
 } as const;
 
-type Event = { type: 'submit' } | { type: 'PASSWORD.CHANGE'; payload: string };
+type SubmitEvent = { type: 'submit' };
+type PasswordChangeEvent = { type: 'PASSWORD.CHANGE'; payload: string };
+
+type MachineEvent = SubmitEvent | PasswordChangeEvent;
 
 export type LoginMachine = typeof loginMachine;
-
 export const loginMachine =
   /** @xstate-layout N4IgpgJg5mDOIC5QBsD2UCWA7AdBiyYAxLAK4BGAthgC4DaADALqKgAOqstGqWrIAD0QBGACzCANCACeIhgFYcAdlEBOVQA4AzKIBMq3duGqAvialpMufIRIVq9YSyQgOXGjz4uhCMZJmIugxaymqaOvqGWrpmFujYeFgAbgCGyPhEArA0KTRgOCkAZnkATgAU8gwMAJRElgnYqekQjM7snNy8-D66WsLKwcK68lKyvvIAbDi6Ydp6BtoxsSBYqBBw-PVe7e6e3YgAtBOjh1NVVVpaGqIT8qKiChPLW3gEYPxunduCiHonvqoQloVOF5lElnErDgmvgPh0PF1vIgtBMlModMCRgEEBp+mFQZEjKZzCAXo00rCXJ8Ed8fGp+ndblpJqolHdxFp-oYNNMlCjhJUBVdAWYzEA */
   createMachine(
@@ -23,7 +25,7 @@ export const loginMachine =
       preserveActionOrder: true,
       schema: {
         context: {} as MachineContext,
-        events: {} as Event,
+        events: {} as MachineEvent,
       },
       context: initialContext,
       initial: 'idle',
