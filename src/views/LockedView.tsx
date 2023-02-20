@@ -12,9 +12,6 @@ import avatar from '../assets/avatar.png';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 import { DesktopMachine } from '../machines/desktop.machine';
 
-const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
-  state.children.loginService;
-
 function LockedView() {
   const { desktopService } = useGlobalServices();
   const loginService = useSelector(desktopService, loginServiceSelector);
@@ -65,6 +62,9 @@ function LockedView() {
 }
 
 export default LockedView;
+
+const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
+  state.children.loginService;
 
 const Container = styled.div`
   display: flex;

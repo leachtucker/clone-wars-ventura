@@ -13,8 +13,10 @@ const initialContext: MachineContext = {
 
 type LogoutEvent = { type: 'logout' };
 type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
+// * for debugging
+type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
 
-type MachineEvent = LogoutEvent | ToggleThemeEvent;
+type MachineEvent = LogoutEvent | ToggleThemeEvent | AuthenticationToggleEvent;
 
 export type DesktopMachine = typeof desktopMachine;
 export const desktopMachine =
@@ -40,11 +42,22 @@ export const desktopMachine =
               target: 'authenticated',
             },
           },
+          on: {
+            // * for debugging
+            'AUTHENTICATION.TOGGLE': {
+              target: 'unauthenticated',
+            },
+          },
         },
 
         authenticated: {
           on: {
             logout: {
+              target: 'unauthenticated',
+            },
+
+            // * for debugging
+            'AUTHENTICATION.TOGGLE': {
               target: 'unauthenticated',
             },
           },

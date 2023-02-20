@@ -10,7 +10,12 @@ type Context = {
 const GlobalStateContext = React.createContext<Context | null>(null);
 
 function GlobalServicesProvider({ children }: React.PropsWithChildren) {
-  const desktopService = useInterpret(desktopMachine);
+  const desktopService = useInterpret(desktopMachine, { devTools: true });
+
+  React.useEffect(() => {
+    // * for debugging purposes (manually sending events)
+    window.desktopService = desktopService;
+  }, []);
 
   return (
     <GlobalStateContext.Provider value={{ desktopService }}>
