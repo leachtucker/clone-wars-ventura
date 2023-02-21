@@ -25,8 +25,8 @@ const Wrapper = styled.div`
   height: 75px;
   width: 80%;
 
-  color: white;
-  background-color: rgb(240, 240, 240, 0.3);
+  color: ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.backgroundTransparent};
   backdrop-filter: blur(50px);
 
   display: flex;

@@ -1,10 +1,9 @@
 import { assign, createMachine } from 'xstate';
 import { loginMachine } from './login.machine';
-
-type DisplayMode = 'dark' | 'light';
+import { ThemeName } from '../shared/config/themes';
 
 type MachineContext = {
-  theme: DisplayMode;
+  theme: ThemeName;
 };
 
 const initialContext: MachineContext = {
@@ -81,7 +80,7 @@ export const desktopMachine =
     }
   );
 
-function getNextTheme(theme: DisplayMode): DisplayMode {
+function getNextTheme(theme: ThemeName): ThemeName {
   const nextTheme = theme == 'light' ? 'dark' : 'light';
   return nextTheme;
 }
