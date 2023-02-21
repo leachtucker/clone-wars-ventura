@@ -8,21 +8,22 @@ import LockedView from './views/LockedView';
 import { useGlobalServices } from './shared/providers/GlobalServicesProvider';
 import { StateFrom } from 'xstate';
 import { DesktopMachine } from './machines/desktop.machine';
+import UnlockedView from './views/UnlockedView';
 
 function Desktop() {
   const { desktopService } = useGlobalServices();
   const isAuthenticated = useSelector(desktopService, isAuthenticatedSelector);
 
   return (
-    <ViewContainer>
+    <Container>
       <Show when={!isAuthenticated}>
         <LockedView />
       </Show>
 
       <Show when={isAuthenticated}>
-        <h1>Authenticated!</h1>
+        <UnlockedView />
       </Show>
-    </ViewContainer>
+    </Container>
   );
 }
 
@@ -31,9 +32,11 @@ export default Desktop;
 const isAuthenticatedSelector = (state: StateFrom<DesktopMachine>) =>
   state.matches('authenticated');
 
-const ViewContainer = styled.div`
+const Container = styled.div`
   width: 100%;
   height: 100%;
+
   background-image: url(${wallpaper});
   background-size: cover;
+  background-position: center;
 `;

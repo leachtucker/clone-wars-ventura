@@ -6,6 +6,7 @@ export const Button = styled.button`
   outline: none;
   background: none;
   cursor: pointer;
+  color: inherit;
 `;
 
 export default Button;
