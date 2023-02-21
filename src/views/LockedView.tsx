@@ -10,6 +10,7 @@ import avatar from '../assets/avatar.png';
 
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 import { loginServiceSelector } from '../machines/desktop.machine';
+import themes from '../shared/config/themes';
 
 function LockedView() {
   const { desktopService } = useGlobalServices();
@@ -70,7 +71,7 @@ const Container = styled.div`
 
   height: 100%;
 
-  color: white;
+  color: ${themes.dark.colors.primary};
 `;
 
 const Avatar = styled.img`
@@ -79,17 +80,16 @@ const Avatar = styled.img`
   border-radius: 50%;
 
   background-color: #f7d4b0;
-  box-shadow: 0 0 4px rgb(0 0 0 / 50%);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 `;
 
 const Username = styled.span`
   display: block;
+  margin-top: 2.4rem;
+
   text-align: center;
   font-weight: 600;
   font-size: 2rem;
-
-  margin-top: 24px;
-  color: white;
 
   text-shadow: 0px 1px 4px rgba(0, 0, 0, 0.75);
 `;
@@ -99,8 +99,8 @@ const PasswordInput = styled.input.attrs({
   placeholder: 'Enter Password',
 })`
   border-radius: 24px;
-  padding-left: 15px;
-  background-color: rgba(255, 255, 255, 0.35);
+  padding-left: 1.5rem;
+  background-color: ${themes.light.colors.backgroundTransparent};
   border: none;
 
   display: block;
@@ -125,7 +125,8 @@ const PasswordInput = styled.input.attrs({
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+    color: ${themes.dark.colors.primary};
+    opacity: 0.7;
   }
 
   animation: ${(props: { $invalid?: boolean }) =>
@@ -145,11 +146,12 @@ const PasswordInputWrapper = styled.div`
 
 const PasswordInputArrow = styled(FiArrowRightCircle)`
   position: absolute;
-  right: 2px;
+  right: 0.2rem;
   top: 3px;
 
   font-size: 2.4rem;
   stroke-width: 1.5px;
+  opacity: 0.6;
 `;
 
 const PasswordHint = styled.span`
@@ -165,7 +167,7 @@ const ActionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 0.8rem;
 `;
 
 const ActionLabel = styled.span`
@@ -173,9 +175,10 @@ const ActionLabel = styled.span`
 `;
 
 const RoundIconButton = styled(Button)`
-  background-color: rgba(255, 255, 255, 0.35);
+  background-color: ${themes.light.colors.backgroundTransparent};
+  color: ${themes.dark.colors.primary};
+  opacity: 0.6;
 
-  color: rgba(255, 255, 255, 0.6);
   font-size: 2rem;
 
   border-radius: 50%;

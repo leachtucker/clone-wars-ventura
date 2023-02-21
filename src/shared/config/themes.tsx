@@ -10,7 +10,7 @@ export type ThemeMapping = {
 
 const light: DefaultTheme = {
   colors: {
-    primary: 'black',
+    primary: 'rgb(0, 0, 0)',
     background: 'rgb(243, 235, 235)',
     backgroundTransparent: 'rgba(243, 235, 235, 0.3)',
   },
@@ -18,7 +18,7 @@ const light: DefaultTheme = {
 
 const dark: DefaultTheme = {
   colors: {
-    primary: 'white',
+    primary: 'rgb(255, 255, 255)',
     background: 'rgb(50, 40, 39)',
     backgroundTransparent: 'rgba(50, 40, 39, 0.3)',
   },
