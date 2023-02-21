@@ -1,7 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { useActor, useSelector } from '@xstate/react';
-import { StateFrom } from 'xstate';
 
 import Button from '../components/Button';
 import { Show } from '../components/Show';
@@ -10,7 +9,7 @@ import { FiArrowRightCircle, FiXCircle } from 'react-icons/fi';
 import avatar from '../assets/avatar.png';
 
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
-import { DesktopMachine } from '../machines/desktop.machine';
+import { loginServiceSelector } from '../machines/desktop.machine';
 
 function LockedView() {
   const { desktopService } = useGlobalServices();
@@ -62,9 +61,6 @@ function LockedView() {
 }
 
 export default LockedView;
-
-const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
-  state.children.loginService;
 
 const Container = styled.div`
   display: flex;

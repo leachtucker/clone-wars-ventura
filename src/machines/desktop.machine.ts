@@ -1,4 +1,4 @@
-import { assign, createMachine } from 'xstate';
+import { StateFrom, assign, createMachine } from 'xstate';
 import { loginMachine } from './login.machine';
 import { ThemeName } from '../shared/config/themes';
 
@@ -84,3 +84,10 @@ function getNextTheme(theme: ThemeName): ThemeName {
   const nextTheme = theme == 'light' ? 'dark' : 'light';
   return nextTheme;
 }
+
+/* Selectors */
+export const isAuthenticatedSelector = (state: StateFrom<DesktopMachine>) =>
+  state.matches('authenticated');
+
+export const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
+  state.children.loginService;
