@@ -4,6 +4,7 @@ import { TiVendorApple } from 'react-icons/ti';
 
 import Button from '../components/Button';
 import Toggles from './icons/Toggles';
+import themes from '../shared/config/themes';
 
 function TopBar() {
   const now = new Date();
@@ -35,8 +36,8 @@ const Wrapper = styled.div`
   height: ${TOPBAR_HEIGHT};
   width: 100%;
 
-  color: white;
-  background-color: rgb(40, 40, 40, 0.3);
+  color: ${themes.dark.colors.primary};
+  background-color: ${themes.dark.colors.backgroundTransparent};
   backdrop-filter: blur(65px);
 
   display: flex;
