@@ -5,22 +5,39 @@ export type ThemeMapping = {
     primary: string;
     background: string;
     backgroundTransparent: string;
+    selection: string;
+    selectionContrast: string;
+    grey: string;
   };
 };
 
+const colors = {
+  white: 'rgb(243, 235, 235)',
+  black: 'rgb(0, 0, 0)',
+  almostBlack: 'rgb(50, 40, 39)',
+  blue: 'rgb(17, 107, 210)',
+  grey: 'rgb(139, 140, 151)',
+} as const;
+
 const light: DefaultTheme = {
   colors: {
-    primary: 'rgb(0, 0, 0)',
-    background: 'rgb(243, 235, 235)',
+    primary: colors.black,
+    background: colors.white,
     backgroundTransparent: 'rgba(243, 235, 235, 0.3)',
+    selection: colors.blue,
+    selectionContrast: colors.white,
+    grey: colors.grey,
   },
 };
 
 const dark: DefaultTheme = {
   colors: {
-    primary: 'rgb(255, 255, 255)',
-    background: 'rgb(50, 40, 39)',
+    primary: colors.white,
+    background: colors.almostBlack,
     backgroundTransparent: 'rgba(50, 40, 39, 0.3)',
+    selection: colors.blue,
+    selectionContrast: colors.white,
+    grey: colors.grey,
   },
 };
 
