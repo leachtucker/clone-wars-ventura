@@ -10,40 +10,19 @@ import themes from '../shared/config/themes';
 
 function TopBar() {
   const now = new Date();
+
   return (
     <Wrapper>
       <LeftRightContainer>
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger asChild>
-            <Button style={{ fontSize: '2rem' }}>
-              <TiVendorApple />
-            </Button>
-          </DropdownMenu.Trigger>
-
-          <DropdownMenu.Portal>
-            <StyledMenuContent
-              sideOffset={TOPBAR_HEIGHT_PX}
-              align="start"
-              alignOffset={15}
-              avoidCollisions={false}
-            >
-              <StyledMenuItem>About This Mac</StyledMenuItem>
-              <StyledSeparator />
-              <StyledMenuItem>About This Engineer</StyledMenuItem>
-              <StyledMenuItem>Log Out Tucker...</StyledMenuItem>
-            </StyledMenuContent>
-          </DropdownMenu.Portal>
-        </DropdownMenu.Root>
+        <AppleMenu />
       </LeftRightContainer>
 
       <LeftRightContainer>
         <Button style={{ fontSize: '1.4rem' }}>
           <Toggles />
         </Button>
-        <DateWrapper>
-          {WeekDayIntlDateTimeFormat.format(now)}{' '}
-          {IntlDateTimeFormat.format(now)}
-        </DateWrapper>
+
+        <SimpleDate date={now} />
       </LeftRightContainer>
     </Wrapper>
   );
@@ -73,6 +52,15 @@ const LeftRightContainer = styled.div`
   gap: 1.2rem;
 `;
 
+type SimpleDateProps = { date: Date };
+function SimpleDate({ date }: SimpleDateProps) {
+  return (
+    <DateWrapper>
+      {WeekDayIntlDateTimeFormat.format(date)} {IntlDateTimeFormat.format(date)}
+    </DateWrapper>
+  );
+}
+
 const WeekDayIntlDateTimeFormat = new Intl.DateTimeFormat('default', {
   weekday: 'short',
 });
@@ -87,6 +75,32 @@ const IntlDateTimeFormat = new Intl.DateTimeFormat('default', {
 const DateWrapper = styled.span`
   font-size: 1.2rem;
 `;
+
+function AppleMenu() {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <Button style={{ fontSize: '2rem' }}>
+          <TiVendorApple />
+        </Button>
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <StyledMenuContent
+          sideOffset={TOPBAR_HEIGHT_PX}
+          align="start"
+          alignOffset={15}
+          avoidCollisions={false}
+        >
+          <StyledMenuItem>About This Mac</StyledMenuItem>
+          <StyledSeparator />
+          <StyledMenuItem>About This Engineer</StyledMenuItem>
+          <StyledMenuItem>Log Out Tucker...</StyledMenuItem>
+        </StyledMenuContent>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
 
 const StyledMenuContent = styled(DropdownMenu.Content)`
   color: ${({ theme }) => theme.colors.primary};
