@@ -1,21 +1,47 @@
 import { StateFrom, assign, createMachine } from 'xstate';
+import * as Ramda from 'ramda';
+
 import { loginMachine } from './login.machine';
 import { ThemeName } from '../shared/config/themes';
 
+type DesktopWindow = {
+  name: string;
+  hasFocus: boolean;
+  isMinimized: boolean;
+  zIndex: number;
+  xPos: number;
+  yPos: number;
+};
+
+const initialDesktopWindowState: Omit<DesktopWindow, 'name'> = {
+  hasFocus: true,
+  isMinimized: false,
+  zIndex: 1,
+  xPos: 100,
+  yPos: 100,
+};
+
 type MachineContext = {
   theme: ThemeName;
+  windows: DesktopWindow[];
 };
 
 const initialContext: MachineContext = {
   theme: 'light',
+  windows: [],
 };
 
 type LogoutEvent = { type: 'logout' };
 type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
 // * for debugging
 type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
+type OpenWindow = { type: 'WINDOW.OPEN'; appName: string };
 
-type MachineEvent = LogoutEvent | ToggleThemeEvent | AuthenticationToggleEvent;
+type MachineEvent =
+  | LogoutEvent
+  | ToggleThemeEvent
+  | AuthenticationToggleEvent
+  | OpenWindow;
 
 export type DesktopMachine = typeof desktopMachine;
 export const desktopMachine =
@@ -66,12 +92,26 @@ export const desktopMachine =
         'THEME.TOGGLE': {
           actions: 'toggleTheme',
         },
+        'WINDOW.OPEN': {
+          actions: 'openWindow',
+        },
       },
     },
     {
       actions: {
-        toggleTheme: assign({
-          theme: (context) => getNextTheme(context.theme),
+        toggleTheme: assign((context) => ({
+          theme: getNextTheme(context.theme),
+        })),
+
+        openWindow: assign((context, event) => {
+          const newWindow = {
+            ...initialDesktopWindowState,
+            name: event.appName,
+          };
+
+          return {
+            windows: [...context.windows, newWindow],
+          };
         }),
       },
       services: {
@@ -91,3 +131,8 @@ export const isAuthenticatedSelector = (state: StateFrom<DesktopMachine>) =>
 
 export const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
   state.children.loginService;
+
+const isActiveWindow = Ramda.propEq('isMinimized', false);
+export const activeWindowsSelector = (state: StateFrom<DesktopMachine>) => {
+  return state.context.windows.filter(isActiveWindow);
+};

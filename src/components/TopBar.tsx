@@ -1,7 +1,10 @@
 import styled from 'styled-components';
 
-import { TiVendorApple } from 'react-icons/ti';
+import { useActor } from '@xstate/react';
 
+import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
+
+import { TiVendorApple } from 'react-icons/ti';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 import Button from '../components/Button';
@@ -77,6 +80,13 @@ const DateWrapper = styled.span`
 `;
 
 function AppleMenu() {
+  const { desktopService } = useGlobalServices();
+  const [, send] = useActor(desktopService);
+
+  function handleAboutThisMac() {
+    send({ type: 'WINDOW.OPEN', appName: 'Test App' });
+  }
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -92,7 +102,9 @@ function AppleMenu() {
           alignOffset={15}
           avoidCollisions={false}
         >
-          <StyledMenuItem>About This Mac</StyledMenuItem>
+          <StyledMenuItem onClick={handleAboutThisMac}>
+            About This Mac
+          </StyledMenuItem>
           <StyledSeparator />
           <StyledMenuItem>About This Engineer</StyledMenuItem>
           <StyledMenuItem>Log Out Tucker...</StyledMenuItem>
