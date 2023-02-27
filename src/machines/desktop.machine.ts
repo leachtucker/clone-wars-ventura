@@ -1,47 +1,39 @@
-import { StateFrom, assign, createMachine } from 'xstate';
-import * as Ramda from 'ramda';
+import { ActorRefFrom, StateFrom, assign, createMachine, spawn } from 'xstate';
 
 import { loginMachine } from './login.machine';
 import { ThemeName } from '../shared/config/themes';
+import {
+  DesktopWindowMachine,
+  desktopWindowMachine,
+} from './desktopWindow.machine';
 
-type DesktopWindow = {
-  name: string;
-  hasFocus: boolean;
-  isMinimized: boolean;
-  zIndex: number;
-  xPos: number;
-  yPos: number;
-};
-
-const initialDesktopWindowState: Omit<DesktopWindow, 'name'> = {
-  hasFocus: true,
-  isMinimized: false,
-  zIndex: 1,
-  xPos: 100,
-  yPos: 100,
-};
+type Window = { machine: ActorRefFrom<DesktopWindowMachine>; zIndex: number };
 
 type MachineContext = {
   theme: ThemeName;
-  windows: DesktopWindow[];
+  windows: Window[];
+  currentZIndexMaximum: number;
 };
 
 const initialContext: MachineContext = {
   theme: 'light',
   windows: [],
+  currentZIndexMaximum: 0,
 };
 
 type LogoutEvent = { type: 'logout' };
 type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
 // * for debugging
 type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
-type OpenWindow = { type: 'WINDOW.OPEN'; appName: string };
+type OpenWindow = { type: 'WINDOW.OPEN'; name: string };
+type FocusWindow = { type: 'WINDOW.FOCUS'; name: string };
 
 type MachineEvent =
   | LogoutEvent
   | ToggleThemeEvent
   | AuthenticationToggleEvent
-  | OpenWindow;
+  | OpenWindow
+  | FocusWindow;
 
 export type DesktopMachine = typeof desktopMachine;
 export const desktopMachine =
@@ -68,7 +60,6 @@ export const desktopMachine =
             },
           },
           on: {
-            // * for debugging
             'AUTHENTICATION.TOGGLE': {
               target: 'unauthenticated',
             },
@@ -88,12 +79,18 @@ export const desktopMachine =
           },
         },
       },
+
       on: {
         'THEME.TOGGLE': {
           actions: 'toggleTheme',
         },
+
         'WINDOW.OPEN': {
           actions: 'openWindow',
+        },
+
+        'WINDOW.FOCUS': {
+          actions: ['setWindowZIndexToTop'],
         },
       },
     },
@@ -104,16 +101,42 @@ export const desktopMachine =
         })),
 
         openWindow: assign((context, event) => {
-          const newWindow = {
-            ...initialDesktopWindowState,
-            name: event.appName,
-          };
+          const newDesktopWindowMachine = spawn(
+            desktopWindowMachine,
+            event.name
+          );
+
+          newDesktopWindowMachine.send({
+            type: 'init',
+            name: event.name,
+          });
 
           return {
-            windows: [...context.windows, newWindow],
+            windows: [
+              ...context.windows,
+              {
+                machine: newDesktopWindowMachine,
+                zIndex: context.currentZIndexMaximum + 1,
+              },
+            ],
+          };
+        }),
+
+        setWindowZIndexToTop: assign((context, event) => {
+          const newWindows = context.windows.map((window) => {
+            if (window.machine.id == event.name) {
+              return { ...window, zIndex: context.currentZIndexMaximum + 1 };
+            }
+
+            return window;
+          });
+
+          return {
+            windows: newWindows,
           };
         }),
       },
+
       services: {
         loginService: loginMachine,
       },
@@ -132,7 +155,5 @@ export const isAuthenticatedSelector = (state: StateFrom<DesktopMachine>) =>
 export const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
   state.children.loginService;
 
-const isActiveWindow = Ramda.propEq('isMinimized', false);
-export const activeWindowsSelector = (state: StateFrom<DesktopMachine>) => {
-  return state.context.windows.filter(isActiveWindow);
-};
+export const windowsSelector = (state: StateFrom<DesktopMachine>) =>
+  state.context.windows;

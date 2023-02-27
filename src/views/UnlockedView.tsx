@@ -4,25 +4,26 @@ import TopBar, { TOPBAR_HEIGHT_PX } from '../components/TopBar';
 import Dock from '../components/Dock';
 import styled from 'styled-components';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
-import { useSelector } from '@xstate/react';
-import { activeWindowsSelector } from '../machines/desktop.machine';
+import { useActor, useSelector } from '@xstate/react';
+import { windowsSelector } from '../machines/desktop.machine';
 import AppWindow from '../components/AppWindow';
 
 function UnlockedView() {
   const { desktopService } = useGlobalServices();
-  const activeWindows = useSelector(desktopService, activeWindowsSelector);
+  const windows = useSelector(desktopService, windowsSelector);
+
+  const [state] = useActor(desktopService);
+  console.log({ state });
 
   return (
     <>
       <TopBar />
       <WindowsContainer>
-        {activeWindows.map((window) => (
+        {windows.map((window, idx) => (
           <AppWindow
-            key={window.name}
-            title={window.name}
+            key={idx}
             zIndex={window.zIndex}
-            xPos={window.xPos}
-            yPos={window.yPos}
+            windowMachine={window.machine}
           />
         ))}
       </WindowsContainer>
