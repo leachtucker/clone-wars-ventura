@@ -35,5 +35,9 @@ function UnlockedView() {
 export default UnlockedView;
 
 const WindowsContainer = styled.div`
-  height: calc(100vh - ${TOPBAR_HEIGHT_PX}px);
+  position: relative;
+
+  height: calc(100vh - ${TOPBAR_HEIGHT_PX}px - 1rem);
+  /* Necessary for not allowing windows to be dragged out of the viewport */
+  margin: 0 1rem;
 `;

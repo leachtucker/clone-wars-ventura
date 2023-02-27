@@ -7,6 +7,7 @@ import { ActorRefFrom } from 'xstate';
 import { DesktopWindowMachine } from '../machines/desktopWindow.machine';
 import { useActor } from '@xstate/react';
 import { Show } from './Show';
+import { Rnd } from 'react-rnd';
 
 type AppWindowProps = {
   zIndex: number;
@@ -18,9 +19,16 @@ function AppWindow(props: AppWindowProps & React.PropsWithChildren) {
 
   return (
     <Show when={!state.matches('minimized')}>
-      <Wrapper zIndex={props.zIndex}>
-        <AppWindowIcons />
-      </Wrapper>
+      <Rnd
+        enableUserSelectHack
+        enableResizing
+        bounds="parent"
+        default={{ width: 400, height: 350, x: 250, y: 200 }}
+      >
+        <Wrapper zIndex={props.zIndex} isFocused={state.matches('focused')}>
+          <AppWindowIcons />
+        </Wrapper>
+      </Rnd>
     </Show>
   );
 }
@@ -29,6 +37,7 @@ export default AppWindow;
 
 const Wrapper = styled.div<{
   zIndex: number;
+  isFocused: boolean;
 }>`
   ${(props) =>
     props.zIndex &&
@@ -38,17 +47,14 @@ const Wrapper = styled.div<{
 
   position: absolute;
   border-radius: 10px;
+  width: 100%;
+  height: 100%;
 
-  /* box-shadow should be displayed only if the window is focused */
-  box-shadow: 2px 6px 18px rgba(0, 0, 0, 0.18);
-
-  /* temp styles */
-  left: 200px;
-  top: 200px;
-
-  /* fit-content -- we will render the app's content as children of this component and that shall determine size*/
-  width: 250px;
-  height: 500px;
+  ${(props) =>
+    props.isFocused &&
+    css`
+      box-shadow: 2px 6px 18px rgba(0, 0, 0, 0.18);
+    `}
 
   background-color: ${({ theme }) => theme.colors.backgroundTransparent};
   backdrop-filter: blur(65px);
