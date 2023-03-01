@@ -84,7 +84,7 @@ function AppleMenu() {
   const [, send] = useActor(desktopService);
 
   function handleAboutThisMac() {
-    send({ type: 'WINDOW.OPEN', name: 'Test' });
+    send({ type: 'WINDOW.OPEN', name: 'aboutThisMac' });
   }
 
   return (

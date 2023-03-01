@@ -1,13 +1,13 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-import { BsFillCircleFill } from 'react-icons/bs';
-import Button from './Button';
 import { ActorRefFrom } from 'xstate';
 import { DesktopWindowMachine } from '../machines/desktopWindow.machine';
 import { useActor } from '@xstate/react';
 import { Show } from './Show';
 import { Rnd } from 'react-rnd';
+import AboutThisMac, { AboutThisMac_RND_CONFIG } from './apps/AboutThisMac';
+import AppWindowMenu from './AppWindowMenu';
 
 type AppWindowProps = {
   zIndex: number;
@@ -16,6 +16,13 @@ type AppWindowProps = {
 
 function AppWindow(props: AppWindowProps & React.PropsWithChildren) {
   const [state] = useActor(props.windowMachine);
+  const isWindowFocused = state.matches('focused');
+  console.log({ state });
+
+  // @ts-expect-error test
+  const ApplicationComponent = applicationComponentMap[state.context.name];
+  // @ts-expect-error test
+  const applicationRndConfig = applicationRndMap[state.context.name];
 
   return (
     <Show when={!state.matches('minimized')}>
@@ -23,10 +30,22 @@ function AppWindow(props: AppWindowProps & React.PropsWithChildren) {
         enableUserSelectHack
         enableResizing
         bounds="parent"
-        default={{ width: 400, height: 350, x: 250, y: 200 }}
+        dragHandleClassName="dragHandle"
+        cancel=".interactable"
+        {...applicationRndConfig}
+        default={{
+          x: 250,
+          y: 200,
+          ...applicationRndConfig.default,
+        }}
       >
-        <Wrapper zIndex={props.zIndex} isFocused={state.matches('focused')}>
-          <AppWindowIcons />
+        <Wrapper
+          className="dragHandle"
+          zIndex={props.zIndex}
+          isFocused={isWindowFocused}
+        >
+          <ApplicationComponent isFocused={isWindowFocused} />
+          <AppWindowMenu windowMachine={props.windowMachine} />
         </Wrapper>
       </Rnd>
     </Show>
@@ -55,56 +74,12 @@ const Wrapper = styled.div<{
     css`
       box-shadow: 2px 6px 18px rgba(0, 0, 0, 0.18);
     `}
-
-  background-color: ${({ theme }) => theme.colors.backgroundTransparent};
-  backdrop-filter: blur(65px);
 `;
 
-function AppWindowIcons() {
-  function handleAppCloseClick() {}
+const applicationComponentMap = {
+  aboutThisMac: AboutThisMac,
+} as const;
 
-  function handleAppMinimizeClick() {}
-
-  return (
-    <AppWindowIconsContainer>
-      <Button onClick={handleAppCloseClick}>
-        <AppCloseIcon />
-      </Button>
-      <Button>
-        <AppMinimizeIcon onClick={handleAppMinimizeClick} />
-      </Button>
-
-      <AppWindowActionIcon disabled />
-    </AppWindowIconsContainer>
-  );
-}
-
-const AppWindowIconsContainer = styled.div`
-  display: flex;
-  gap: 0.75rem;
-  padding: 1rem;
-  width: fit-content;
-  position: absolute;
-`;
-
-const AppWindowActionIcon = styled(BsFillCircleFill)<{ disabled?: boolean }>`
-  font-size: 1.2rem;
-  border-radius: 50%;
-  filter: drop-shadow(0px 0px 0.2px #3e3b3bde);
-
-  ${({ disabled }) =>
-    disabled &&
-    css`
-      && {
-        color: rgb(220, 217, 216);
-      }
-    `}
-`;
-
-const AppCloseIcon = styled(AppWindowActionIcon)`
-  color: rgb(255, 95, 87);
-`;
-
-const AppMinimizeIcon = styled(AppWindowActionIcon)`
-  color: rgb(254, 188, 47);
-`;
+const applicationRndMap = {
+  aboutThisMac: AboutThisMac_RND_CONFIG,
+} as const;
