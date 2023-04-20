@@ -1,18 +1,21 @@
 import { createMachine, assign } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 
+import { ApplicationName } from '../components/apps';
+
 type MachineContext = {
-  name: string;
+  name: ApplicationName | null;
 };
 
-const initialContext: MachineContext = {
-  name: '',
-};
+const initialContext = {
+  name: null,
+} satisfies MachineContext;
 
-type InitEvent = { type: 'init'; name: string };
+type InitEvent = { type: 'init'; name: ApplicationName };
 type MinimizeEvent = { type: 'minimize' };
+type CloseEvent = { type: 'close' };
 
-type MachineEvent = InitEvent | MinimizeEvent;
+type MachineEvent = InitEvent | MinimizeEvent | CloseEvent;
 
 export type DesktopWindowMachine = typeof desktopWindowMachine;
 export const desktopWindowMachine = createMachine(
@@ -36,20 +39,34 @@ export const desktopWindowMachine = createMachine(
       },
 
       focused: {
-        entry: [
-          (context) => sendParent({ type: 'WINDOW.FOCUS', name: context.name }),
-        ],
+        entry: ['focusApp'],
       },
 
       unfocused: {},
 
       minimized: {},
     },
+
+    on: {
+      close: {
+        actions: ['closeApp'],
+      },
+    },
   },
   {
     actions: {
       assignName: assign((context, event) => ({
         name: event.name,
+      })),
+
+      focusApp: sendParent((context) => ({
+        type: 'WINDOW.FOCUS',
+        name: context.name,
+      })),
+
+      closeApp: sendParent((context) => ({
+        type: 'WINDOW.CLOSE',
+        name: context.name,
       })),
     },
   }

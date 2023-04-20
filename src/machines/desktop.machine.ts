@@ -6,6 +6,7 @@ import {
   DesktopWindowMachine,
   desktopWindowMachine,
 } from './desktopWindow.machine';
+import { ApplicationName } from '../components/apps';
 
 type Window = { machine: ActorRefFrom<DesktopWindowMachine>; zIndex: number };
 
@@ -25,15 +26,18 @@ type LogoutEvent = { type: 'logout' };
 type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
 // * for debugging
 type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
-type OpenWindow = { type: 'WINDOW.OPEN'; name: string };
-type FocusWindow = { type: 'WINDOW.FOCUS'; name: string };
+type OpenWindow = { type: 'WINDOW.OPEN'; name: ApplicationName };
+
+type FocusWindow = { type: 'WINDOW.FOCUS'; name: ApplicationName };
+type CloseWindow = { type: 'WINDOW.CLOSE'; name: ApplicationName };
 
 type MachineEvent =
   | LogoutEvent
   | ToggleThemeEvent
   | AuthenticationToggleEvent
   | OpenWindow
-  | FocusWindow;
+  | FocusWindow
+  | CloseWindow;
 
 export type DesktopMachine = typeof desktopMachine;
 export const desktopMachine =
@@ -92,6 +96,10 @@ export const desktopMachine =
         'WINDOW.FOCUS': {
           actions: ['setWindowZIndexToTop'],
         },
+
+        'WINDOW.CLOSE': {
+          actions: 'closeWindow',
+        },
       },
     },
     {
@@ -122,6 +130,24 @@ export const desktopMachine =
           };
         }),
 
+        closeWindow: assign((context, event) => {
+          const window = context.windows.find(
+            (win) => win.machine.id === event.name
+          );
+
+          if (window?.machine?.stop) {
+            window.machine.stop();
+          }
+
+          console.log('hit!');
+
+          return {
+            windows: context.windows.filter(
+              (win) => win.machine.id != event.name
+            ),
+          };
+        }),
+
         setWindowZIndexToTop: assign((context, event) => {
           const newWindows = context.windows.map((window) => {
             if (window.machine.id == event.name) {
@@ -130,6 +156,8 @@ export const desktopMachine =
 
             return window;
           });
+
+          console.log('working');
 
           return {
             windows: newWindows,

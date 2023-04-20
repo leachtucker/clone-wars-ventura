@@ -1,13 +1,19 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { Rnd } from 'react-rnd';
 
 import { ActorRefFrom } from 'xstate';
-import { DesktopWindowMachine } from '../machines/desktopWindow.machine';
 import { useActor } from '@xstate/react';
+
+import { DesktopWindowMachine } from '../machines/desktopWindow.machine';
 import { Show } from './Show';
-import { Rnd } from 'react-rnd';
-import AboutThisMac, { AboutThisMac_RND_CONFIG } from './apps/AboutThisMac';
+
 import AppWindowMenu from './AppWindowMenu';
+import { applicationComponentMap, applicationRndMap } from './apps';
+
+export type ApplicationComponentProps = {
+  isFocused: boolean;
+};
 
 type AppWindowProps = {
   zIndex: number;
@@ -19,37 +25,31 @@ function AppWindow(props: AppWindowProps & React.PropsWithChildren) {
   const isWindowFocused = state.matches('focused');
   console.log({ state });
 
-  // @ts-expect-error test
-  const ApplicationComponent = applicationComponentMap[state.context.name];
-  // @ts-expect-error test
-  const applicationRndConfig = applicationRndMap[state.context.name];
+  if (state.context.name) {
+    const ApplicationComponent = applicationComponentMap[state.context.name];
+    const applicationRndConfig = applicationRndMap[state.context.name];
 
-  return (
-    <Show when={!state.matches('minimized')}>
-      <Rnd
-        enableUserSelectHack
-        enableResizing
-        bounds="parent"
-        dragHandleClassName="dragHandle"
-        cancel=".interactable"
-        {...applicationRndConfig}
-        default={{
-          x: 250,
-          y: 200,
-          ...applicationRndConfig.default,
-        }}
-      >
-        <Wrapper
-          className="dragHandle"
-          zIndex={props.zIndex}
-          isFocused={isWindowFocused}
+    return (
+      <Show when={!state.matches('minimized')}>
+        <Rnd
+          enableUserSelectHack
+          bounds="parent"
+          dragHandleClassName="dragHandle"
+          cancel=".interactable"
+          {...applicationRndConfig}
         >
-          <ApplicationComponent isFocused={isWindowFocused} />
-          <AppWindowMenu windowMachine={props.windowMachine} />
-        </Wrapper>
-      </Rnd>
-    </Show>
-  );
+          <Wrapper
+            className="dragHandle"
+            zIndex={props.zIndex}
+            isFocused={isWindowFocused}
+          >
+            <ApplicationComponent isFocused={isWindowFocused} />
+            <AppWindowMenu windowMachine={props.windowMachine} />
+          </Wrapper>
+        </Rnd>
+      </Show>
+    );
+  }
 }
 
 export default AppWindow;
@@ -75,11 +75,3 @@ const Wrapper = styled.div<{
       box-shadow: 2px 6px 18px rgba(0, 0, 0, 0.18);
     `}
 `;
-
-const applicationComponentMap = {
-  aboutThisMac: AboutThisMac,
-} as const;
-
-const applicationRndMap = {
-  aboutThisMac: AboutThisMac_RND_CONFIG,
-} as const;

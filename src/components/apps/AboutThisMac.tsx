@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import macbook from '../../assets/macbook.png';
+import macbookImg from '../../assets/macbook.png';
+import { Rnd } from 'react-rnd';
 
 type AboutThisMacProps = { isFocused: boolean };
 
@@ -8,7 +9,7 @@ function AboutThisMac(props: AboutThisMacProps) {
   return (
     <Wrapper isFocused={props.isFocused}>
       <Container>
-        <Macbook />
+        <Macbook style={{ pointerEvents: 'none' }} />
         <span
           style={{
             fontWeight: 700,
@@ -56,9 +57,11 @@ export const AboutThisMac_RND_CONFIG = {
   default: {
     width: 280,
     height: 450,
+    x: 250,
+    y: 200,
   },
   enableResizing: false,
-};
+} satisfies Partial<React.ComponentProps<typeof Rnd>>;
 
 const Wrapper = styled.div<{ isFocused: boolean }>`
   height: 100%;
@@ -80,7 +83,7 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const Macbook = styled.img.attrs({ src: macbook })`
+const Macbook = styled.img.attrs({ src: macbookImg })`
   width: 17rem;
   margin-top: 7rem;
 `;

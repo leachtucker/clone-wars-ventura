@@ -8,11 +8,13 @@ import { useActor } from '@xstate/react';
 type AppWindowMenuProps = { windowMachine: ActorRefFrom<DesktopWindowMachine> };
 
 export function AppWindowMenu(props: AppWindowMenuProps) {
-  const [state, send] = useActor(props.windowMachine);
+  const [, send] = useActor(props.windowMachine);
 
-  const handleAppCloseClick: React.MouseEventHandler = (e) => {};
+  const handleAppCloseClick: React.MouseEventHandler = () => {
+    send('close');
+  };
 
-  const handleAppMinimizeClick: React.MouseEventHandler = (e) => {};
+  const handleAppMinimizeClick: React.MouseEventHandler = () => {};
 
   return (
     <Container className="interactable">
