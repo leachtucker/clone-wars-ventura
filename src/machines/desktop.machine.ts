@@ -133,21 +133,21 @@ export const desktopMachine =
           windows: context.windows.filter((win) => win.id != event.id),
         })),
 
-        setWindowZIndexToTop: assign((context, event) => {
-          const nextZIndex = context.currentZIndexMaximum + 1;
+        // setWindowZIndexToTop: assign((context, event) => {
+        //   const nextZIndex = context.currentZIndexMaximum + 1;
 
-          const updatedWindows = context.windows.map((window) => {
-            if (window.id == event.id) {
-              return { ...window, zIndex: nextZIndex };
-            }
+        //   const updatedWindows = context.windows.map((window) => {
+        //     if (window.id == event.id) {
+        //       return { ...window, zIndex: nextZIndex };
+        //     }
 
-            return window;
-          });
+        //     return window;
+        //   });
 
-          return {
-            windows: updatedWindows,
-          };
-        }),
+        //   return {
+        //     windows: updatedWindows,
+        //   };
+        // }),
       },
 
       services: {

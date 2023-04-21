@@ -19,8 +19,8 @@ function UnlockedView() {
     <>
       <TopBar />
       <WindowsContainer>
-        {windows.map((window, idx) => (
-          <AppWindow key={idx} {...window} />
+        {windows.map((window) => (
+          <AppWindow key={window.id} {...window} />
         ))}
       </WindowsContainer>
       <Dock />
