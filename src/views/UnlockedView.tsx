@@ -12,15 +12,23 @@ function UnlockedView() {
   const { desktopService } = useGlobalServices();
   const windows = useSelector(desktopService, visibleWindowsSelector);
 
-  const [state] = useActor(desktopService);
+  const [state, send] = useActor(desktopService);
   console.log({ state });
+
+  const pushWindowToTop = (windowId: string) => {
+    send({ type: 'WINDOW.FOCUS', id: windowId });
+  };
 
   return (
     <>
       <TopBar />
       <WindowsContainer>
         {windows.map((window) => (
-          <AppWindow key={window.id} {...window} />
+          <AppWindow
+            key={window.id}
+            {...window}
+            pushWindowToTop={() => pushWindowToTop(window.id)}
+          />
         ))}
       </WindowsContainer>
       <Dock />

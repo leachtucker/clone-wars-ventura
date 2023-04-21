@@ -21,6 +21,7 @@ type AppWindowProps = {
   isFocused: boolean;
   zIndex: number;
   id: string;
+  pushWindowToTop: () => void;
 };
 
 function AppWindow(props: React.PropsWithChildren<AppWindowProps>) {
@@ -35,11 +36,13 @@ function AppWindow(props: React.PropsWithChildren<AppWindowProps>) {
         dragHandleClassName="dragHandle"
         cancel=".interactable"
         {...applicationRndConfig}
+        style={{ zIndex: props.zIndex }}
+        onDragStart={props.pushWindowToTop}
       >
         <Wrapper
           className="dragHandle"
-          zIndex={props.zIndex}
           isFocused={props.isFocused}
+          onClick={props.pushWindowToTop}
         >
           <ApplicationComponent isFocused={props.isFocused} />
           <AppWindowMenu windowId={props.id} />
@@ -52,15 +55,8 @@ function AppWindow(props: React.PropsWithChildren<AppWindowProps>) {
 export default AppWindow;
 
 const Wrapper = styled.div<{
-  zIndex: number;
   isFocused: boolean;
 }>`
-  ${(props) =>
-    props.zIndex &&
-    css`
-      z-index: ${props.zIndex};
-    `};
-
   position: absolute;
   border-radius: 10px;
   width: 100%;

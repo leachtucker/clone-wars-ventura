@@ -12,11 +12,11 @@ export function AppWindowMenu(props: AppWindowMenuProps) {
   const { desktopService } = useGlobalServices();
   const [, send] = useActor(desktopService);
 
-  const handleAppCloseClick: React.MouseEventHandler = () => {
+  const handleAppCloseClick = () =>
     send({ type: 'WINDOW.CLOSE', id: props.windowId });
-  };
 
-  const handleAppMinimizeClick: React.MouseEventHandler = () => {};
+  const handleAppMinimizeClick = () =>
+    send({ type: 'WINDOW.MINIMIZE', id: props.windowId });
 
   return (
     <Container className="interactable">

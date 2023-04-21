@@ -29,18 +29,19 @@ type LogoutEvent = { type: 'logout' };
 type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
 // * for debugging
 type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
-type OpenWindow = { type: 'WINDOW.OPEN'; name: ApplicationName };
 
+type OpenWindow = { type: 'WINDOW.OPEN'; name: ApplicationName };
 type FocusWindow = { type: 'WINDOW.FOCUS'; id: string };
 type CloseWindow = { type: 'WINDOW.CLOSE'; id: string };
+type MinimizeWindow = { type: 'WINDOW.MINIMIZE'; id: string };
+
+type WindowEvent = OpenWindow | FocusWindow | CloseWindow | MinimizeWindow;
 
 type MachineEvent =
   | LogoutEvent
   | ToggleThemeEvent
   | AuthenticationToggleEvent
-  | OpenWindow
-  | FocusWindow
-  | CloseWindow;
+  | WindowEvent;
 
 export type DesktopMachine = typeof desktopMachine;
 export const desktopMachine =
@@ -103,6 +104,10 @@ export const desktopMachine =
         'WINDOW.CLOSE': {
           actions: ['closeWindow'],
         },
+
+        'WINDOW.MINIMIZE': {
+          actions: ['minimizeWindow'],
+        },
       },
     },
     {
@@ -133,21 +138,32 @@ export const desktopMachine =
           windows: context.windows.filter((win) => win.id != event.id),
         })),
 
-        // setWindowZIndexToTop: assign((context, event) => {
-        //   const nextZIndex = context.currentZIndexMaximum + 1;
+        minimizeWindow: assign((context, event) => ({
+          windows: context.windows.map((win) => {
+            if (win.id == event.id) {
+              return { ...win, isFocused: false, isMinimized: true };
+            }
 
-        //   const updatedWindows = context.windows.map((window) => {
-        //     if (window.id == event.id) {
-        //       return { ...window, zIndex: nextZIndex };
-        //     }
+            return win;
+          }),
+        })),
 
-        //     return window;
-        //   });
+        setWindowZIndexToTop: assign((context, event) => {
+          const nextZIndex = context.currentZIndexMaximum + 1;
 
-        //   return {
-        //     windows: updatedWindows,
-        //   };
-        // }),
+          const updatedWindows = context.windows.map((window) => {
+            if (window.id == event.id) {
+              return { ...window, zIndex: nextZIndex };
+            }
+
+            return window;
+          });
+
+          return {
+            windows: updatedWindows,
+            currentZIndexMaximum: nextZIndex,
+          };
+        }),
       },
 
       services: {
