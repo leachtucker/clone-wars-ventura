@@ -1,14 +1,17 @@
-import { ActorRefFrom, StateFrom, assign, createMachine, spawn } from 'xstate';
+import { StateFrom, assign, createMachine } from 'xstate';
+import * as Ramda from 'ramda';
 
 import { loginMachine } from './login.machine';
 import { ThemeName } from '../shared/config/themes';
-import {
-  DesktopWindowMachine,
-  desktopWindowMachine,
-} from './desktopWindow.machine';
 import { ApplicationName } from '../components/apps';
 
-type Window = { machine: ActorRefFrom<DesktopWindowMachine>; zIndex: number };
+type Window = {
+  zIndex: number;
+  id: string;
+  name: ApplicationName;
+  isFocused: boolean;
+  isMinimized: boolean;
+};
 
 type MachineContext = {
   theme: ThemeName;
@@ -28,8 +31,8 @@ type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
 type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
 type OpenWindow = { type: 'WINDOW.OPEN'; name: ApplicationName };
 
-type FocusWindow = { type: 'WINDOW.FOCUS'; name: ApplicationName };
-type CloseWindow = { type: 'WINDOW.CLOSE'; name: ApplicationName };
+type FocusWindow = { type: 'WINDOW.FOCUS'; id: string };
+type CloseWindow = { type: 'WINDOW.CLOSE'; id: string };
 
 type MachineEvent =
   | LogoutEvent
@@ -98,7 +101,7 @@ export const desktopMachine =
         },
 
         'WINDOW.CLOSE': {
-          actions: 'closeWindow',
+          actions: ['closeWindow'],
         },
       },
     },
@@ -109,58 +112,40 @@ export const desktopMachine =
         })),
 
         openWindow: assign((context, event) => {
-          const newDesktopWindowMachine = spawn(
-            desktopWindowMachine,
-            event.name
-          );
+          const uid = self.crypto.randomUUID();
+          const nextZIndex = context.currentZIndexMaximum + 1;
 
-          newDesktopWindowMachine.send({
-            type: 'init',
+          const newWindow: Window = {
+            id: uid,
             name: event.name,
-          });
+            zIndex: nextZIndex,
+            isFocused: true,
+            isMinimized: false,
+          };
 
           return {
-            windows: [
-              ...context.windows,
-              {
-                machine: newDesktopWindowMachine,
-                zIndex: context.currentZIndexMaximum + 1,
-              },
-            ],
+            windows: [...context.windows, newWindow],
+            currentZIndexMaximum: nextZIndex,
           };
         }),
 
-        closeWindow: assign((context, event) => {
-          const window = context.windows.find(
-            (win) => win.machine.id === event.name
-          );
-
-          if (window?.machine?.stop) {
-            window.machine.stop();
-          }
-
-          console.log('hit!');
-
-          return {
-            windows: context.windows.filter(
-              (win) => win.machine.id != event.name
-            ),
-          };
-        }),
+        closeWindow: assign((context, event) => ({
+          windows: context.windows.filter((win) => win.id != event.id),
+        })),
 
         setWindowZIndexToTop: assign((context, event) => {
-          const newWindows = context.windows.map((window) => {
-            if (window.machine.id == event.name) {
-              return { ...window, zIndex: context.currentZIndexMaximum + 1 };
+          const nextZIndex = context.currentZIndexMaximum + 1;
+
+          const updatedWindows = context.windows.map((window) => {
+            if (window.id == event.id) {
+              return { ...window, zIndex: nextZIndex };
             }
 
             return window;
           });
 
-          console.log('working');
-
           return {
-            windows: newWindows,
+            windows: updatedWindows,
           };
         }),
       },
@@ -185,3 +170,8 @@ export const loginServiceSelector = (state: StateFrom<DesktopMachine>) =>
 
 export const windowsSelector = (state: StateFrom<DesktopMachine>) =>
   state.context.windows;
+
+export const visibleWindowsSelector = (state: StateFrom<DesktopMachine>) =>
+  state.context.windows.filter(isMinimized);
+
+const isMinimized = Ramda.propEq('isMinimized', false);

@@ -922,6 +922,13 @@
     commander "^8.0.0"
     xstate "^4.33.4"
 
+"@xstate/inspect@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@xstate/inspect/-/inspect-0.8.0.tgz#f99d3706cd823d4922c47ce4f4376eecac502cc7"
+  integrity sha512-wSkFeOnp+7dhn+zTThO0M4D2FEqZN9lGIWowJu5JLa2ojjtlzRwK8SkjcHZ4rLX8VnMev7kGjgQLrGs8kxy+hw==
+  dependencies:
+    fast-safe-stringify "^2.1.1"
+
 "@xstate/machine-extractor@^0.9.0":
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/@xstate/machine-extractor/-/machine-extractor-0.9.0.tgz#4d352f4befb98a7c0189e0246b70f626149b0091"
@@ -1423,6 +1430,11 @@ fast-memoize@^2.5.1:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/fast-memoize/-/fast-memoize-2.5.2.tgz#79e3bb6a4ec867ea40ba0e7146816f6cdce9b57e"
   integrity sha512-Ue0LwpDYErFbmNnZSF0UH6eImUwDmogUO1jyE+JbN2gsQz/jICm1Ve7t9QT0rNSsfJt+Hs4/S3GnsDVjL4HVrw==
+
+fast-safe-stringify@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-2.1.1.tgz#c406a83b6e70d9e35ce3b30a81141df30aeba884"
+  integrity sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==
 
 fastq@^1.6.0:
   version "1.15.0"

@@ -5,12 +5,12 @@ import Dock from '../components/Dock';
 import styled from 'styled-components';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 import { useActor, useSelector } from '@xstate/react';
-import { windowsSelector } from '../machines/desktop.machine';
+import { visibleWindowsSelector } from '../machines/desktop.machine';
 import AppWindow from '../components/AppWindow';
 
 function UnlockedView() {
   const { desktopService } = useGlobalServices();
-  const windows = useSelector(desktopService, windowsSelector);
+  const windows = useSelector(desktopService, visibleWindowsSelector);
 
   const [state] = useActor(desktopService);
   console.log({ state });
@@ -20,11 +20,7 @@ function UnlockedView() {
       <TopBar />
       <WindowsContainer>
         {windows.map((window, idx) => (
-          <AppWindow
-            key={idx}
-            zIndex={window.zIndex}
-            windowMachine={window.machine}
-          />
+          <AppWindow key={idx} {...window} />
         ))}
       </WindowsContainer>
       <Dock />

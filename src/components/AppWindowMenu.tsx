@@ -1,17 +1,19 @@
 import styled, { css } from 'styled-components';
-import Button from './Button';
 import { BsFillCircleFill } from 'react-icons/bs';
-import { ActorRefFrom } from 'xstate';
-import { DesktopWindowMachine } from '../machines/desktopWindow.machine';
-import { useActor } from '@xstate/react';
 
-type AppWindowMenuProps = { windowMachine: ActorRefFrom<DesktopWindowMachine> };
+import { useActor } from '@xstate/react';
+import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
+
+import Button from './Button';
+
+type AppWindowMenuProps = { windowId: string };
 
 export function AppWindowMenu(props: AppWindowMenuProps) {
-  const [, send] = useActor(props.windowMachine);
+  const { desktopService } = useGlobalServices();
+  const [, send] = useActor(desktopService);
 
   const handleAppCloseClick: React.MouseEventHandler = () => {
-    send('close');
+    send({ type: 'WINDOW.CLOSE', id: props.windowId });
   };
 
   const handleAppMinimizeClick: React.MouseEventHandler = () => {};
