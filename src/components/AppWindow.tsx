@@ -10,6 +10,8 @@ import {
   applicationComponentMap,
   applicationRndMap,
 } from './apps';
+import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
+import { useActor } from '@xstate/react';
 
 export type ApplicationComponentProps = {
   isFocused: boolean;
@@ -25,6 +27,17 @@ type AppWindowProps = {
 };
 
 function AppWindow(props: React.PropsWithChildren<AppWindowProps>) {
+  const { desktopService } = useGlobalServices();
+  const [, send] = useActor(desktopService);
+
+  const handleAppCloseClick = (windowId: string) => {
+    send({ type: 'WINDOW.CLOSE', id: windowId });
+  };
+
+  const handleAppMinimizeClick = (windowId: string) => {
+    send({ type: 'WINDOW.MINIMIZE', id: windowId });
+  };
+
   const ApplicationComponent = applicationComponentMap[props.name];
   const applicationRndConfig = applicationRndMap[props.name];
 
@@ -45,7 +58,10 @@ function AppWindow(props: React.PropsWithChildren<AppWindowProps>) {
           onClick={props.pushWindowToTop}
         >
           <ApplicationComponent isFocused={props.isFocused} />
-          <AppWindowMenu windowId={props.id} />
+          <AppWindowMenu
+            onCloseClick={() => handleAppCloseClick(props.id)}
+            onMinimizeClick={() => handleAppMinimizeClick(props.id)}
+          />
         </Wrapper>
       </Rnd>
     </Show>

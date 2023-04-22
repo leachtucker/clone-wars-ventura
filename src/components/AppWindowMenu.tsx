@@ -1,30 +1,22 @@
 import styled, { css } from 'styled-components';
 import { BsFillCircleFill } from 'react-icons/bs';
 
-import { useActor } from '@xstate/react';
-import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
-
 import Button from './Button';
 
-type AppWindowMenuProps = { windowId: string };
+type AppWindowMenuProps = {
+  onCloseClick: () => void;
+  onMinimizeClick: () => void;
+};
 
 export function AppWindowMenu(props: AppWindowMenuProps) {
-  const { desktopService } = useGlobalServices();
-  const [, send] = useActor(desktopService);
-
-  const handleAppCloseClick = () =>
-    send({ type: 'WINDOW.CLOSE', id: props.windowId });
-
-  const handleAppMinimizeClick = () =>
-    send({ type: 'WINDOW.MINIMIZE', id: props.windowId });
-
   return (
     <Container className="interactable">
-      <Button onClick={handleAppCloseClick}>
+      <Button onClick={props.onCloseClick}>
         <AppCloseIcon />
       </Button>
+
       <Button>
-        <AppMinimizeIcon onClick={handleAppMinimizeClick} />
+        <AppMinimizeIcon onClick={props.onMinimizeClick} />
       </Button>
 
       <AppWindowActionIcon disabled />
