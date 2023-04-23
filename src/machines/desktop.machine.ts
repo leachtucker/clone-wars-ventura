@@ -27,8 +27,15 @@ const initialContext: MachineContext = {
 
 type LogoutEvent = { type: 'AUTHENTICATION.LOGOUT' };
 type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
+
 // * for debugging
 type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
+
+type MachineEvent =
+  | LogoutEvent
+  | ToggleThemeEvent
+  | AuthenticationToggleEvent
+  | WindowEvent;
 
 type OpenWindow = { type: 'WINDOW.OPEN'; name: ApplicationName };
 type FocusWindow = { type: 'WINDOW.FOCUS'; id: string };
@@ -42,12 +49,6 @@ type WindowEvent =
   | CloseWindow
   | MinimizeWindow
   | ReopenWindow;
-
-type MachineEvent =
-  | LogoutEvent
-  | ToggleThemeEvent
-  | AuthenticationToggleEvent
-  | WindowEvent;
 
 export type DesktopMachine = typeof desktopMachine;
 export const desktopMachine =
@@ -78,6 +79,7 @@ export const desktopMachine =
               target: 'unauthenticated',
             },
           },
+          entry: ['resetContext'],
         },
 
         authenticated: {
@@ -184,6 +186,8 @@ export const desktopMachine =
             currentZIndexMaximum: nextZIndex,
           };
         }),
+
+        resetContext: assign(() => initialContext),
       },
 
       services: {
