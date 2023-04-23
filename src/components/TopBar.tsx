@@ -87,6 +87,10 @@ function AppleMenu() {
     send({ type: 'WINDOW.OPEN', name: 'aboutThisMac' });
   }
 
+  function handleAboutThisEngineer() {
+    send({ type: 'WINDOW.OPEN', name: 'aboutThisEngineer' });
+  }
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -105,8 +109,12 @@ function AppleMenu() {
           <StyledMenuItem onClick={handleAboutThisMac}>
             About This Mac
           </StyledMenuItem>
+
           <StyledSeparator />
-          <StyledMenuItem>About This Engineer</StyledMenuItem>
+
+          <StyledMenuItem onClick={handleAboutThisEngineer}>
+            About This Engineer
+          </StyledMenuItem>
           <StyledMenuItem>Log Out Tucker...</StyledMenuItem>
         </StyledMenuContent>
       </DropdownMenu.Portal>

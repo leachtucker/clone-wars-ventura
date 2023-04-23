@@ -11,6 +11,7 @@ import avatar from '../assets/avatar.png';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 import { loginServiceSelector } from '../machines/desktop.machine';
 import themes from '../shared/config/themes';
+import Avatar from '../components/Avatar';
 
 function LockedView() {
   const { desktopService } = useGlobalServices();
@@ -30,7 +31,7 @@ function LockedView() {
   const isPasswordInput = state.context.password.length > 0;
   return (
     <Container>
-      <Avatar src={avatar} />
+      <Avatar src={avatar} style={{ width: '15rem', height: '15rem' }} />
       <Username>Tucker</Username>
 
       <form onSubmit={handleSubmit}>
@@ -72,15 +73,6 @@ const Container = styled.div`
   height: 100%;
 
   color: ${themes.dark.colors.primary};
-`;
-
-const Avatar = styled.img`
-  width: 15rem;
-  height: 15rem;
-  border-radius: 50%;
-
-  background-color: #f7d4b0;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 `;
 
 const Username = styled.span`
