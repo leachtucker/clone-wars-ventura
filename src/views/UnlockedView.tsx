@@ -1,22 +1,33 @@
 import React from 'react';
+import styled from 'styled-components';
+import { useActor, useSelector } from '@xstate/react';
 
 import TopBar, { TOPBAR_HEIGHT_PX } from '../components/TopBar';
 import Dock from '../components/Dock';
-import styled from 'styled-components';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
-import { useActor, useSelector } from '@xstate/react';
-import { visibleWindowsSelector } from '../machines/desktop.machine';
+import {
+  windowsSelector,
+  minimizedWindowsSelector,
+} from '../machines/desktop.machine';
 import AppWindow from '../components/AppWindow';
 
 function UnlockedView() {
   const { desktopService } = useGlobalServices();
-  const windows = useSelector(desktopService, visibleWindowsSelector);
+  const windows = useSelector(desktopService, windowsSelector);
+  const minimizedWindows = useSelector(
+    desktopService,
+    minimizedWindowsSelector
+  );
 
   const [state, send] = useActor(desktopService);
   console.log({ state });
 
   const pushWindowToTop = (windowId: string) => {
     send({ type: 'WINDOW.FOCUS', id: windowId });
+  };
+
+  const reopenWindow = (windowId: string) => {
+    send({ type: 'WINDOW.REOPEN', id: windowId });
   };
 
   return (
@@ -31,7 +42,10 @@ function UnlockedView() {
           />
         ))}
       </WindowsContainer>
-      <Dock />
+      <Dock
+        minimizedWindows={minimizedWindows}
+        onMinimizedWindowClick={reopenWindow}
+      />
     </>
   );
 }

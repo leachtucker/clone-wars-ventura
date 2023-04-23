@@ -5,7 +5,7 @@ import { loginMachine } from './login.machine';
 import { ThemeName } from '../shared/config/themes';
 import { ApplicationName } from '../components/apps';
 
-type Window = {
+export type Window = {
   zIndex: number;
   id: string;
   name: ApplicationName;
@@ -34,8 +34,14 @@ type OpenWindow = { type: 'WINDOW.OPEN'; name: ApplicationName };
 type FocusWindow = { type: 'WINDOW.FOCUS'; id: string };
 type CloseWindow = { type: 'WINDOW.CLOSE'; id: string };
 type MinimizeWindow = { type: 'WINDOW.MINIMIZE'; id: string };
+type ReopenWindow = { type: 'WINDOW.REOPEN'; id: string };
 
-type WindowEvent = OpenWindow | FocusWindow | CloseWindow | MinimizeWindow;
+type WindowEvent =
+  | OpenWindow
+  | FocusWindow
+  | CloseWindow
+  | MinimizeWindow
+  | ReopenWindow;
 
 type MachineEvent =
   | LogoutEvent
@@ -108,6 +114,10 @@ export const desktopMachine =
         'WINDOW.MINIMIZE': {
           actions: ['minimizeWindow'],
         },
+
+        'WINDOW.REOPEN': {
+          actions: ['reopenWindow', 'setWindowZIndexToTop'],
+        },
       },
     },
     {
@@ -148,15 +158,25 @@ export const desktopMachine =
           }),
         })),
 
+        reopenWindow: assign((context, event) => ({
+          windows: context.windows.map((win) => {
+            if (win.id == event.id) {
+              return { ...win, isFocused: true, isMinimized: false };
+            }
+
+            return win;
+          }),
+        })),
+
         setWindowZIndexToTop: assign((context, event) => {
           const nextZIndex = context.currentZIndexMaximum + 1;
 
-          const updatedWindows = context.windows.map((window) => {
-            if (window.id == event.id) {
-              return { ...window, zIndex: nextZIndex };
+          const updatedWindows = context.windows.map((win) => {
+            if (win.id == event.id) {
+              return { ...win, zIndex: nextZIndex };
             }
 
-            return window;
+            return win;
           });
 
           return {
@@ -188,6 +208,9 @@ export const windowsSelector = (state: StateFrom<DesktopMachine>) =>
   state.context.windows;
 
 export const visibleWindowsSelector = (state: StateFrom<DesktopMachine>) =>
+  state.context.windows.filter(Ramda.compose(Ramda.not, isMinimized));
+
+export const minimizedWindowsSelector = (state: StateFrom<DesktopMachine>) =>
   state.context.windows.filter(isMinimized);
 
-const isMinimized = Ramda.propEq('isMinimized', false);
+const isMinimized = Ramda.propEq('isMinimized', true);

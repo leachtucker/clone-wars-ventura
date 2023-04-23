@@ -10,6 +10,7 @@ function AboutThisMac(props: AboutThisMacProps) {
     <Wrapper isFocused={props.isFocused}>
       <Container>
         <Macbook style={{ pointerEvents: 'none' }} />
+
         <span
           style={{
             fontWeight: 700,
@@ -23,6 +24,7 @@ function AboutThisMac(props: AboutThisMacProps) {
         <span style={{ color: 'rgb(45, 42, 41, 0.6)', marginTop: '0.5rem' }}>
           16-inch, 2019
         </span>
+
         <MacInfoGrid>
           <MacInfoLabel>Processor</MacInfoLabel>
           <MacInfoContent>2.3 GHz 8-Core Intel Core i9</MacInfoContent>

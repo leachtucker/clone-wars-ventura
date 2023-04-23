@@ -2,8 +2,6 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { Rnd } from 'react-rnd';
 
-import { Show } from './Show';
-
 import AppWindowMenu from './AppWindowMenu';
 import {
   ApplicationName,
@@ -42,29 +40,30 @@ function AppWindow(props: React.PropsWithChildren<AppWindowProps>) {
   const applicationRndConfig = applicationRndMap[props.name];
 
   return (
-    <Show when={!props.isMinimized}>
-      <Rnd
-        enableUserSelectHack
-        bounds="parent"
-        dragHandleClassName="dragHandle"
-        cancel=".interactable"
-        {...applicationRndConfig}
-        style={{ zIndex: props.zIndex }}
-        onDragStart={props.pushWindowToTop}
+    <Rnd
+      enableUserSelectHack
+      bounds="parent"
+      dragHandleClassName="dragHandle"
+      cancel=".interactable"
+      {...applicationRndConfig}
+      style={{
+        zIndex: props.zIndex,
+        visibility: props.isMinimized ? 'hidden' : 'visible',
+      }}
+      onDragStart={props.pushWindowToTop}
+    >
+      <Wrapper
+        className="dragHandle"
+        isFocused={props.isFocused}
+        onClick={props.pushWindowToTop}
       >
-        <Wrapper
-          className="dragHandle"
-          isFocused={props.isFocused}
-          onClick={props.pushWindowToTop}
-        >
-          <ApplicationComponent isFocused={props.isFocused} />
-          <AppWindowMenu
-            onCloseClick={() => handleAppCloseClick(props.id)}
-            onMinimizeClick={() => handleAppMinimizeClick(props.id)}
-          />
-        </Wrapper>
-      </Rnd>
-    </Show>
+        <ApplicationComponent isFocused={props.isFocused} />
+        <AppWindowMenu
+          onCloseClick={() => handleAppCloseClick(props.id)}
+          onMinimizeClick={() => handleAppMinimizeClick(props.id)}
+        />
+      </Wrapper>
+    </Rnd>
   );
 }
 
