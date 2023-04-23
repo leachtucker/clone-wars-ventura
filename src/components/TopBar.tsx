@@ -83,12 +83,16 @@ function AppleMenu() {
   const { desktopService } = useGlobalServices();
   const [, send] = useActor(desktopService);
 
-  function handleAboutThisMac() {
+  function handleAboutThisMacClick() {
     send({ type: 'WINDOW.OPEN', name: 'aboutThisMac' });
   }
 
-  function handleAboutThisEngineer() {
+  function handleAboutThisEngineerClick() {
     send({ type: 'WINDOW.OPEN', name: 'aboutThisEngineer' });
+  }
+
+  function handleLogOutClick() {
+    send({ type: 'AUTHENTICATION.LOGOUT' });
   }
 
   return (
@@ -106,16 +110,19 @@ function AppleMenu() {
           alignOffset={15}
           avoidCollisions={false}
         >
-          <StyledMenuItem onClick={handleAboutThisMac}>
+          <StyledMenuItem onClick={handleAboutThisMacClick}>
             About This Mac
           </StyledMenuItem>
 
           <StyledSeparator />
 
-          <StyledMenuItem onClick={handleAboutThisEngineer}>
+          <StyledMenuItem onClick={handleAboutThisEngineerClick}>
             About This Engineer
           </StyledMenuItem>
-          <StyledMenuItem>Log Out Tucker...</StyledMenuItem>
+
+          <StyledMenuItem onClick={handleLogOutClick}>
+            Log Out Tucker...
+          </StyledMenuItem>
         </StyledMenuContent>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

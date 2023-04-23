@@ -25,7 +25,7 @@ const initialContext: MachineContext = {
   currentZIndexMaximum: 0,
 };
 
-type LogoutEvent = { type: 'logout' };
+type LogoutEvent = { type: 'AUTHENTICATION.LOGOUT' };
 type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
 // * for debugging
 type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
@@ -82,7 +82,7 @@ export const desktopMachine =
 
         authenticated: {
           on: {
-            logout: {
+            'AUTHENTICATION.LOGOUT': {
               target: 'unauthenticated',
             },
 
