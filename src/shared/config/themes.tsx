@@ -8,6 +8,7 @@ export type ThemeMapping = {
     selection: string;
     selectionContrast: string;
     grey: string;
+    transparentGrey: string;
   };
 };
 
@@ -17,6 +18,7 @@ const colors = {
   almostBlack: 'rgb(50, 40, 39)',
   blue: 'rgb(17, 107, 210)',
   grey: 'rgb(139, 140, 151)',
+  transparentGrey: 'rgba(139, 140, 151, 0.3)',
 } as const;
 
 const light: DefaultTheme = {
@@ -27,6 +29,7 @@ const light: DefaultTheme = {
     selection: colors.blue,
     selectionContrast: colors.white,
     grey: colors.grey,
+    transparentGrey: colors.transparentGrey,
   },
 };
 
@@ -38,6 +41,7 @@ const dark: DefaultTheme = {
     selection: colors.blue,
     selectionContrast: colors.white,
     grey: colors.grey,
+    transparentGrey: colors.transparentGrey,
   },
 };
 

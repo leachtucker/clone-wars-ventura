@@ -1,18 +1,16 @@
+import React from 'react';
 import styled from 'styled-components';
 
-import { useActor } from '@xstate/react';
+import AppleMenu from './AppleMenu';
 
-import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
-
-import { TiVendorApple } from 'react-icons/ti';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-
-import Button from '../components/Button';
-import Toggles from './icons/Toggles';
 import themes from '../shared/config/themes';
+import ControlPanelDropdown from './ControlPanelDropdown';
+import SimpleDate from './SimpleDate';
+import useCurrentDate from '../hooks/useCurrentDate';
+import Button from './Button';
 
 function TopBar() {
-  const now = new Date();
+  const date = useCurrentDate();
 
   return (
     <Wrapper>
@@ -21,11 +19,9 @@ function TopBar() {
       </LeftRightContainer>
 
       <LeftRightContainer>
-        <Button style={{ fontSize: '1.4rem' }}>
-          <Toggles />
-        </Button>
+        <ControlPanelDropdown />
 
-        <SimpleDate date={now} />
+        <SimpleDate date={date} />
       </LeftRightContainer>
     </Wrapper>
   );
@@ -53,107 +49,19 @@ const LeftRightContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 1.2rem;
+
+  height: 100%;
 `;
 
-type SimpleDateProps = { date: Date };
-function SimpleDate({ date }: SimpleDateProps) {
-  return (
-    <DateWrapper>
-      {WeekDayIntlDateTimeFormat.format(date)} {IntlDateTimeFormat.format(date)}
-    </DateWrapper>
-  );
-}
+export const TopBarButton = styled(Button)`
+  height: 100%;
+  display: flex;
+  align-items: center;
 
-const WeekDayIntlDateTimeFormat = new Intl.DateTimeFormat('default', {
-  weekday: 'short',
-});
+  padding: 0.2rem 1rem;
+  border-radius: 4px;
 
-const IntlDateTimeFormat = new Intl.DateTimeFormat('default', {
-  month: 'short',
-  day: '2-digit',
-  hour: 'numeric',
-  minute: 'numeric',
-});
-
-const DateWrapper = styled.span`
-  font-size: 1.2rem;
-`;
-
-function AppleMenu() {
-  const { desktopService } = useGlobalServices();
-  const [, send] = useActor(desktopService);
-
-  function handleAboutThisMacClick() {
-    send({ type: 'WINDOW.OPEN', name: 'aboutThisMac' });
+  &[data-state='open'] {
+    background-color: ${({ theme }) => theme.colors.transparentGrey};
   }
-
-  function handleAboutThisEngineerClick() {
-    send({ type: 'WINDOW.OPEN', name: 'aboutThisEngineer' });
-  }
-
-  function handleLogOutClick() {
-    send({ type: 'AUTHENTICATION.LOGOUT' });
-  }
-
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <Button style={{ fontSize: '2rem' }}>
-          <TiVendorApple />
-        </Button>
-      </DropdownMenu.Trigger>
-
-      <DropdownMenu.Portal>
-        <StyledMenuContent
-          sideOffset={TOPBAR_HEIGHT_PX}
-          align="start"
-          alignOffset={15}
-          avoidCollisions={false}
-        >
-          <StyledMenuItem onClick={handleAboutThisMacClick}>
-            About This Mac
-          </StyledMenuItem>
-
-          <StyledSeparator />
-
-          <StyledMenuItem onClick={handleAboutThisEngineerClick}>
-            About This Engineer
-          </StyledMenuItem>
-
-          <StyledMenuItem onClick={handleLogOutClick}>
-            Log Out Tucker...
-          </StyledMenuItem>
-        </StyledMenuContent>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
-  );
-}
-
-const StyledMenuContent = styled(DropdownMenu.Content)`
-  color: ${({ theme }) => theme.colors.primary};
-  background-color: ${({ theme }) => theme.colors.backgroundTransparent};
-  backdrop-filter: blur(65px);
-  border-radius: 5px;
-
-  padding: 0.6rem;
-  width: 24rem;
-`;
-
-const StyledMenuItem = styled(DropdownMenu.Item)`
-  cursor: default;
-  font-size: 1.25rem;
-  padding: 0.5rem 1rem;
-  border-radius: 3px;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.selection};
-    color: ${({ theme }) => theme.colors.selectionContrast};
-  }
-`;
-
-const StyledSeparator = styled(DropdownMenu.Separator)`
-  width: 92%;
-  height: 1px;
-  margin: 0.4rem auto;
-  background-color: ${({ theme }) => theme.colors.grey};
 `;
