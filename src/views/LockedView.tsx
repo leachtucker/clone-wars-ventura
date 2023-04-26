@@ -2,7 +2,8 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { useActor, useSelector } from '@xstate/react';
 
-import Button from '../components/Button';
+import Avatar from '../components/Avatar';
+import RoundIconButton from '../components/RoundIconButton';
 import { Show } from '../components/Show';
 import { shake } from '../shared/keyframes';
 import { FiArrowRightCircle, FiXCircle } from 'react-icons/fi';
@@ -11,7 +12,6 @@ import avatar from '../assets/avatar.png';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 import { loginServiceSelector } from '../machines/desktop.machine';
 import themes from '../shared/config/themes';
-import Avatar from '../components/Avatar';
 
 function LockedView() {
   const { desktopService } = useGlobalServices();
@@ -164,17 +164,4 @@ const ActionWrapper = styled.div`
 
 const ActionLabel = styled.span`
   font-size: 1.2rem;
-`;
-
-const RoundIconButton = styled(Button)`
-  background-color: ${themes.light.colors.backgroundTransparent};
-  color: ${themes.dark.colors.primary};
-  opacity: 0.6;
-
-  font-size: 2rem;
-
-  border-radius: 50%;
-
-  display: flex;
-  padding: 0.4rem;
 `;
