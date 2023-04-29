@@ -218,3 +218,6 @@ export const minimizedWindowsSelector = (state: StateFrom<DesktopMachine>) =>
   state.context.windows.filter(isMinimized);
 
 const isMinimized = Ramda.propEq('isMinimized', true);
+
+export const isThemeDarkSelector = (state: StateFrom<DesktopMachine>) =>
+  state.context.theme === 'dark';

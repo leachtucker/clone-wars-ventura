@@ -1,7 +1,9 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import * as Ramda from 'ramda';
+import Color from 'color';
 
 import {
   BiWifi2,
@@ -15,11 +17,21 @@ import {
 import { TopBarButton } from './TopBar';
 import Toggles from './icons/Toggles';
 import RoundIconButton from './RoundIconButton';
+import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
+import { useSelector } from '@xstate/react';
+import { isThemeDarkSelector } from '../machines/desktop.machine';
 
 function ControlPanelDropdown() {
   const [isWifiOn, setIsWifiOn] = React.useState(true);
   const [isBluetoothOn, setIsBluetoothOn] = React.useState(true);
   const [isAirDropOn, setIsAirDropOn] = React.useState(true);
+
+  const { desktopService } = useGlobalServices();
+  const isThemeDark = useSelector(desktopService, isThemeDarkSelector);
+
+  function handleThemeClick() {
+    desktopService.send({ type: 'THEME.TOGGLE' });
+  }
 
   return (
     <DropdownMenu.Root>
@@ -107,8 +119,8 @@ function ControlPanelDropdown() {
             >
               <PanelButton
                 icon={<BiMoon style={{ fontSize: '1.7rem' }} />}
-                isActive={isBluetoothOn}
-                onClick={() => setIsBluetoothOn(toggleBoolean)}
+                isActive={isThemeDark}
+                onClick={handleThemeClick}
               />
               <PanelItemMainText>Dark Mode</PanelItemMainText>
             </PanelGroup>
@@ -179,10 +191,6 @@ const WindowPanelGroup = styled(PanelGroup)`
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-
-  & > svg {
-    fill: ${({ theme }) => theme.colors.almostBlack};
-  }
 `;
 
 const PanelItemSmall = styled.div`
@@ -208,7 +216,11 @@ const PanelItemMainText = styled.div`
 `;
 
 const PanelItemSubText = styled.span`
-  color: ${({ theme }) => theme.colors.almostBlack};
+  color: ${(props) =>
+    (props.theme.name == 'light'
+      ? Color(props.theme.colors.primary).lighten(0.3)
+      : Color(props.theme.colors.primary).darken(0.3)
+    ).toString()};
 `;
 
 type PanelIconButtonProps = { isActive?: boolean };
