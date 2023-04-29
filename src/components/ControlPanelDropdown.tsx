@@ -3,7 +3,14 @@ import styled, { css } from 'styled-components';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import * as Ramda from 'ramda';
 
-import { BsWifi2 } from 'react-icons/bs';
+import {
+  BiWifi2,
+  BiBluetooth,
+  BiStation,
+  BiMoon,
+  BiWindow,
+  BiWindows,
+} from 'react-icons/bi';
 
 import { TopBarButton } from './TopBar';
 import Toggles from './icons/Toggles';
@@ -32,19 +39,26 @@ function ControlPanelDropdown() {
             <PanelGroup
               style={{
                 gridColumn: 'span 2',
+                gridRow: 'span 3',
                 display: 'flex',
                 flexDirection: 'column',
-                gridGap: '1.2rem',
+                gridGap: '1rem',
                 padding: '1.2rem 0.8rem',
               }}
             >
-              <PanelItemSmall style={{}}>
+              <PanelItemSmall>
                 <PanelButton
-                  icon={<BsWifi2 />}
+                  icon={
+                    <BiWifi2
+                      style={{ strokeWidth: '0.5px', fontSize: '1.8rem' }}
+                    />
+                  }
                   isActive={isWifiOn}
                   onClick={() => setIsWifiOn(toggleBoolean)}
                 >
-                  <PanelItemMainText>Wi-Fi</PanelItemMainText>
+                  <PanelItemMainText style={{ marginBottom: '0.4rem' }}>
+                    Wi-Fi
+                  </PanelItemMainText>
                   <PanelItemSubText>
                     {isWifiOn ? '1337 Network' : 'Off'}
                   </PanelItemSubText>
@@ -53,11 +67,13 @@ function ControlPanelDropdown() {
 
               <PanelItemSmall>
                 <PanelButton
-                  icon={<BsWifi2 />}
+                  icon={<BiBluetooth style={{ fontSize: '1.7rem' }} />}
                   isActive={isBluetoothOn}
                   onClick={() => setIsBluetoothOn(toggleBoolean)}
                 >
-                  <PanelItemMainText>Bluetooth</PanelItemMainText>
+                  <PanelItemMainText style={{ marginBottom: '0.4rem' }}>
+                    Bluetooth
+                  </PanelItemMainText>
                   <PanelItemSubText>
                     {isBluetoothOn ? 'On' : 'Off'}
                   </PanelItemSubText>
@@ -66,11 +82,13 @@ function ControlPanelDropdown() {
 
               <PanelItemSmall>
                 <PanelButton
-                  icon={<BsWifi2 />}
+                  icon={<BiStation style={{ fontSize: '1.7rem' }} />}
                   isActive={isAirDropOn}
                   onClick={() => setIsAirDropOn(toggleBoolean)}
                 >
-                  <PanelItemMainText>AirDrop</PanelItemMainText>
+                  <PanelItemMainText style={{ marginBottom: '0.4rem' }}>
+                    AirDrop
+                  </PanelItemMainText>
                   <PanelItemSubText>
                     {isAirDropOn ? 'On' : 'Off'}
                   </PanelItemSubText>
@@ -78,12 +96,45 @@ function ControlPanelDropdown() {
               </PanelItemSmall>
             </PanelGroup>
 
-            <PanelGroup style={{ gridColumn: 'span 2' }}>PanelGroup</PanelGroup>
+            <PanelGroup
+              style={{
+                gridColumn: 'span 2',
+                display: 'flex',
+                alignItems: 'center',
+                gridGap: '0.4rem',
+                padding: '1.2rem 0.8rem',
+              }}
+            >
+              <PanelButton
+                icon={<BiMoon style={{ fontSize: '1.7rem' }} />}
+                isActive={isBluetoothOn}
+                onClick={() => setIsBluetoothOn(toggleBoolean)}
+              />
+              <PanelItemMainText>Dark Mode</PanelItemMainText>
+            </PanelGroup>
 
-            <PanelGroup style={{ gridColumn: 'span 2' }}>PanelGroup</PanelGroup>
-
-            <PanelGroup style={{ gridColumn: 'span 1' }}>PanelGroup</PanelGroup>
-            <PanelGroup style={{ gridColumn: 'span 1' }}>PanelGroup</PanelGroup>
+            <WindowPanelGroup
+              style={{
+                gridColumn: 'span 1',
+                gridRow: 'span 2',
+              }}
+            >
+              <BiWindow style={{ fontSize: '2rem' }} />
+              <span style={{ textAlign: 'center', fontSize: '0.9rem' }}>
+                Stage Manager
+              </span>
+            </WindowPanelGroup>
+            <WindowPanelGroup
+              style={{
+                gridColumn: 'span 1',
+                gridRow: 'span 2',
+              }}
+            >
+              <BiWindows style={{ fontSize: '2rem' }} />
+              <span style={{ textAlign: 'center', fontSize: '0.9rem' }}>
+                Screen Mirroring
+              </span>
+            </WindowPanelGroup>
           </PanelGrid>
         </StyledMenuContent>
       </DropdownMenu.Portal>
@@ -97,17 +148,19 @@ const StyledMenuContent = styled(DropdownMenu.Content)`
   color: ${({ theme }) => theme.colors.primary};
   background-color: ${({ theme }) => theme.colors.backgroundTransparent};
   backdrop-filter: blur(65px);
-  border-radius: 5px;
+  border-radius: 14px;
 
   padding: 0.6rem;
   width: 31rem;
+  height: 13rem;
 `;
 
 const PanelGrid = styled.div`
   display: grid;
+  height: 100%;
 
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
 
   grid-gap: 0.8rem;
 `;
@@ -120,6 +173,18 @@ const PanelGroup = styled.div`
   padding: 0.5rem 1rem;
 `;
 
+const WindowPanelGroup = styled(PanelGroup)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  & > svg {
+    fill: ${({ theme }) => theme.colors.almostBlack};
+  }
+`;
+
 const PanelItemSmall = styled.div`
   display: flex;
   grid-gap: 0.8rem;
@@ -127,7 +192,7 @@ const PanelItemSmall = styled.div`
 
 type PanelButtonProps = {
   icon: React.ReactNode;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 } & React.ComponentPropsWithoutRef<typeof PanelIconButton>;
 const PanelButton = ({ icon, children, ...props }: PanelButtonProps) => {
   return (
@@ -140,7 +205,6 @@ const PanelButton = ({ icon, children, ...props }: PanelButtonProps) => {
 
 const PanelItemMainText = styled.div`
   font-weight: 500;
-  margin-bottom: 2px;
 `;
 
 const PanelItemSubText = styled.span`
@@ -159,11 +223,7 @@ const PanelIconButton = styled(RoundIconButton)<PanelIconButtonProps>`
       background-color: ${props.theme.colors.highlightBlue};
     `}
 
-  padding: 0.2rem;
-
-  & > svg {
-    stroke-width: 0.5px;
-  }
+  stroke-width: 0.3px;
 `;
 
 const toggleBoolean = Ramda.not;
