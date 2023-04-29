@@ -1,6 +1,7 @@
 import { DefaultTheme } from 'styled-components';
 
 export type ThemeMapping = {
+  name: 'light' | 'dark';
   colors: {
     white: string;
     black: string;
@@ -29,6 +30,7 @@ const colors = {
 } as const;
 
 const light: DefaultTheme = {
+  name: 'light',
   colors: {
     ...colors,
     primary: colors.black,
@@ -40,6 +42,7 @@ const light: DefaultTheme = {
 };
 
 const dark: DefaultTheme = {
+  name: 'dark',
   colors: {
     ...colors,
     primary: colors.white,
