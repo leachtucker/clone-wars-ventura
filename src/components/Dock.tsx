@@ -3,8 +3,13 @@ import styled from 'styled-components';
 import Trash from './icons/Trash';
 
 import type { Window } from '../machines/desktop.machine';
-import { applicationMinimizedImgMap } from './apps';
+import {
+  ApplicationName,
+  applicationDockIconMap,
+  applicationMinimizedImgMap,
+} from './apps';
 import Button from './Button';
+import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 
 type DockProps = {
   minimizedWindows: Window[];
@@ -12,14 +17,28 @@ type DockProps = {
 };
 
 function Dock({ minimizedWindows, onMinimizedWindowClick }: DockProps) {
+  const { desktopService } = useGlobalServices();
+
+  function createIconClickHandler(appName: ApplicationName) {
+    return function inner() {
+      desktopService.send({ type: 'WINDOW.OPEN', name: appName });
+    };
+  }
+
   return (
     <Container>
       <Wrapper>
         <IconsGutter>
           <IconsContainer>
-            <Button>
-              <div>Dock</div>
-            </Button>
+            {Object.entries(applicationDockIconMap).map(
+              ([appName, appIconImg]) => (
+                <DockIconButton
+                  onClick={createIconClickHandler(appName as ApplicationName)}
+                >
+                  <img src={appIconImg} alt={appName} />
+                </DockIconButton>
+              )
+            )}
           </IconsContainer>
 
           <Separator style={{ margin: '0 1.2rem' }} />
@@ -29,20 +48,20 @@ function Dock({ minimizedWindows, onMinimizedWindowClick }: DockProps) {
               const applicationImg = applicationMinimizedImgMap[win.name];
 
               return (
-                <Button
+                <DockIconButton
                   key={win.id}
                   onClick={() => onMinimizedWindowClick(win.id)}
                   style={{ height: '100%' }}
                 >
                   <img src={applicationImg} style={{ height: '100%' }} />
-                </Button>
+                </DockIconButton>
               );
             })}
           </IconsContainer>
 
-          <Button>
-            <Trash style={{ height: '100%' }} />
-          </Button>
+          <DockIconButton>
+            <Trash />
+          </DockIconButton>
         </IconsGutter>
       </Wrapper>
     </Container>
@@ -99,4 +118,15 @@ const Separator = styled.div`
   height: 100%;
   width: 1px;
   background: rgba(255, 255, 255, 0.3);
+`;
+
+const DockIconButton = styled(Button)`
+  display: block;
+  padding: 0;
+  height: 100%;
+
+  & > img {
+    height: 100%;
+    width: auto;
+  }
 `;
