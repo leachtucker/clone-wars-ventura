@@ -80,7 +80,7 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  z-index: 1;
+  z-index: 1500;
   height: 75px;
 
   color: ${({ theme }) => theme.colors.primary};

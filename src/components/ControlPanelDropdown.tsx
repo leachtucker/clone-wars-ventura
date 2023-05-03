@@ -157,6 +157,7 @@ function ControlPanelDropdown() {
 export default ControlPanelDropdown;
 
 const StyledMenuContent = styled(DropdownMenu.Content)`
+  z-index: 1500;
   color: ${({ theme }) => theme.colors.primary};
   background-color: ${({ theme }) => theme.colors.backgroundTransparent};
   backdrop-filter: blur(65px);
