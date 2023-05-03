@@ -16,6 +16,9 @@ export type ThemeMapping = {
     backgroundTransparent: string;
     selection: string;
     selectionContrast: string;
+
+    chromeTopBarBackground: string;
+    chromeTopBarTabBackground: string;
   };
 };
 
@@ -27,6 +30,9 @@ const colors = {
   grey: 'rgb(139, 140, 151)',
   transparentGrey: 'rgba(139, 140, 151, 0.3)',
   highlightBlue: `rgba(0, 122, 255)`,
+  chromeGrey: 'rgb(227, 227, 227)',
+  chromeBlack: 'rgb(33, 33, 36)',
+  chromeDarkGrey: 'rgb(56, 56, 56)',
 } as const;
 
 const light: DefaultTheme = {
@@ -38,6 +44,8 @@ const light: DefaultTheme = {
     backgroundTransparent: 'rgba(243, 235, 235, 0.3)',
     selection: colors.blue,
     selectionContrast: colors.white,
+    chromeTopBarBackground: colors.chromeGrey,
+    chromeTopBarTabBackground: colors.white,
   },
 };
 
@@ -50,6 +58,8 @@ const dark: DefaultTheme = {
     backgroundTransparent: 'rgba(50, 40, 39, 0.3)',
     selection: colors.blue,
     selectionContrast: colors.white,
+    chromeTopBarBackground: colors.chromeBlack,
+    chromeTopBarTabBackground: colors.chromeDarkGrey,
   },
 };
 
