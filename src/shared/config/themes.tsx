@@ -12,6 +12,7 @@ export type ThemeMapping = {
     highlightBlue: string;
 
     primary: string;
+    secondary: string;
     background: string;
     backgroundTransparent: string;
     selection: string;
@@ -26,6 +27,7 @@ const colors = {
   white: 'rgb(243, 235, 235)',
   black: 'rgb(0, 0, 0)',
   almostBlack: 'rgb(50, 40, 39)',
+  almostWhite: 'rgb(222, 222, 222)',
   blue: 'rgb(17, 107, 210)',
   grey: 'rgb(139, 140, 151)',
   transparentGrey: 'rgba(139, 140, 151, 0.3)',
@@ -40,6 +42,7 @@ const light: DefaultTheme = {
   colors: {
     ...colors,
     primary: colors.black,
+    secondary: colors.almostBlack,
     background: colors.white,
     backgroundTransparent: 'rgba(243, 235, 235, 0.3)',
     selection: colors.blue,
@@ -54,6 +57,7 @@ const dark: DefaultTheme = {
   colors: {
     ...colors,
     primary: colors.white,
+    secondary: colors.almostWhite,
     background: colors.almostBlack,
     backgroundTransparent: 'rgba(50, 40, 39, 0.3)',
     selection: colors.blue,
