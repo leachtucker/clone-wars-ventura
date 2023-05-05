@@ -15,7 +15,7 @@ import {
 type ChromeProps = { isFocused: boolean };
 
 function Chrome(props: ChromeProps) {
-  const [currentUrl, setCurrentUrl] = React.useState('');
+  const [currentUrl, setCurrentUrl] = React.useState('https://www.google.com/');
 
   return (
     <AppWrapper isFocused={props.isFocused}>
@@ -61,7 +61,9 @@ function Chrome(props: ChromeProps) {
           Twitter
         </BookmarkButton>
       </BookmarksBarContainer>
-      Chrome
+      <PageContainer>
+        <iframe src={currentUrl} style={{ height: '100%', width: '100%' }} />
+      </PageContainer>
     </AppWrapper>
   );
 }
@@ -158,4 +160,11 @@ const BookmarkButton = styled(Button)`
     background-color: ${({ theme }) => theme.colors.transparentGrey};
     cursor: pointer;
   }
+`;
+
+const PageContainer = styled.div`
+  height: 100%;
+  width: 100%;
+
+  background-color: white;
 `;
