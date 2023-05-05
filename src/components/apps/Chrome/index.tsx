@@ -71,11 +71,13 @@ function Chrome(props: ChromeProps) {
 export default Chrome;
 
 export const Chrome_RND_CONFIG = {
+  minHeight: 400,
+  minWidth: 400,
   default: {
     width: 700,
     height: 700,
-    x: 250,
-    y: 200,
+    x: 100,
+    y: 100,
   },
   enableResizing: true,
 } satisfies Partial<React.ComponentProps<typeof Rnd>>;
