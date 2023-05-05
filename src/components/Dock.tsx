@@ -53,7 +53,10 @@ function Dock({ minimizedWindows, onMinimizedWindowClick }: DockProps) {
                   onClick={() => onMinimizedWindowClick(win.id)}
                   style={{ height: '100%' }}
                 >
-                  <img src={applicationImg} style={{ height: '100%' }} />
+                  <img
+                    src={applicationImg}
+                    style={{ height: '100%', borderRadius: '8px' }}
+                  />
                 </DockIconButton>
               );
             })}
