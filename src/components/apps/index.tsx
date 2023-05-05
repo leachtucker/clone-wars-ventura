@@ -2,15 +2,16 @@ import { Rnd } from 'react-rnd';
 import { ApplicationComponentProps } from '../AppWindow';
 
 import AboutThisMac, { AboutThisMac_RND_CONFIG } from './AboutThisMac';
-import aboutThisMacImg from '../../assets/minimized-apps/aboutThisMac.png';
+import aboutThisMacMinimizedImg from '../../assets/minimized-apps/aboutThisMac.png';
 
 import AboutThisEngineer, {
   AboutThisEngineer_RND_CONFIG,
 } from './AboutThisEngineer';
-import aboutThisEngineerImg from '../../assets/minimized-apps/aboutThisEngineer.png';
+import aboutThisEngineerMinimizedImg from '../../assets/minimized-apps/aboutThisEngineer.png';
 
 import Chrome, { Chrome_RND_CONFIG } from './Chrome';
 import chromeDockIconImg from '../../assets/chrome-icon.png';
+import chromeMinimizedImg from '../../assets/minimized-apps/chrome.png';
 
 export type ApplicationName = 'aboutThisMac' | 'aboutThisEngineer' | 'chrome';
 
@@ -33,9 +34,9 @@ export const applicationRndMap = {
 >;
 
 export const applicationMinimizedImgMap = {
-  aboutThisMac: aboutThisMacImg,
-  aboutThisEngineer: aboutThisEngineerImg,
-  chrome: aboutThisEngineerImg,
+  aboutThisMac: aboutThisMacMinimizedImg,
+  aboutThisEngineer: aboutThisEngineerMinimizedImg,
+  chrome: chromeMinimizedImg,
 } as const satisfies Record<ApplicationName, string>;
 
 export const applicationDockIconMap = {
