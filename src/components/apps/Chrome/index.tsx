@@ -13,23 +13,28 @@ type ChromeProps = { isFocused: boolean };
 
 function Chrome(props: ChromeProps) {
   const [currentUrl, setCurrentUrl] = React.useState('https://www.google.com/');
+  const [iframeKey, setIframeKey] = React.useState(() => Math.random());
+
+  const handleRefreshClick = () => {
+    setIframeKey(Math.random());
+  };
 
   return (
     <AppWrapper isFocused={props.isFocused}>
       <TopBar />
       <UrlBarContainer>
         <NavigationButtonsContainer>
-          <Button style={{ fontSize: '2.2rem' }}>
+          <NavButton style={{ fontSize: '2.2rem' }}>
             <BiLeftArrowAlt />
-          </Button>
+          </NavButton>
 
-          <Button style={{ fontSize: '2.2rem' }}>
+          <NavButton style={{ fontSize: '2.2rem' }}>
             <BiRightArrowAlt />
-          </Button>
+          </NavButton>
 
-          <Button style={{ fontSize: '2rem' }}>
+          <NavButton style={{ fontSize: '2rem' }} onClick={handleRefreshClick}>
             <IoMdRefresh />
-          </Button>
+          </NavButton>
         </NavigationButtonsContainer>
 
         <UrlBar value={currentUrl} />
@@ -64,7 +69,11 @@ function Chrome(props: ChromeProps) {
         </BookmarkButton>
       </BookmarksBarContainer>
       <PageContainer>
-        <iframe src={currentUrl} style={{ height: '100%', width: '100%' }} />
+        <iframe
+          key={iframeKey}
+          src={currentUrl}
+          style={{ height: '100%', width: '100%' }}
+        />
       </PageContainer>
     </AppWrapper>
   );
@@ -110,6 +119,10 @@ const NavigationButtonsContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 0 0.6rem;
+`;
+
+const NavButton = styled(Button)`
+  cursor: pointer;
 `;
 
 const UrlBar = styled.input`
