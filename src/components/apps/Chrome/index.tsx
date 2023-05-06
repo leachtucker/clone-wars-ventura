@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import * as Ramda from 'ramda';
 
 import { Rnd } from 'react-rnd';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
@@ -11,12 +12,67 @@ import { RiNetflixFill } from 'react-icons/ri';
 
 type ChromeProps = { isFocused: boolean };
 
+type NavigationState = {
+  currentUrl: string;
+  pastUrls: string[];
+  forwardUrlsStack: string[];
+};
+
 function Chrome(props: ChromeProps) {
-  const [currentUrl, setCurrentUrl] = React.useState('https://www.google.com/');
+  const [navigationState, setNavigationState] = React.useState<NavigationState>(
+    {
+      currentUrl: 'https://www.google.com/',
+      pastUrls: [],
+      forwardUrlsStack: [],
+    }
+  );
+
   const [iframeKey, setIframeKey] = React.useState(() => Math.random());
 
   const handleRefreshClick = () => {
     setIframeKey(Math.random());
+  };
+
+  const handleGoBackClick = () => {
+    setNavigationState((prevNav) => {
+      if (prevNav.pastUrls.length > 0) {
+        const nextUrl = Ramda.last(prevNav.pastUrls) as string;
+        const pastUrls = Ramda.init(prevNav.pastUrls);
+
+        return {
+          currentUrl: nextUrl,
+          pastUrls,
+          forwardUrlsStack: [...prevNav.forwardUrlsStack, prevNav.currentUrl],
+        };
+      }
+
+      return prevNav;
+    });
+  };
+
+  const handleGoForwardClick = () => {
+    setNavigationState((prevNav) => {
+      if (prevNav.forwardUrlsStack.length > 0) {
+        const nextUrl = Ramda.last(prevNav.forwardUrlsStack) as string;
+        const forwardUrlsStack = Ramda.init(prevNav.forwardUrlsStack);
+
+        return {
+          currentUrl: nextUrl,
+          pastUrls: [...prevNav.pastUrls, prevNav.currentUrl],
+          forwardUrlsStack,
+        };
+      }
+
+      return prevNav;
+    });
+  };
+
+  const navigateToNewPage = (nextUrl: string) => {
+    setNavigationState((prevNav) => ({
+      ...prevNav,
+      currentUrl: nextUrl,
+      pastUrls: [...prevNav.pastUrls, prevNav.currentUrl],
+    }));
   };
 
   return (
@@ -24,11 +80,14 @@ function Chrome(props: ChromeProps) {
       <TopBar />
       <UrlBarContainer>
         <NavigationButtonsContainer>
-          <NavButton style={{ fontSize: '2.2rem' }}>
+          <NavButton style={{ fontSize: '2.2rem' }} onClick={handleGoBackClick}>
             <BiLeftArrowAlt />
           </NavButton>
 
-          <NavButton style={{ fontSize: '2.2rem' }}>
+          <NavButton
+            style={{ fontSize: '2.2rem' }}
+            onClick={handleGoForwardClick}
+          >
             <BiRightArrowAlt />
           </NavButton>
 
@@ -37,32 +96,36 @@ function Chrome(props: ChromeProps) {
           </NavButton>
         </NavigationButtonsContainer>
 
-        <UrlBar value={currentUrl} />
+        <UrlBar value={navigationState.currentUrl} />
       </UrlBarContainer>
       <BookmarksBarContainer>
         <BookmarkButton
-          onClick={() => setCurrentUrl('https://www.google.com/')}
+          onClick={() => navigateToNewPage('https://www.google.com/')}
         >
           <AiOutlineGoogle />
           Google
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={() => setCurrentUrl('https://www.netflix.com/')}
+          onClick={() => navigateToNewPage('https://www.netflix.com/')}
         >
           <RiNetflixFill style={{ fontSize: '1.5rem' }} />
           Netflix
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={() => setCurrentUrl('https://github.com/leachtucker')}
+          onClick={() => navigateToNewPage('https://github.com/leachtucker')}
         >
           <AiFillGithub />
           GitHub
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={() => setCurrentUrl('https://www.netflix.com/')}
+          onClick={() =>
+            navigateToNewPage(
+              'https://github.com/leachtucker/clone-wars-ventura'
+            )
+          }
         >
           <AiFillGithub />
           OS Clone
@@ -71,7 +134,7 @@ function Chrome(props: ChromeProps) {
       <PageContainer>
         <iframe
           key={iframeKey}
-          src={currentUrl}
+          src={navigationState.currentUrl}
           style={{ height: '100%', width: '100%' }}
         />
       </PageContainer>
