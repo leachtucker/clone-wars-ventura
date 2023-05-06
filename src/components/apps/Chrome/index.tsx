@@ -6,11 +6,7 @@ import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import { IoMdRefresh } from 'react-icons/io';
 import { AppWrapper } from '../AppWrapper';
 import Button from '../../Button';
-import {
-  AiFillGithub,
-  AiFillLinkedin,
-  AiFillTwitterCircle,
-} from 'react-icons/ai';
+import { AiFillGithub, AiOutlineGoogle } from 'react-icons/ai';
 
 type ChromeProps = { isFocused: boolean };
 
@@ -39,12 +35,10 @@ function Chrome(props: ChromeProps) {
       </UrlBarContainer>
       <BookmarksBarContainer>
         <BookmarkButton
-          onClick={() =>
-            setCurrentUrl('https://www.linkedin.com/in/leachtucker/')
-          }
+          onClick={() => setCurrentUrl('https://www.google.com/')}
         >
-          <AiFillLinkedin />
-          LinkedIn
+          <AiOutlineGoogle />
+          Google
         </BookmarkButton>
 
         <BookmarkButton
@@ -55,10 +49,12 @@ function Chrome(props: ChromeProps) {
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={() => setCurrentUrl('https://twitter.com/BuiltByTucker')}
+          onClick={() =>
+            setCurrentUrl('https://github.com/leachtucker/clone-wars-ventura')
+          }
         >
-          <AiFillTwitterCircle />
-          Twitter
+          <AiFillGithub />
+          OS Clone
         </BookmarkButton>
       </BookmarksBarContainer>
       <PageContainer>
@@ -152,6 +148,7 @@ const BookmarkButton = styled(Button)`
 
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 
   font-size: 1.1rem;
   & > svg {
