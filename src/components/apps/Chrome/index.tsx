@@ -7,6 +7,7 @@ import { IoMdRefresh } from 'react-icons/io';
 import { AppWrapper } from '../AppWrapper';
 import Button from '../../Button';
 import { AiFillGithub, AiOutlineGoogle } from 'react-icons/ai';
+import { RiNetflixFill } from 'react-icons/ri';
 
 type ChromeProps = { isFocused: boolean };
 
@@ -42,6 +43,13 @@ function Chrome(props: ChromeProps) {
         </BookmarkButton>
 
         <BookmarkButton
+          onClick={() => setCurrentUrl('https://www.netflix.com/')}
+        >
+          <RiNetflixFill style={{ fontSize: '1.5rem' }} />
+          Netflix
+        </BookmarkButton>
+
+        <BookmarkButton
           onClick={() => setCurrentUrl('https://github.com/leachtucker')}
         >
           <AiFillGithub />
@@ -49,9 +57,7 @@ function Chrome(props: ChromeProps) {
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={() =>
-            setCurrentUrl('https://github.com/leachtucker/clone-wars-ventura')
-          }
+          onClick={() => setCurrentUrl('https://www.netflix.com/')}
         >
           <AiFillGithub />
           OS Clone
