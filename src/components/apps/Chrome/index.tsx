@@ -32,7 +32,7 @@ function Chrome(props: ChromeProps) {
           <NavButton
             style={{ fontSize: '2.2rem' }}
             onClick={navigation.goBackward}
-            disabled={Ramda.isEmpty(navigation.state.backwardUrlsStack)}
+            disabled={!navigation.canGoBackward}
           >
             <BiLeftArrowAlt />
           </NavButton>
@@ -40,7 +40,7 @@ function Chrome(props: ChromeProps) {
           <NavButton
             style={{ fontSize: '2.2rem' }}
             onClick={navigation.goForward}
-            disabled={Ramda.isEmpty(navigation.state.forwardUrlsStack)}
+            disabled={!navigation.canGoForward}
           >
             <BiRightArrowAlt />
           </NavButton>
@@ -50,7 +50,7 @@ function Chrome(props: ChromeProps) {
           </NavButton>
         </NavigationButtonsContainer>
 
-        <UrlBar value={navigation.state.currentUrl} readOnly />
+        <UrlBar value={navigation.currentUrl} readOnly />
       </UrlBarContainer>
       <BookmarksBarContainer>
         <BookmarkButton
@@ -87,7 +87,7 @@ function Chrome(props: ChromeProps) {
       <PageContainer>
         <iframe
           key={iframeKey}
-          src={navigation.state.currentUrl}
+          src={navigation.currentUrl}
           style={{ height: '100%', width: '100%' }}
         />
       </PageContainer>
@@ -208,65 +208,40 @@ const PageContainer = styled.div`
   background-color: white;
 `;
 
-type NavigationState = {
-  currentUrl: string;
-  backwardUrlsStack: string[];
-  forwardUrlsStack: string[];
-};
-
+const INITIAL_URL = 'https://www.google.com/';
 function useNavigationState() {
-  const [state, setState] = React.useState<NavigationState>({
-    currentUrl: 'https://www.google.com/',
-    backwardUrlsStack: [],
-    forwardUrlsStack: [],
-  });
+  const [history, setHistory] = React.useState<string[]>([INITIAL_URL]);
+  const [currentHistoryIdx, setCurrentHistoryIdx] = React.useState<number>(0);
+
+  const currentUrl = history[currentHistoryIdx];
+  const canGoForward = currentHistoryIdx < Ramda.dec(history.length);
+  const canGoBackward = currentHistoryIdx > 0;
 
   const goBackward = () => {
-    setState((prevNav) => {
-      if (prevNav.backwardUrlsStack.length > 0) {
-        const nextUrl = Ramda.last(prevNav.backwardUrlsStack) as string;
-        const backwardUrlsStack = Ramda.init(prevNav.backwardUrlsStack);
-
-        return {
-          currentUrl: nextUrl,
-          backwardUrlsStack,
-          forwardUrlsStack: [...prevNav.forwardUrlsStack, prevNav.currentUrl],
-        };
-      }
-
-      return prevNav;
-    });
+    if (canGoBackward) {
+      setCurrentHistoryIdx(Ramda.dec);
+    }
   };
 
   const goForward = () => {
-    setState((prevNav) => {
-      if (prevNav.forwardUrlsStack.length > 0) {
-        const nextUrl = Ramda.last(prevNav.forwardUrlsStack) as string;
-        const forwardUrlsStack = Ramda.init(prevNav.forwardUrlsStack);
-
-        return {
-          currentUrl: nextUrl,
-          backwardUrlsStack: [...prevNav.backwardUrlsStack, prevNav.currentUrl],
-          forwardUrlsStack,
-        };
-      }
-
-      return prevNav;
-    });
+    if (canGoForward) {
+      setCurrentHistoryIdx(Ramda.inc);
+    }
   };
 
   const goTo = (nextUrl: string) => {
-    setState((prevNav) => ({
-      ...prevNav,
-      currentUrl: nextUrl,
-      backwardUrlsStack: [...prevNav.backwardUrlsStack, prevNav.currentUrl],
-    }));
+    setHistory((prevHistory) => {
+      setCurrentHistoryIdx(() => history.length);
+      return [...prevHistory, nextUrl];
+    });
   };
 
   return {
-    state,
+    currentUrl,
     goTo,
     goForward,
     goBackward,
+    canGoForward,
+    canGoBackward,
   };
 }
