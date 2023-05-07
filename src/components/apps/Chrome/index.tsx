@@ -20,13 +20,18 @@ function Chrome(props: ChromeProps) {
     setIframeKey(Math.random());
   };
 
-  const createHandleBookmarkClick = (bookmarkUrl: string) => {
-    return () => navigation.goTo(bookmarkUrl);
+  const createHandleBookmarkClick = (
+    bookmarkUrl: string,
+    bookmarkTitle: string
+  ) => {
+    return () =>
+      navigation.goTo({ url: bookmarkUrl, pageTitle: bookmarkTitle });
   };
 
   return (
     <AppWrapper isFocused={props.isFocused}>
       <TopBar />
+      <ActiveTab>{navigation.currentState.pageTitle}</ActiveTab>
       <UrlBarContainer>
         <NavigationButtonsContainer>
           <NavButton
@@ -50,25 +55,34 @@ function Chrome(props: ChromeProps) {
           </NavButton>
         </NavigationButtonsContainer>
 
-        <UrlBar value={navigation.currentUrl} readOnly />
+        <UrlBar value={navigation.currentState.url} readOnly />
       </UrlBarContainer>
       <BookmarksBarContainer>
         <BookmarkButton
-          onClick={createHandleBookmarkClick('https://www.google.com/')}
+          onClick={createHandleBookmarkClick(
+            'https://www.google.com/',
+            'Google'
+          )}
         >
           <AiOutlineGoogle />
           Google
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={createHandleBookmarkClick('https://www.netflix.com/')}
+          onClick={createHandleBookmarkClick(
+            'https://www.netflix.com/',
+            'Netflix'
+          )}
         >
           <RiNetflixFill style={{ fontSize: '1.5rem' }} />
           Netflix
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={createHandleBookmarkClick('https://github.com/leachtucker')}
+          onClick={createHandleBookmarkClick(
+            'https://github.com/leachtucker',
+            'GitHub'
+          )}
         >
           <AiFillGithub />
           GitHub
@@ -76,7 +90,8 @@ function Chrome(props: ChromeProps) {
 
         <BookmarkButton
           onClick={createHandleBookmarkClick(
-            'https://github.com/leachtucker/clone-wars-ventura'
+            'https://github.com/leachtucker/clone-wars-ventura',
+            'OS Clone'
           )}
         >
           <AiFillGithub />
@@ -87,7 +102,7 @@ function Chrome(props: ChromeProps) {
       <PageContainer>
         <iframe
           key={iframeKey}
-          src={navigation.currentUrl}
+          src={navigation.currentState.url}
           style={{ height: '100%', width: '100%' }}
         />
       </PageContainer>
@@ -118,10 +133,30 @@ const TopBar = styled.div`
   border-top-right-radius: inherit;
 `;
 
+const ActiveTab = styled.div`
+  position: absolute;
+  transform: translate3d(75px, -32px, 0px);
+
+  width: 16rem;
+  height: 32px;
+
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+
+  background-color: ${({ theme }) => theme.colors.chromeTopBarTabBackground};
+  color: ${({ theme }) => theme.colors.primary};
+
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+
+  font-size: 1.2rem;
+`;
+
 const UrlBarContainer = styled.div`
   height: 3rem;
-  background-color: ${({ theme }) => theme.colors.chromeTopBarTabBackground};
 
+  background-color: ${({ theme }) => theme.colors.chromeTopBarTabBackground};
   color: ${({ theme }) => theme.colors.primary};
 
   display: flex;
@@ -208,12 +243,14 @@ const PageContainer = styled.div`
   background-color: white;
 `;
 
-const INITIAL_URL = 'https://www.google.com/';
+type NavState = { url: string; pageTitle: string };
+
+const INITIAL_NAV = { url: 'https://www.google.com/', pageTitle: 'Google' };
 function useNavigationState() {
-  const [history, setHistory] = React.useState<string[]>([INITIAL_URL]);
+  const [history, setHistory] = React.useState<NavState[]>([INITIAL_NAV]);
   const [currentHistoryIdx, setCurrentHistoryIdx] = React.useState<number>(0);
 
-  const currentUrl = history[currentHistoryIdx];
+  const currentState = history[currentHistoryIdx];
   const canGoForward = currentHistoryIdx < Ramda.dec(history.length);
   const canGoBackward = currentHistoryIdx > 0;
 
@@ -229,15 +266,15 @@ function useNavigationState() {
     }
   };
 
-  const goTo = (nextUrl: string) => {
+  const goTo = (nextNav: NavState) => {
     setHistory((prevHistory) => {
       setCurrentHistoryIdx(() => history.length);
-      return [...prevHistory, nextUrl];
+      return [...prevHistory, nextNav];
     });
   };
 
   return {
-    currentUrl,
+    currentState,
     goTo,
     goForward,
     goBackward,
