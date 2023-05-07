@@ -34,6 +34,7 @@ function Dock({ minimizedWindows, onMinimizedWindowClick }: DockProps) {
               ([appName, appIconImg]) => (
                 <DockIconButton
                   onClick={createIconClickHandler(appName as ApplicationName)}
+                  key={appName}
                 >
                   <img src={appIconImg} alt={appName} />
                 </DockIconButton>

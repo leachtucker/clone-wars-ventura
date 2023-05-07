@@ -96,7 +96,7 @@ function Chrome(props: ChromeProps) {
           </NavButton>
         </NavigationButtonsContainer>
 
-        <UrlBar value={navigationState.currentUrl} />
+        <UrlBar value={navigationState.currentUrl} readOnly />
       </UrlBarContainer>
       <BookmarksBarContainer>
         <BookmarkButton
