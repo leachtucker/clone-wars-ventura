@@ -12,67 +12,16 @@ import { RiNetflixFill } from 'react-icons/ri';
 
 type ChromeProps = { isFocused: boolean };
 
-type NavigationState = {
-  currentUrl: string;
-  pastUrls: string[];
-  forwardUrlsStack: string[];
-};
-
 function Chrome(props: ChromeProps) {
-  const [navigationState, setNavigationState] = React.useState<NavigationState>(
-    {
-      currentUrl: 'https://www.google.com/',
-      pastUrls: [],
-      forwardUrlsStack: [],
-    }
-  );
-
+  const navigation = useNavigationState();
   const [iframeKey, setIframeKey] = React.useState(() => Math.random());
 
   const handleRefreshClick = () => {
     setIframeKey(Math.random());
   };
 
-  const handleGoBackClick = () => {
-    setNavigationState((prevNav) => {
-      if (prevNav.pastUrls.length > 0) {
-        const nextUrl = Ramda.last(prevNav.pastUrls) as string;
-        const pastUrls = Ramda.init(prevNav.pastUrls);
-
-        return {
-          currentUrl: nextUrl,
-          pastUrls,
-          forwardUrlsStack: [...prevNav.forwardUrlsStack, prevNav.currentUrl],
-        };
-      }
-
-      return prevNav;
-    });
-  };
-
-  const handleGoForwardClick = () => {
-    setNavigationState((prevNav) => {
-      if (prevNav.forwardUrlsStack.length > 0) {
-        const nextUrl = Ramda.last(prevNav.forwardUrlsStack) as string;
-        const forwardUrlsStack = Ramda.init(prevNav.forwardUrlsStack);
-
-        return {
-          currentUrl: nextUrl,
-          pastUrls: [...prevNav.pastUrls, prevNav.currentUrl],
-          forwardUrlsStack,
-        };
-      }
-
-      return prevNav;
-    });
-  };
-
-  const navigateToNewPage = (nextUrl: string) => {
-    setNavigationState((prevNav) => ({
-      ...prevNav,
-      currentUrl: nextUrl,
-      pastUrls: [...prevNav.pastUrls, prevNav.currentUrl],
-    }));
+  const createHandleBookmarkClick = (bookmarkUrl: string) => {
+    return () => navigation.goTo(bookmarkUrl);
   };
 
   return (
@@ -80,13 +29,16 @@ function Chrome(props: ChromeProps) {
       <TopBar />
       <UrlBarContainer>
         <NavigationButtonsContainer>
-          <NavButton style={{ fontSize: '2.2rem' }} onClick={handleGoBackClick}>
+          <NavButton
+            style={{ fontSize: '2.2rem' }}
+            onClick={navigation.goBackward}
+          >
             <BiLeftArrowAlt />
           </NavButton>
 
           <NavButton
             style={{ fontSize: '2.2rem' }}
-            onClick={handleGoForwardClick}
+            onClick={navigation.goForward}
           >
             <BiRightArrowAlt />
           </NavButton>
@@ -96,45 +48,44 @@ function Chrome(props: ChromeProps) {
           </NavButton>
         </NavigationButtonsContainer>
 
-        <UrlBar value={navigationState.currentUrl} readOnly />
+        <UrlBar value={navigation.state.currentUrl} readOnly />
       </UrlBarContainer>
       <BookmarksBarContainer>
         <BookmarkButton
-          onClick={() => navigateToNewPage('https://www.google.com/')}
+          onClick={createHandleBookmarkClick('https://www.google.com/')}
         >
           <AiOutlineGoogle />
           Google
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={() => navigateToNewPage('https://www.netflix.com/')}
+          onClick={createHandleBookmarkClick('https://www.netflix.com/')}
         >
           <RiNetflixFill style={{ fontSize: '1.5rem' }} />
           Netflix
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={() => navigateToNewPage('https://github.com/leachtucker')}
+          onClick={createHandleBookmarkClick('https://github.com/leachtucker')}
         >
           <AiFillGithub />
           GitHub
         </BookmarkButton>
 
         <BookmarkButton
-          onClick={() =>
-            navigateToNewPage(
-              'https://github.com/leachtucker/clone-wars-ventura'
-            )
-          }
+          onClick={createHandleBookmarkClick(
+            'https://github.com/leachtucker/clone-wars-ventura'
+          )}
         >
           <AiFillGithub />
           OS Clone
         </BookmarkButton>
       </BookmarksBarContainer>
+
       <PageContainer>
         <iframe
           key={iframeKey}
-          src={navigationState.currentUrl}
+          src={navigation.state.currentUrl}
           style={{ height: '100%', width: '100%' }}
         />
       </PageContainer>
@@ -249,3 +200,66 @@ const PageContainer = styled.div`
 
   background-color: white;
 `;
+
+type NavigationState = {
+  currentUrl: string;
+  backwardUrlsStack: string[];
+  forwardUrlsStack: string[];
+};
+
+function useNavigationState() {
+  const [state, setState] = React.useState<NavigationState>({
+    currentUrl: 'https://www.google.com/',
+    backwardUrlsStack: [],
+    forwardUrlsStack: [],
+  });
+
+  const goBackward = () => {
+    setState((prevNav) => {
+      if (prevNav.backwardUrlsStack.length > 0) {
+        const nextUrl = Ramda.last(prevNav.backwardUrlsStack) as string;
+        const backwardUrlsStack = Ramda.init(prevNav.backwardUrlsStack);
+
+        return {
+          currentUrl: nextUrl,
+          backwardUrlsStack,
+          forwardUrlsStack: [...prevNav.forwardUrlsStack, prevNav.currentUrl],
+        };
+      }
+
+      return prevNav;
+    });
+  };
+
+  const goForward = () => {
+    setState((prevNav) => {
+      if (prevNav.forwardUrlsStack.length > 0) {
+        const nextUrl = Ramda.last(prevNav.forwardUrlsStack) as string;
+        const forwardUrlsStack = Ramda.init(prevNav.forwardUrlsStack);
+
+        return {
+          currentUrl: nextUrl,
+          backwardUrlsStack: [...prevNav.backwardUrlsStack, prevNav.currentUrl],
+          forwardUrlsStack,
+        };
+      }
+
+      return prevNav;
+    });
+  };
+
+  const goTo = (nextUrl: string) => {
+    setState((prevNav) => ({
+      ...prevNav,
+      currentUrl: nextUrl,
+      backwardUrlsStack: [...prevNav.backwardUrlsStack, prevNav.currentUrl],
+    }));
+  };
+
+  return {
+    state,
+    goTo,
+    goForward,
+    goBackward,
+  };
+}
