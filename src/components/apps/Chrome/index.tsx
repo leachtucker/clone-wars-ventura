@@ -195,7 +195,7 @@ const BookmarkButton = styled(Button)`
 `;
 
 const PageContainer = styled.div`
-  height: 100%;
+  height: calc(100% - 10rem);
   width: 100%;
 
   background-color: white;
