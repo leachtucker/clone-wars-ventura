@@ -135,10 +135,10 @@ const TopBar = styled.div`
 
 const ActiveTab = styled.div`
   position: absolute;
-  transform: translate3d(75px, -32px, 0px);
+  transform: translate3d(75px, -34px, 0px);
 
   width: 16rem;
-  height: 32px;
+  height: 34px;
 
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
