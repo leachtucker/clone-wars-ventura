@@ -32,6 +32,7 @@ function Chrome(props: ChromeProps) {
           <NavButton
             style={{ fontSize: '2.2rem' }}
             onClick={navigation.goBackward}
+            disabled={Ramda.isEmpty(navigation.state.backwardUrlsStack)}
           >
             <BiLeftArrowAlt />
           </NavButton>
@@ -39,6 +40,7 @@ function Chrome(props: ChromeProps) {
           <NavButton
             style={{ fontSize: '2.2rem' }}
             onClick={navigation.goForward}
+            disabled={Ramda.isEmpty(navigation.state.forwardUrlsStack)}
           >
             <BiRightArrowAlt />
           </NavButton>
@@ -137,6 +139,11 @@ const NavigationButtonsContainer = styled.div`
 
 const NavButton = styled(Button)`
   cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    color: ${({ theme }) => theme.colors.grey};
+  }
 `;
 
 const UrlBar = styled.input`
