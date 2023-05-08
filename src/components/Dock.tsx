@@ -99,7 +99,7 @@ const Wrapper = styled.div`
 `;
 
 const IconsGutter = styled.div`
-  height: 70%;
+  height: 68%;
   margin: auto;
 
   display: flex;
