@@ -20,7 +20,7 @@ function Dock({ minimizedWindows, onMinimizedWindowClick }: DockProps) {
   const { desktopService } = useGlobalServices();
 
   function createIconClickHandler(appName: ApplicationName) {
-    return function inner() {
+    return function handleIconClick() {
       desktopService.send({ type: 'WINDOW.OPEN', name: appName });
     };
   }
@@ -132,5 +132,10 @@ const DockIconButton = styled(Button)`
   & > img {
     height: 100%;
     width: auto;
+  }
+
+  &:active {
+    filter: brightness(80%);
+    transform: scale3d(0.97, 0.97, 1);
   }
 `;
