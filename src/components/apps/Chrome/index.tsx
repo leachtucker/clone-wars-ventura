@@ -50,8 +50,11 @@ function Chrome(props: ChromeProps) {
             <BiRightArrowAlt />
           </NavButton>
 
-          <NavButton style={{ fontSize: '2rem' }} onClick={handleRefreshClick}>
-            <IoMdRefresh />
+          <NavButton
+            style={{ fontSize: '2rem', marginLeft: '0.3rem' }}
+            onClick={handleRefreshClick}
+          >
+            <IoMdRefresh style={{ transform: 'translateY(1px)' }} />
           </NavButton>
         </NavigationButtonsContainer>
 
@@ -173,6 +176,10 @@ const NavigationButtonsContainer = styled.div`
 `;
 
 const NavButton = styled(Button)`
+  display: block;
+  padding: 0;
+  height: 22px;
+
   cursor: pointer;
 
   &:disabled {
