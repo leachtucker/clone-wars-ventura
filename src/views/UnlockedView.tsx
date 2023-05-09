@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useActor, useSelector } from '@xstate/react';
+import { useSelector } from '@xstate/react';
+import * as RadixContextMenu from '@radix-ui/react-context-menu';
+import ContextMenu from '../components/ContextMenu';
 
 import TopBar, { TOPBAR_HEIGHT_PX } from '../components/TopBar';
 import Dock from '../components/Dock';
@@ -19,33 +21,40 @@ function UnlockedView() {
     minimizedWindowsSelector
   );
 
-  const [state, send] = useActor(desktopService);
-  console.log({ state });
+  console.count('rerender');
 
   const pushWindowToTop = (windowId: string) => {
-    send({ type: 'WINDOW.FOCUS', id: windowId });
+    desktopService.send({ type: 'WINDOW.FOCUS', id: windowId });
   };
 
   const reopenWindow = (windowId: string) => {
-    send({ type: 'WINDOW.REOPEN', id: windowId });
+    desktopService.send({ type: 'WINDOW.REOPEN', id: windowId });
   };
 
   return (
     <>
       <TopBar />
-      <WindowsContainer>
-        {windows.map((window) => (
-          <AppWindow
-            key={window.id}
-            {...window}
-            pushWindowToTop={() => pushWindowToTop(window.id)}
+      <RadixContextMenu.Root>
+        <RadixContextMenu.Trigger>
+          <WindowsContainer>
+            {windows.map((window) => (
+              <AppWindow
+                key={window.id}
+                {...window}
+                pushWindowToTop={() => pushWindowToTop(window.id)}
+              />
+            ))}
+          </WindowsContainer>
+          <Dock
+            minimizedWindows={minimizedWindows}
+            onMinimizedWindowClick={reopenWindow}
           />
-        ))}
-      </WindowsContainer>
-      <Dock
-        minimizedWindows={minimizedWindows}
-        onMinimizedWindowClick={reopenWindow}
-      />
+        </RadixContextMenu.Trigger>
+
+        <RadixContextMenu.Portal>
+          <ContextMenu />
+        </RadixContextMenu.Portal>
+      </RadixContextMenu.Root>
     </>
   );
 }
