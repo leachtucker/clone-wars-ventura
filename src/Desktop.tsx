@@ -36,4 +36,6 @@ const Container = styled.div`
   background-image: url(${wallpaper});
   background-size: cover;
   background-position: center;
+
+  animation: fadein 1s;
 `;
