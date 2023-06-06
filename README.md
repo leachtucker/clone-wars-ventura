@@ -8,3 +8,4 @@ macOS Ventura clone built with React &amp; xState
 - Desktop Icons
 - Terminal app
 - Finder app
+- Fix opacity transition issue
