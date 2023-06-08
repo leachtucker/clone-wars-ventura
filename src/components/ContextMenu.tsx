@@ -1,10 +1,12 @@
 import styled from 'styled-components';
 import * as RadixContextMenu from '@radix-ui/react-context-menu';
 
-const ContextMenu = () => {
+type ContextMenuProps = { onCleanUp: () => void };
+
+const ContextMenu = (props: ContextMenuProps) => {
   return (
     <StyledContent>
-      <StyledItem>Clean Up</StyledItem>
+      <StyledItem onClick={props.onCleanUp}>Clean Up</StyledItem>
     </StyledContent>
   );
 };

@@ -42,3 +42,20 @@ export const applicationMinimizedImgMap = {
 export const applicationDockIconMap = {
   chrome: chromeDockIconImg,
 } as const satisfies Partial<Record<ApplicationName, string>>;
+
+type IconConfig = {
+  iconName: string;
+  image: string;
+  position: { x: number; y: number };
+};
+
+export const desktopIconsMaps = {
+  chrome: {
+    iconName: 'Chrome',
+    image: chromeDockIconImg,
+    position: {
+      x: 0,
+      y: 20,
+    },
+  },
+} as const satisfies Partial<Record<ApplicationName, IconConfig>>;

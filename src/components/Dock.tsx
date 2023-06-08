@@ -124,7 +124,7 @@ const Separator = styled.div`
   background: rgba(255, 255, 255, 0.3);
 `;
 
-const DockIconButton = styled(Button)`
+export const DockIconButton = styled(Button)`
   display: block;
   padding: 0;
   height: 100%;
