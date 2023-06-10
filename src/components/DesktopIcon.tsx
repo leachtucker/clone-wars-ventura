@@ -1,15 +1,20 @@
-import React from 'react';
-import { Rnd } from 'react-rnd';
-import { IconButton } from '../views/UnlockedView';
+import React, { MouseEventHandler } from 'react';
+import { Rnd, RndDragCallback } from 'react-rnd';
+import styled, { css } from 'styled-components';
+import Color from 'color';
+
 import { ApplicationName } from './apps';
+import { DockIconButton } from './Dock';
 
 type DesktopIconProps = {
   icon: IconConfig;
   parent: HTMLDivElement;
   isSelected: boolean;
   appName: ApplicationName;
-  resetPositions: number;
-  onClick: (e: React.MouseEvent) => void;
+  resetPosition: boolean;
+  onClick: MouseEventHandler;
+  onDoubleClick: MouseEventHandler;
+  onDragStart: RndDragCallback;
 };
 
 function DesktopIcon(props: DesktopIconProps) {
@@ -17,7 +22,7 @@ function DesktopIcon(props: DesktopIconProps) {
 
   React.useEffect(() => {
     ref.current?.updatePosition(props.icon.position);
-  }, [props.resetPositions]);
+  }, [props.resetPosition]);
 
   return (
     <Rnd
@@ -30,20 +35,21 @@ function DesktopIcon(props: DesktopIconProps) {
         width: 'auto',
         height: 'auto',
       }}
-      // dragGrid={[20, 20]}
-      on
+      onDragStart={props.onDragStart}
     >
-      <IconButton
+      <IconWithName
         aria-label={props.icon.iconName}
+        onDoubleClick={props.onDoubleClick}
         onClick={props.onClick}
         isSelected={props.isSelected}
       >
         <img
           src={props.icon.imageSrc}
-          style={{ height: '100%', borderRadius: '8px' }}
+          // style={{ height: '100%', borderRadius: '8px' }}
           draggable={false}
         />
-      </IconButton>
+        <span>{props.icon.iconName}</span>
+      </IconWithName>
     </Rnd>
   );
 }
@@ -55,3 +61,45 @@ export type IconConfig = {
   imageSrc: string;
   position: { x: number; y: number };
 };
+
+const IconButton = styled(DockIconButton)<{ isSelected: boolean }>`
+  position: relative;
+  -webkit-user-drag: none;
+
+  height: 6rem;
+  padding: 2px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+
+  ${(props) =>
+    props.isSelected &&
+    css`
+      border-color: ${props.theme.colors.grey};
+      background-color: ${Color(props.theme.colors.grey).alpha(0.3).toString()};
+      backdrop-filter: blur(50px);
+    `}
+`;
+
+const IconWithName = styled(IconButton)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > span {
+    position: absolute;
+    top: 105%;
+
+    padding: 2px;
+    border-radius: 4px;
+
+    font-weight: 600;
+    font-size: 1.2rem;
+
+    color: ${(props) => props.theme.colors.white};
+    ${(props) =>
+      props.isSelected &&
+      css`
+        background-color: ${props.theme.colors.blue};
+      `}
+  }
+`;
