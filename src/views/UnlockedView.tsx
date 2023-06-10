@@ -2,7 +2,8 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { useSelector } from '@xstate/react';
 import * as RadixContextMenu from '@radix-ui/react-context-menu';
-import { Rnd } from 'react-rnd';
+
+import * as Ramda from 'ramda';
 import Color from 'color';
 
 import ContextMenu from '../components/ContextMenu';
@@ -16,6 +17,7 @@ import {
 } from '../machines/desktop.machine';
 import AppWindow from '../components/AppWindow';
 import { ApplicationName, desktopIconsMaps } from '../components/apps';
+import DesktopIcon from '../components/DesktopIcon';
 
 function UnlockedView() {
   const { desktopService } = useGlobalServices();
@@ -25,13 +27,11 @@ function UnlockedView() {
     minimizedWindowsSelector
   );
 
+  const [resetPositions, setResetPositions] = React.useState(0);
   const [selectedIcon, setSelectedIcon] =
     React.useState<ApplicationName | null>(null);
 
   const windowContainerRef = React.useRef<HTMLDivElement>(null);
-  const rndIconsRef = React.useRef<{ el: Rnd; appName: ApplicationName }[]>([]);
-
-  console.count('rerender');
 
   const pushWindowToTop = (windowId: string) => {
     desktopService.send({ type: 'WINDOW.FOCUS', id: windowId });
@@ -54,23 +54,10 @@ function UnlockedView() {
   }
 
   const handleCleanUp = () => {
-    console.log({ c: rndIconsRef.current });
-    rndIconsRef.current.forEach((icon) =>
-      icon.el.updatePosition({ x: 0, y: 20 })
-    );
+    setResetPositions(Ramda.inc);
   };
 
-  function pushRndRef(appName: ApplicationName) {
-    return function inner(el: Rnd | null) {
-      if (el) {
-        rndIconsRef.current.push({
-          el: el,
-          appName,
-        });
-      }
-    };
-  }
-
+  console.count('rerender');
   return (
     <>
       <TopBar />
@@ -89,30 +76,14 @@ function UnlockedView() {
             ))}
 
             {Object.entries(desktopIconsMaps).map(([appName, iconConfig]) => (
-              <Rnd
-                ref={pushRndRef(appName as ApplicationName)}
-                bounds={windowContainerRef.current as HTMLDivElement}
-                enableResizing={false}
-                enableUserSelectHack
-                default={{
-                  ...iconConfig.position,
-                  width: 'auto',
-                  height: 'auto',
-                }}
-                dragGrid={[20, 20]}
-              >
-                <IconButton
-                  aria-label={appName}
-                  onClick={createIconClickHandler(appName as ApplicationName)}
-                  isSelected={selectedIcon == appName}
-                >
-                  <img
-                    src={iconConfig.image}
-                    style={{ height: '100%', borderRadius: '8px' }}
-                    draggable={false}
-                  />
-                </IconButton>
-              </Rnd>
+              <DesktopIcon
+                icon={iconConfig}
+                appName={appName as ApplicationName}
+                isSelected={appName == selectedIcon}
+                onClick={createIconClickHandler(appName as ApplicationName)}
+                parent={windowContainerRef.current as HTMLDivElement}
+                resetPositions={resetPositions}
+              />
             ))}
           </WindowsContainer>
           <Dock

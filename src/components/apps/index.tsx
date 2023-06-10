@@ -12,6 +12,7 @@ import aboutThisEngineerMinimizedImg from '../../assets/minimized-apps/aboutThis
 import Chrome, { Chrome_RND_CONFIG } from './Chrome';
 import chromeDockIconImg from '../../assets/chrome-icon.png';
 import chromeMinimizedImg from '../../assets/minimized-apps/chrome.png';
+import { IconConfig } from '../DesktopIcon';
 
 export type ApplicationName = 'aboutThisMac' | 'aboutThisEngineer' | 'chrome';
 
@@ -43,16 +44,10 @@ export const applicationDockIconMap = {
   chrome: chromeDockIconImg,
 } as const satisfies Partial<Record<ApplicationName, string>>;
 
-type IconConfig = {
-  iconName: string;
-  image: string;
-  position: { x: number; y: number };
-};
-
 export const desktopIconsMaps = {
   chrome: {
     iconName: 'Chrome',
-    image: chromeDockIconImg,
+    imageSrc: chromeDockIconImg,
     position: {
       x: 0,
       y: 20,
