@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useSelector } from '@xstate/react';
 
-import { Show } from './components/Show';
+import { Show } from './components/primitives/Show';
 
 import wallpaper from './assets/wallpaper.jpg';
 import LockedView from './views/LockedView';

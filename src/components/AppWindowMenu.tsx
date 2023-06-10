@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { BsFillCircleFill } from 'react-icons/bs';
 
-import Button from './Button';
+import Button from './primitives/Button';
 
 type AppWindowMenuProps = {
   onCloseClick: () => void;

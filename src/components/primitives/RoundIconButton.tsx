@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import Button from './Button';
-import themes from '../shared/config/themes';
+import themes from '../../shared/config/themes';
 
 const RoundIconButton = styled(Button)`
   background-color: ${themes.light.colors.backgroundTransparent};

@@ -8,7 +8,7 @@ import {
   applicationDockIconMap,
   applicationMinimizedImgMap,
 } from './apps';
-import Button from './Button';
+import Button from './primitives/Button';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 
 type DockProps = {

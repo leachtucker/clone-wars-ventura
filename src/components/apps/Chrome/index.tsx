@@ -6,7 +6,7 @@ import { Rnd } from 'react-rnd';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import { IoMdRefresh } from 'react-icons/io';
 import { AppWrapper } from '../AppWrapper';
-import Button from '../../Button';
+import Button from '../../primitives/Button';
 import { AiFillGithub, AiOutlineGoogle } from 'react-icons/ai';
 import { RiNetflixFill } from 'react-icons/ri';
 

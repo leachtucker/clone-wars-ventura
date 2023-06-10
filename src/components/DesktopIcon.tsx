@@ -31,6 +31,7 @@ function DesktopIcon(props: DesktopIconProps) {
         height: 'auto',
       }}
       // dragGrid={[20, 20]}
+      on
     >
       <IconButton
         aria-label={props.icon.iconName}

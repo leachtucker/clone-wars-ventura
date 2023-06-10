@@ -4,7 +4,7 @@ import { Rnd } from 'react-rnd';
 
 import { AppWrapper } from './AppWrapper';
 import avatarImg from '../../assets/avatar.png';
-import Avatar from '../Avatar';
+import Avatar from '../primitives/Avatar';
 
 import {
   AiFillGithub,

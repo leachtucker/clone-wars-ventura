@@ -5,9 +5,9 @@ import AppleMenu from './AppleMenu';
 
 import themes from '../shared/config/themes';
 import ControlPanelDropdown from './ControlPanelDropdown';
-import SimpleDate from './SimpleDate';
+import SimpleDate from './primitives/SimpleDate';
 import useCurrentDate from '../hooks/useCurrentDate';
-import Button from './Button';
+import Button from './primitives/Button';
 
 function TopBar() {
   const date = useCurrentDate();

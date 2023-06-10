@@ -2,9 +2,9 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { useActor, useSelector } from '@xstate/react';
 
-import Avatar from '../components/Avatar';
-import RoundIconButton from '../components/RoundIconButton';
-import { Show } from '../components/Show';
+import Avatar from '../components/primitives/Avatar';
+import RoundIconButton from '../components/primitives/RoundIconButton';
+import { Show } from '../components/primitives/Show';
 import { shake } from '../shared/keyframes';
 import { FiArrowRightCircle, FiXCircle } from 'react-icons/fi';
 import avatar from '../assets/avatar.png';

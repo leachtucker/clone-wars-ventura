@@ -16,7 +16,7 @@ import {
 
 import { TopBarButton } from './TopBar';
 import Toggles from './icons/Toggles';
-import RoundIconButton from './RoundIconButton';
+import RoundIconButton from './primitives/RoundIconButton';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 import { useSelector } from '@xstate/react';
 import { isThemeDarkSelector } from '../machines/desktop.machine';
