@@ -14,7 +14,7 @@ const ContextMenu = (props: ContextMenuProps) => {
 export default ContextMenu;
 
 const StyledContent = styled(RadixContextMenu.Content)`
-  width: 24rem;
+  width: 23rem;
   border-radius: 8px;
   padding: 0.6rem;
 
