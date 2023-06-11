@@ -1,6 +1,7 @@
 import React, { MouseEventHandler } from 'react';
 import { Rnd, RndDragCallback } from 'react-rnd';
 import styled, { css } from 'styled-components';
+import Color from 'color';
 
 import { ApplicationName } from './apps';
 import { DockIconButton } from './Dock';
@@ -63,13 +64,13 @@ const IconButton = styled(DockIconButton)<{ isSelected: boolean }>`
 
   height: 6rem;
   padding: 2px;
-  border: 1.5px solid transparent;
+  border: 2px solid transparent;
   border-radius: 5px;
 
   ${(props) =>
     props.isSelected &&
     css`
-      border-color: ${props.theme.colors.chromeDarkGrey};
+      border-color: ${Color(props.theme.colors.white).alpha(0.3).toString()};
       background-color: ${themes.dark.colors.backgroundTransparent};
       backdrop-filter: blur(50px);
     `}

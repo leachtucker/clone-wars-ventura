@@ -5,6 +5,6 @@ macOS Ventura clone built with React &amp; xState
 ### TODO:
 
 - ~~Context Menu~~ ✅
-- Desktop Icons
+- ~~Desktop Icons~~ ✅
 - Terminal app
 - Finder app
