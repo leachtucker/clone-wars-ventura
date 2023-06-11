@@ -36,7 +36,7 @@ function DesktopIconList(props: DesktopIconListProps) {
   React.useEffect(resetSelectedIcon, [props.resetIconPositions]);
 
   return (
-    <div style={{ width: '100%', height: '100%' }} onClick={resetSelectedIcon}>
+    <div style={{ width: '100%', height: '99%' }} onClick={resetSelectedIcon}>
       {Object.entries(desktopIconsMaps).map(([appName, iconConfig]) => (
         <DesktopIcon
           key={appName}
