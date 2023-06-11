@@ -8,7 +8,6 @@ import { DockIconButton } from './Dock';
 
 type DesktopIconProps = {
   icon: IconConfig;
-  parent: HTMLDivElement;
   isSelected: boolean;
   appName: ApplicationName;
   resetPosition: boolean;
@@ -27,7 +26,7 @@ function DesktopIcon(props: DesktopIconProps) {
   return (
     <Rnd
       ref={(c) => (ref.current = c as Rnd)}
-      bounds={props.parent}
+      bounds="parent"
       enableResizing={false}
       enableUserSelectHack
       default={{

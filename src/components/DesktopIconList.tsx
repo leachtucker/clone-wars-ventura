@@ -6,7 +6,6 @@ import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 import { RndDragCallback } from 'react-rnd';
 
 type DesktopIconListProps = {
-  parent: HTMLDivElement;
   resetIconPositions: boolean;
 };
 
@@ -48,7 +47,6 @@ function DesktopIconList(props: DesktopIconListProps) {
           onDoubleClick={createIconDoubleClickHandler(
             appName as ApplicationName
           )}
-          parent={props.parent}
           resetPosition={props.resetIconPositions}
           onDragStart={createDragStartHandler(appName as ApplicationName)}
         />

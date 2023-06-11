@@ -49,8 +49,8 @@ export const desktopIconsMaps = {
     iconName: 'Chrome',
     imageSrc: chromeDockIconImg,
     position: {
-      x: 0,
-      y: 20,
+      x: window.innerWidth - 80,
+      y: 10,
     },
   },
 } as const satisfies Partial<Record<ApplicationName, IconConfig>>;

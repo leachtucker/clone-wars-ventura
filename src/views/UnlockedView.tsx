@@ -55,10 +55,7 @@ function UnlockedView() {
               />
             ))}
 
-            <DesktopIconList
-              parent={windowContainerRef.current as HTMLDivElement}
-              resetIconPositions={resetIconPositions}
-            />
+            <DesktopIconList resetIconPositions={resetIconPositions} />
           </WindowsContainer>
           <Dock
             minimizedWindows={minimizedWindows}
