@@ -1,16 +1,9 @@
 import { DefaultTheme } from 'styled-components';
+import Color from 'color';
 
 export type ThemeMapping = {
   name: 'light' | 'dark';
   colors: {
-    white: string;
-    black: string;
-    almostBlack: string;
-    blue: string;
-    grey: string;
-    transparentGrey: string;
-    highlightBlue: string;
-
     primary: string;
     secondary: string;
     background: string;
@@ -20,7 +13,7 @@ export type ThemeMapping = {
 
     chromeTopBarBackground: string;
     chromeTopBarTabBackground: string;
-  };
+  } & typeof colors;
 };
 
 const colors = {
@@ -31,7 +24,7 @@ const colors = {
   blue: 'rgb(17, 107, 210)',
   grey: 'rgb(139, 140, 151)',
   transparentGrey: 'rgba(139, 140, 151, 0.3)',
-  highlightBlue: `rgba(0, 122, 255)`,
+  highlightBlue: `rgb(0, 122, 255)`,
   chromeGrey: 'rgb(227, 227, 227)',
   chromeBlack: 'rgb(33, 33, 36)',
   chromeDarkGrey: 'rgb(56, 56, 56)',
@@ -44,7 +37,7 @@ const light: DefaultTheme = {
     primary: colors.black,
     secondary: colors.almostBlack,
     background: colors.white,
-    backgroundTransparent: 'rgba(243, 235, 235, 0.3)',
+    backgroundTransparent: Color(colors.white).alpha(0.3).toString(),
     selection: colors.blue,
     selectionContrast: colors.white,
     chromeTopBarBackground: colors.chromeGrey,
@@ -59,7 +52,7 @@ const dark: DefaultTheme = {
     primary: colors.white,
     secondary: colors.almostWhite,
     background: colors.almostBlack,
-    backgroundTransparent: 'rgba(50, 40, 39, 0.3)',
+    backgroundTransparent: Color(colors.almostBlack).alpha(0.3).toString(),
     selection: colors.blue,
     selectionContrast: colors.white,
     chromeTopBarBackground: colors.chromeBlack,

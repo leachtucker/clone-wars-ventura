@@ -1,10 +1,10 @@
 import React, { MouseEventHandler } from 'react';
 import { Rnd, RndDragCallback } from 'react-rnd';
 import styled, { css } from 'styled-components';
-import Color from 'color';
 
 import { ApplicationName } from './apps';
 import { DockIconButton } from './Dock';
+import themes from '../shared/config/themes';
 
 type DesktopIconProps = {
   icon: IconConfig;
@@ -42,11 +42,7 @@ function DesktopIcon(props: DesktopIconProps) {
         onClick={props.onClick}
         isSelected={props.isSelected}
       >
-        <img
-          src={props.icon.imageSrc}
-          // style={{ height: '100%', borderRadius: '8px' }}
-          draggable={false}
-        />
+        <img src={props.icon.imageSrc} draggable={false} />
         <span>{props.icon.iconName}</span>
       </IconWithName>
     </Rnd>
@@ -67,14 +63,14 @@ const IconButton = styled(DockIconButton)<{ isSelected: boolean }>`
 
   height: 6rem;
   padding: 2px;
-  border: 1px solid transparent;
+  border: 1.5px solid transparent;
   border-radius: 5px;
 
   ${(props) =>
     props.isSelected &&
     css`
-      border-color: ${props.theme.colors.grey};
-      background-color: ${Color(props.theme.colors.grey).alpha(0.3).toString()};
+      border-color: ${props.theme.colors.chromeDarkGrey};
+      background-color: ${themes.dark.colors.backgroundTransparent};
       backdrop-filter: blur(50px);
     `}
 `;
