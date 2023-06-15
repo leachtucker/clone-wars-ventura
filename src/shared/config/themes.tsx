@@ -13,6 +13,9 @@ export type ThemeMapping = {
 
     chromeTopBarBackground: string;
     chromeTopBarTabBackground: string;
+
+    terminalTopBarBackground: string;
+    terminalBackground: string;
   } & typeof colors;
 };
 
@@ -28,6 +31,10 @@ const colors = {
   chromeGrey: 'rgb(227, 227, 227)',
   chromeBlack: 'rgb(33, 33, 36)',
   chromeDarkGrey: 'rgb(56, 56, 56)',
+  terminalAlmostWhite: 'rgb(249, 240, 237)',
+  terminalAlmostBlack: 'rgb(30, 30, 30)',
+  neonGreen: 'rgb(57, 192, 38)',
+  cyan: 'rgb(56, 185, 199)',
 } as const;
 
 const light: DefaultTheme = {
@@ -42,6 +49,8 @@ const light: DefaultTheme = {
     selectionContrast: colors.white,
     chromeTopBarBackground: colors.chromeGrey,
     chromeTopBarTabBackground: colors.white,
+    terminalTopBarBackground: colors.almostWhite,
+    terminalBackground: colors.terminalAlmostWhite,
   },
 };
 
@@ -57,6 +66,8 @@ const dark: DefaultTheme = {
     selectionContrast: colors.white,
     chromeTopBarBackground: colors.chromeBlack,
     chromeTopBarTabBackground: colors.chromeDarkGrey,
+    terminalTopBarBackground: colors.almostBlack,
+    terminalBackground: colors.terminalAlmostBlack,
   },
 };
 
