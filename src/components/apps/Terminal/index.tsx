@@ -4,16 +4,52 @@ import { Rnd } from 'react-rnd';
 import Color from 'color';
 
 import { AppWrapper } from '../AppWrapper';
+import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
+import { handleOpenCommand } from './prompt-helpers';
 
 type TerminalProps = { isFocused: boolean };
 
 function Terminal(props: TerminalProps) {
-  const [inputLineHistory, setInputLineHistory] = React.useState<string[]>([]);
+  const { desktopService } = useGlobalServices();
+
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [terminalHistory, setTerminalHistory] = React.useState<
+    TerminalHistoryEntry[]
+  >([]);
   const [currentInputLine, setCurrentInputLine] = React.useState<string>('');
+
+  function handleTerminalInput(
+    input: string
+  ): TerminalHistoryEntry | undefined {
+    const [command, ...args] = input.toLowerCase().split(' ');
+
+    switch (command) {
+      case 'open': {
+        const appName = args?.[0];
+        try {
+          handleOpenCommand(desktopService, appName);
+          return { input, output: `zsh: opening ${appName} app` };
+        } catch (e) {
+          return { input, output: `zsh: app not found: ${appName}` };
+        }
+      }
+      case 'clear': {
+        setTerminalHistory([]);
+        break;
+      }
+      default: {
+        return { input, output: `zsh: command not found: ${input}` };
+      }
+    }
+  }
 
   const handleKeyDown: React.KeyboardEventHandler = (e) => {
     if (e.key == 'Enter') {
-      setInputLineHistory((prevEntries) => [...prevEntries, currentInputLine]);
+      const terminalEntry = handleTerminalInput(currentInputLine);
+      if (terminalEntry) {
+        setTerminalHistory((prevEntries) => [...prevEntries, terminalEntry]);
+      }
+
       setCurrentInputLine('');
     }
   };
@@ -23,23 +59,34 @@ function Terminal(props: TerminalProps) {
   };
 
   return (
-    <AppWrapper isFocused={props.isFocused}>
+    <AppWrapper
+      isFocused={props.isFocused}
+      onClick={() => inputRef.current?.focus()}
+    >
       <TopBar />
-      <TerminalViewContainer>
-        {inputLineHistory.map((entry) => (
-          <TerminalInputEntry input={entry} />
+      <TerminalPrompt>
+        {terminalHistory.map((entry, idx) => (
+          <React.Fragment key={idx}>
+            <TerminalInputEntry input={entry.input} />
+            <TerminalLineContainer style={{ marginTop: '0.1rem' }}>
+              {entry.output}
+            </TerminalLineContainer>
+          </React.Fragment>
         ))}
 
-        <TerminalLineContainer>
+        <TerminalLineContainer style={{ marginTop: '0.2rem' }}>
           <ArrowWrapper>➜</ArrowWrapper>
           <TildaWrapper>~</TildaWrapper>
           <TerminalInput
             onChange={handleInputChange}
             value={currentInputLine}
             onKeyDown={handleKeyDown}
+            className="interactable"
+            autoFocus
+            ref={inputRef}
           />
         </TerminalLineContainer>
-      </TerminalViewContainer>
+      </TerminalPrompt>
     </AppWrapper>
   );
 }
@@ -63,12 +110,16 @@ const TopBar = styled.div`
   background-color: ${({ theme }) => theme.colors.terminalTopBarBackground};
 `;
 
-const TerminalViewContainer = styled.div`
+const TerminalPrompt = styled.div`
   height: 100%;
   padding: 0.8rem;
 
   background-color: ${({ theme }) => theme.colors.terminalBackground};
   color: ${({ theme }) => theme.colors.primary};
+
+  font-size: 1.1rem;
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono',
+    Menlo, Monaco, Consolas, monospace;
 
   border-top: 1px solid
     ${({ theme }) =>
@@ -79,7 +130,6 @@ const TerminalViewContainer = styled.div`
 
 const TerminalLineContainer = styled.div`
   display: flex;
-  height: 1.2rem;
 `;
 
 const ArrowWrapper = styled.span`
@@ -91,8 +141,9 @@ const ArrowWrapper = styled.span`
 const TildaWrapper = styled.span`
   line-height: 100%;
   font-size: 1.2rem;
+  font-weight: bold;
 
-  margin-left: 0.8rem;
+  margin-left: 0.6rem;
   margin-right: 0.3rem;
 
   color: ${({ theme }) => theme.colors.cyan};
@@ -104,9 +155,8 @@ const TerminalInput = styled.input`
   color: inherit;
   border: none;
 
-  font-size: 1.1rem;
-  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono',
-    Menlo, Monaco, Consolas, monospace;
+  font-family: inherit;
+  font-size: inherit;
 
   caret-color: ${({ theme }) => theme.colors.primary};
 
@@ -125,3 +175,8 @@ function TerminalInputEntry(props: TerminalInputEntryProps) {
     </TerminalLineContainer>
   );
 }
+
+type TerminalHistoryEntry = {
+  input: string;
+  output: string;
+};
