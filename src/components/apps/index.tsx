@@ -1,6 +1,8 @@
 import { Rnd } from 'react-rnd';
 import { ApplicationComponentProps } from '../AppWindow';
 
+import { IconConfig } from '../DesktopIcon';
+
 import AboutThisMac, { AboutThisMac_RND_CONFIG } from './AboutThisMac';
 import aboutThisMacMinimizedImg from '../../assets/minimized-apps/aboutThisMac.png';
 
@@ -10,10 +12,11 @@ import AboutThisEngineer, {
 import aboutThisEngineerMinimizedImg from '../../assets/minimized-apps/aboutThisEngineer.png';
 
 import Chrome, { Chrome_RND_CONFIG } from './Chrome';
-import chromeDockIconImg from '../../assets/chrome-icon.png';
+import chromeDockIconImg from '../../assets/icon-apps/chrome-icon.png';
 import chromeMinimizedImg from '../../assets/minimized-apps/chrome.png';
-import { IconConfig } from '../DesktopIcon';
+
 import Terminal, { Terminal_RND_CONFIG } from './Terminal';
+import terminalIconImg from '../../assets/icon-apps/terminal-icon.png';
 
 export type ApplicationName =
   | 'aboutThisMac'
@@ -45,14 +48,12 @@ export const applicationMinimizedImgMap = {
   aboutThisMac: aboutThisMacMinimizedImg,
   aboutThisEngineer: aboutThisEngineerMinimizedImg,
   chrome: chromeMinimizedImg,
-  // Todo: update minimized img
-  terminal: chromeMinimizedImg,
+  terminal: terminalIconImg,
 } as const satisfies Record<ApplicationName, string>;
 
 export const applicationDockIconMap = {
   chrome: chromeDockIconImg,
-  // Todo: update minimized img
-  terminal: chromeDockIconImg,
+  terminal: terminalIconImg,
 } as const satisfies Partial<Record<ApplicationName, string>>;
 
 export const desktopIconsMaps = {
