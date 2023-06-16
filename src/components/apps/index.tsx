@@ -65,4 +65,13 @@ export const desktopIconsMaps = {
       y: 10,
     },
   },
+
+  terminal: {
+    iconName: 'Terminal',
+    imageSrc: terminalIconImg,
+    position: {
+      x: window.innerWidth - 80,
+      y: 100,
+    },
+  },
 } as const satisfies Partial<Record<ApplicationName, IconConfig>>;
