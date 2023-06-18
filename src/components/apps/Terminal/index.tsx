@@ -32,7 +32,7 @@ function Terminal(props: TerminalProps) {
 
     switch (command) {
       case 'open': {
-        const appName = args?.[0];
+        const [appName] = args;
         try {
           handleOpenCommand(desktopService, appName);
           terminalHistoryEntry.output = `zsh: opening ${appName} app`;
@@ -43,7 +43,7 @@ function Terminal(props: TerminalProps) {
         break;
       }
       case 'cd': {
-        const requestedPath = args?.[0];
+        const [requestedPath] = args;
         try {
           promptPath.goTo(requestedPath);
         } catch (error: any) {

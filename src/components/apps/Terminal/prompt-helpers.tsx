@@ -4,14 +4,14 @@ import * as Ramda from 'ramda';
 import { ActorRefFrom } from 'xstate';
 
 import { DesktopMachine } from '../../../machines/desktop.machine';
-import { ApplicationName } from '..';
+import { ApplicationName, applicationComponentMap } from '..';
 import { Directory, FILE_SYSTEM_DIRECTORY } from '../../../shared/file-system';
 
 export function handleOpenCommand(
   service: ActorRefFrom<DesktopMachine>,
   appName: string
 ) {
-  const validAppNames = ['chrome'];
+  const validAppNames = Object.keys(applicationComponentMap);
   if (validAppNames.includes(appName)) {
     service.send({ type: 'WINDOW.OPEN', name: appName as ApplicationName });
   }
@@ -31,8 +31,9 @@ export function usePromptPath() {
     setCurrentPath(Ramda.init);
   };
 
-  const goTo = (requestedPath: string) => {
-    if (Ramda.isEmpty(requestedPath)) {
+  const goTo = (requestedPath: string | undefined) => {
+    console.log({ requestedPath });
+    if (requestedPath == undefined || Ramda.isEmpty(requestedPath)) {
       return;
     }
 
