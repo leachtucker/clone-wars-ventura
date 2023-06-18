@@ -41,6 +41,8 @@ export function usePromptPath() {
       return;
     }
 
+    // Todo: Add validation to ensure requested path is not a file or app
+
     const requestedSubdirectoryPathArr = requestedPath
       .split('/')
       .filter(isNotEmpty);
