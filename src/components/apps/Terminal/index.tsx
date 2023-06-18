@@ -2,10 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { Rnd } from 'react-rnd';
 import Color from 'color';
+import * as Ramda from 'ramda';
 
 import { AppWrapper } from '../AppWrapper';
 import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
-import { handleOpenCommand } from './prompt-helpers';
+import { handleOpenCommand, usePromptPath } from './prompt-helpers';
 
 type TerminalProps = { isFocused: boolean };
 
@@ -18,29 +19,52 @@ function Terminal(props: TerminalProps) {
   >([]);
   const [currentInputLine, setCurrentInputLine] = React.useState<string>('');
 
-  function handleTerminalInput(
-    input: string
-  ): TerminalHistoryEntry | undefined {
-    const [command, ...args] = input.toLowerCase().split(' ');
+  // * File system state
+  const promptPath = usePromptPath();
+
+  function handleTerminalInput(input: string): TerminalHistoryEntry {
+    const [command, ...args] = input.toLowerCase().trim().split(' ');
+    const terminalHistoryEntry: TerminalHistoryEntry = {
+      input,
+      workingDirPath: promptPath.currentPath,
+      output: undefined,
+    };
 
     switch (command) {
       case 'open': {
         const appName = args?.[0];
+
         try {
           handleOpenCommand(desktopService, appName);
-          return { input, output: `zsh: opening ${appName} app` };
+          terminalHistoryEntry.output = `zsh: opening ${appName} app`;
         } catch (e) {
-          return { input, output: `zsh: app not found: ${appName}` };
+          terminalHistoryEntry.output = `zsh: app not found: ${appName}`;
         }
+
+        break;
+      }
+      case 'cd': {
+        const requestedPath = args?.[0];
+
+        try {
+          promptPath.goTo(requestedPath);
+          break;
+        } catch (e) {
+          terminalHistoryEntry.output = `zsh: no such file or directory: ${requestedPath}`;
+        }
+
+        break;
       }
       case 'clear': {
         setTerminalHistory([]);
         break;
       }
       default: {
-        return { input, output: `zsh: command not found: ${input}` };
+        terminalHistoryEntry.output = `zsh: command not found: ${input}`;
       }
     }
+
+    return terminalHistoryEntry;
   }
 
   const handleKeyDown: React.KeyboardEventHandler = (e) => {
@@ -58,6 +82,8 @@ function Terminal(props: TerminalProps) {
     setCurrentInputLine(e.target.value);
   };
 
+  console.log({ terminalHistory, currPath: promptPath.currentPath });
+
   return (
     <AppWrapper
       isFocused={props.isFocused}
@@ -67,16 +93,24 @@ function Terminal(props: TerminalProps) {
       <TerminalPrompt>
         {terminalHistory.map((entry, idx) => (
           <React.Fragment key={idx}>
-            <TerminalInputEntry input={entry.input} />
-            <TerminalLineContainer style={{ marginTop: '0.1rem' }}>
-              {entry.output}
-            </TerminalLineContainer>
+            <TerminalInputEntry
+              input={entry.input}
+              workingDirPath={entry.workingDirPath}
+            />
+
+            {entry.output && (
+              <TerminalLineContainer style={{ marginTop: '0.1rem' }}>
+                {entry.output}
+              </TerminalLineContainer>
+            )}
           </React.Fragment>
         ))}
 
         <TerminalLineContainer style={{ marginTop: '0.2rem' }}>
           <ArrowWrapper>➜</ArrowWrapper>
-          <TildaWrapper>~</TildaWrapper>
+          <DirectoryWrapper>
+            {Ramda.last(promptPath.currentPath) ?? '~'}
+          </DirectoryWrapper>
           <TerminalInput
             onChange={handleInputChange}
             value={currentInputLine}
@@ -138,7 +172,7 @@ const ArrowWrapper = styled.span`
   color: ${({ theme }) => theme.colors.neonGreen};
 `;
 
-const TildaWrapper = styled.span`
+const DirectoryWrapper = styled.span`
   line-height: 100%;
   font-size: 1.2rem;
   font-weight: bold;
@@ -165,12 +199,14 @@ const TerminalInput = styled.input`
   }
 `;
 
-type TerminalInputEntryProps = { input: string };
+type TerminalInputEntryProps = { input: string; workingDirPath: string[] };
 function TerminalInputEntry(props: TerminalInputEntryProps) {
   return (
     <TerminalLineContainer>
       <ArrowWrapper>➜</ArrowWrapper>
-      <TildaWrapper>~</TildaWrapper>
+      <DirectoryWrapper>
+        {Ramda.tail(props.workingDirPath) ?? '~'}
+      </DirectoryWrapper>
       <TerminalInput value={props.input} disabled={true} />
     </TerminalLineContainer>
   );
@@ -178,5 +214,6 @@ function TerminalInputEntry(props: TerminalInputEntryProps) {
 
 type TerminalHistoryEntry = {
   input: string;
-  output: string;
+  output: string | undefined;
+  workingDirPath: string[];
 };
