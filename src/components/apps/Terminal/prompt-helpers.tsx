@@ -23,7 +23,7 @@ export function usePromptPath() {
   const [currentPath, setCurrentPath] = React.useState<string[]>([]);
 
   const goBack = () => {
-    if (currentPath.length == 1) {
+    if (currentPath.length == 0) {
       // Prompt is at top-level dir, do nothing
       return;
     }
