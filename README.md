@@ -9,5 +9,7 @@ macOS Ventura clone built with React &amp; xState
 - Terminal app 🏗️
   - Implement `open` application command ✅
   - Implement `nvim` command
-  - Implement `cd` / `ls` commands 🚧
+  - Implement `cd` / `ls` commands ✅
+  - Implement `touch` command 🚧
+  - Implement `help` command
 - Finder app

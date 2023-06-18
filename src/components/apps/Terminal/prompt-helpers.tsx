@@ -5,7 +5,7 @@ import { ActorRefFrom } from 'xstate';
 
 import { DesktopMachine } from '../../../machines/desktop.machine';
 import { ApplicationName } from '..';
-import { FILE_SYSTEM_DIRECTORY } from '../../../shared/file-system';
+import { Directory, FILE_SYSTEM_DIRECTORY } from '../../../shared/file-system';
 
 export function handleOpenCommand(
   service: ActorRefFrom<DesktopMachine>,
@@ -16,7 +16,7 @@ export function handleOpenCommand(
     service.send({ type: 'WINDOW.OPEN', name: appName as ApplicationName });
   }
 
-  throw Error('App not found');
+  throw Error(`app not found: ${appName}`);
 }
 
 export function usePromptPath() {
@@ -51,10 +51,12 @@ export function usePromptPath() {
     const requestedDirectoryEntry = Ramda.path(
       requestedPathArr,
       FILE_SYSTEM_DIRECTORY
-    );
+    ) as undefined | Directory[keyof Directory];
 
-    if (requestedDirectoryEntry === undefined) {
-      throw new Error('No such file or directory');
+    if (requestedDirectoryEntry == undefined) {
+      throw new Error(`no such file or directory: ${requestedPath}`);
+    } else if (requestedDirectoryEntry.type) {
+      throw new Error(`not a directory: ${requestedPath}`);
     } else {
       setCurrentPath(requestedPathArr);
     }

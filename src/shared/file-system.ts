@@ -12,8 +12,17 @@ export type ApplicationDirectoryEntry = {
 
 export type FileDirectoryEntry = {
   type: 'file';
-  fileExtension: 'string';
+  fileExtension: string;
 } & BaseDirectoryEntry;
+
+export type LeafDirectoryEntry =
+  | ApplicationDirectoryEntry
+  | FileDirectoryEntry
+  | Record<string, never>;
+
+export type Directory = {
+  [key: string]: LeafDirectoryEntry | Directory;
+};
 
 export const FILE_SYSTEM_DIRECTORY = {
   home: {
@@ -42,4 +51,4 @@ export const FILE_SYSTEM_DIRECTORY = {
       },
     },
   },
-} as const;
+} as const satisfies Directory;

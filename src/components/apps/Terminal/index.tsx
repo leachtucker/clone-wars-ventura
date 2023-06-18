@@ -33,24 +33,21 @@ function Terminal(props: TerminalProps) {
     switch (command) {
       case 'open': {
         const appName = args?.[0];
-
         try {
           handleOpenCommand(desktopService, appName);
           terminalHistoryEntry.output = `zsh: opening ${appName} app`;
-        } catch (e) {
-          terminalHistoryEntry.output = `zsh: app not found: ${appName}`;
+        } catch (error: any) {
+          terminalHistoryEntry.output = `zsh: ${error.message}`;
         }
 
         break;
       }
       case 'cd': {
         const requestedPath = args?.[0];
-
         try {
           promptPath.goTo(requestedPath);
-          break;
-        } catch (e) {
-          terminalHistoryEntry.output = `zsh: no such file or directory: ${requestedPath}`;
+        } catch (error: any) {
+          terminalHistoryEntry.output = `zsh: ${error.message}`;
         }
 
         break;
