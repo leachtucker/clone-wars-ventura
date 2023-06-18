@@ -58,11 +58,23 @@ export function usePromptPath() {
     }
   };
 
-  console.log({ currentPath });
+  const listWorkingDirectory = () => {
+    const currentDirectoryRecord = Ramda.path(
+      currentPath,
+      FILE_SYSTEM_DIRECTORY
+    );
+
+    if (!currentDirectoryRecord) {
+      return [];
+    }
+
+    return Object.keys(currentDirectoryRecord);
+  };
 
   return {
     goBack,
     goTo,
+    listWorkingDirectory,
     currentPath,
   };
 }

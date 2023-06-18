@@ -55,6 +55,13 @@ function Terminal(props: TerminalProps) {
 
         break;
       }
+      case 'ls': {
+        terminalHistoryEntry.output = promptPath
+          .listWorkingDirectory()
+          .join('   ');
+
+        break;
+      }
       case 'clear': {
         setTerminalHistory([]);
         break;
