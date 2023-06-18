@@ -175,15 +175,17 @@ const TerminalLineContainer = styled.div`
 
 const ArrowWrapper = styled.span`
   line-height: 100%;
+  padding: 0.2rem 0;
 
   color: ${({ theme }) => theme.colors.neonGreen};
 `;
 
 const DirectoryWrapper = styled.span`
   line-height: 100%;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
 
+  padding: 0.2rem 0;
   margin-left: 0.6rem;
   margin-right: 0.3rem;
 
@@ -208,12 +210,14 @@ const TerminalInput = styled.input`
 
 type TerminalInputEntryProps = { input: string; workingDirPath: string[] };
 function TerminalInputEntry(props: TerminalInputEntryProps) {
+  console.log({ tail: Ramda.tail(props.workingDirPath) });
   return (
     <TerminalLineContainer>
       <ArrowWrapper>➜</ArrowWrapper>
       <DirectoryWrapper>
-        {Ramda.tail(props.workingDirPath) ?? '~'}
+        {Ramda.last(props.workingDirPath) || '~'}
       </DirectoryWrapper>
+
       <TerminalInput value={props.input} disabled={true} />
     </TerminalLineContainer>
   );
