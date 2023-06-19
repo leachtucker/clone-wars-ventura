@@ -2,20 +2,27 @@ import React from 'react';
 import * as Ramda from 'ramda';
 
 import { ActorRefFrom } from 'xstate';
+import { useSelector } from '@xstate/react';
 
-import { DesktopMachine } from '../../../machines/desktop.machine';
+import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
+import {
+  DesktopMachine,
+  fileSystemSelector,
+} from '../../../machines/desktop.machine';
 
-import { Directory, FILE_SYSTEM_DIRECTORY } from '../../../shared/file-system';
+import { Directory, LeafDirectoryEntry } from '../../../shared/file-system';
 import {
   ApplicationName,
-  applicationComponentMap,
+  // applicationComponentMap,
 } from '../app-config-mappings';
 
 export function handleOpenCommand(
   service: ActorRefFrom<DesktopMachine>,
   appName: string
 ) {
-  const validAppNames = Object.keys(applicationComponentMap);
+  // Todo: fix dep cycle
+  // const validAppNames = Object.keys(applicationComponentMap);
+  const validAppNames = ['chrome', 'terminal'];
   if (validAppNames.includes(appName)) {
     service.send({ type: 'WINDOW.OPEN', name: appName as ApplicationName });
   }
@@ -24,6 +31,11 @@ export function handleOpenCommand(
 }
 
 export function usePromptPath() {
+  const { desktopService } = useGlobalServices();
+  const currentFileSystemDirectory = useSelector(
+    desktopService,
+    fileSystemSelector
+  );
   const [currentPath, setCurrentPath] = React.useState<string[]>([]);
 
   const goBack = () => {
@@ -36,7 +48,6 @@ export function usePromptPath() {
   };
 
   const goTo = (requestedPath: string | undefined) => {
-    console.log({ requestedPath });
     if (requestedPath == undefined || Ramda.isEmpty(requestedPath)) {
       return;
     }
@@ -53,7 +64,7 @@ export function usePromptPath() {
     const requestedPathArr = [...currentPath, ...requestedSubdirectoryPathArr];
     const requestedDirectoryEntry = Ramda.path(
       requestedPathArr,
-      FILE_SYSTEM_DIRECTORY
+      currentFileSystemDirectory
     ) as undefined | Directory[keyof Directory];
 
     if (requestedDirectoryEntry == undefined) {
@@ -68,14 +79,16 @@ export function usePromptPath() {
   const listWorkingDirectory = () => {
     const currentDirectoryRecord = Ramda.path(
       currentPath,
-      FILE_SYSTEM_DIRECTORY
+      currentFileSystemDirectory
     );
 
     if (!currentDirectoryRecord) {
       return [];
     }
 
-    return Object.keys(currentDirectoryRecord);
+    return Object.entries(currentDirectoryRecord).map(
+      transformDirectoryEntryWithKey
+    );
   };
 
   return {
@@ -87,3 +100,16 @@ export function usePromptPath() {
 }
 
 const isNotEmpty = Ramda.compose(Ramda.not, Ramda.isEmpty);
+
+function transformDirectoryEntryWithKey([key, entry]: [
+  string,
+  Directory | LeafDirectoryEntry
+]): string {
+  if (entry.type == 'file') {
+    return `${entry.name}.${entry.fileExtension}`;
+  } else if (entry.type == 'app') {
+    return entry.name;
+  }
+
+  return key;
+}

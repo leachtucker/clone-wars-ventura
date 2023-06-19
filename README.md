@@ -13,3 +13,4 @@ macOS Ventura clone built with React &amp; xState
   - Implement `touch` command 🚧
   - Implement `help` command
 - Finder app
+- Ensure windows styling compatibility

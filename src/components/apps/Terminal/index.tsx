@@ -7,6 +7,7 @@ import * as Ramda from 'ramda';
 import { AppWrapper } from '../AppWrapper';
 import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
 import { handleOpenCommand, usePromptPath } from './prompt-helpers';
+import { FileDirectoryEntry } from '../../../shared/file-system';
 
 type TerminalProps = { isFocused: boolean };
 
@@ -59,6 +60,33 @@ function Terminal(props: TerminalProps) {
 
         break;
       }
+      case 'touch': {
+        const [fullFileName] = args;
+
+        // Todo: add input validation
+        const split = fullFileName.split('.');
+
+        // todo: file may not have extension
+        const fileExtension = Ramda.last(split);
+        const fileName = Ramda.init(split).join('.');
+
+        console.log({ fileExtension, fileName });
+
+        const newDirectoryEntry = {
+          type: 'file',
+          name: fileName,
+          fileExtension: fileExtension as string,
+          icon: 'ds',
+        } satisfies FileDirectoryEntry;
+
+        desktopService.send({
+          type: 'FILE_SYSTEM.CREATE',
+          entry: newDirectoryEntry,
+          path: promptPath.currentPath,
+        });
+
+        break;
+      }
       case 'clear': {
         setTerminalHistory([]);
         break;
@@ -89,8 +117,6 @@ function Terminal(props: TerminalProps) {
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setCurrentInputLine(e.target.value);
   };
-
-  console.log({ terminalHistory, currPath: promptPath.currentPath });
 
   return (
     <AppWrapper

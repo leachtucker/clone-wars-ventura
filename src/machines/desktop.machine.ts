@@ -3,7 +3,10 @@ import * as Ramda from 'ramda';
 
 import { loginMachine } from './login.machine';
 import { ThemeName } from '../shared/config/themes';
-import { ApplicationName } from '../components/apps/app-config-mappings';
+import type { ApplicationName } from '../components/apps/app-config-mappings';
+
+import type { Directory, LeafDirectoryEntry } from '../shared/file-system';
+import { FILE_SYSTEM_DIRECTORY } from '../shared/file-system';
 
 export type Window = {
   zIndex: number;
@@ -17,12 +20,14 @@ type MachineContext = {
   theme: ThemeName;
   windows: Window[];
   currentZIndexMaximum: number;
+  fileSystem: Directory;
 };
 
 const initialContext: MachineContext = {
   theme: 'light',
   windows: [],
   currentZIndexMaximum: 0,
+  fileSystem: Ramda.clone(FILE_SYSTEM_DIRECTORY),
 };
 
 type LogoutEvent = { type: 'AUTHENTICATION.LOGOUT' };
@@ -30,12 +35,6 @@ type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
 
 // * for debugging
 type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
-
-type MachineEvent =
-  | LogoutEvent
-  | ToggleThemeEvent
-  | AuthenticationToggleEvent
-  | WindowEvent;
 
 type OpenWindow = { type: 'WINDOW.OPEN'; name: ApplicationName };
 type FocusWindow = { type: 'WINDOW.FOCUS'; id: string };
@@ -49,6 +48,21 @@ type WindowEvent =
   | CloseWindow
   | MinimizeWindow
   | ReopenWindow;
+
+type CreateDirectoryEntryEvent = {
+  type: 'FILE_SYSTEM.CREATE';
+  entry: LeafDirectoryEntry;
+  path: string[];
+};
+
+type FileSystemEvent = CreateDirectoryEntryEvent;
+
+type MachineEvent =
+  | LogoutEvent
+  | ToggleThemeEvent
+  | AuthenticationToggleEvent
+  | WindowEvent
+  | FileSystemEvent;
 
 export type DesktopMachine = typeof desktopMachine;
 export const desktopMachine =
@@ -120,6 +134,10 @@ export const desktopMachine =
         'WINDOW.REOPEN': {
           actions: ['reopenWindow', 'setWindowZIndexToTop'],
         },
+
+        'FILE_SYSTEM.CREATE': {
+          actions: ['createDirectoryEntry'],
+        },
       },
     },
     {
@@ -187,6 +205,20 @@ export const desktopMachine =
           };
         }),
 
+        createDirectoryEntry: assign((context, event) => {
+          const newFileSystem = Ramda.assocPath(
+            [...event.path, event.entry.name],
+            event.entry,
+            {}
+          );
+
+          console.log({ event, newFileSystem });
+
+          return {
+            fileSystem: Ramda.mergeDeepLeft(context.fileSystem, newFileSystem),
+          };
+        }),
+
         resetContext: assign(() => initialContext),
       },
 
@@ -221,3 +253,6 @@ const isMinimized = Ramda.propEq('isMinimized', true);
 
 export const isThemeDarkSelector = (state: StateFrom<DesktopMachine>) =>
   state.context.theme === 'dark';
+
+export const fileSystemSelector = (state: StateFrom<DesktopMachine>) =>
+  state.context.fileSystem;
