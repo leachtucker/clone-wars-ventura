@@ -79,6 +79,10 @@ function Terminal(props: TerminalProps) {
       }
 
       setCurrentInputLine('');
+      setTimeout(() => {
+        if (inputRef.current)
+          inputRef.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
+      }, 0);
     }
   };
 
@@ -149,8 +153,10 @@ const TopBar = styled.div`
 `;
 
 const TerminalPrompt = styled.div`
-  height: 100%;
+  height: calc(100% - 3.1rem);
   padding: 0.8rem;
+
+  overflow-y: auto;
 
   background-color: ${({ theme }) => theme.colors.terminalBackground};
   color: ${({ theme }) => theme.colors.primary};
@@ -207,7 +213,6 @@ const TerminalInput = styled.input`
 
 type TerminalInputEntryProps = { input: string; workingDirPath: string[] };
 function TerminalInputEntry(props: TerminalInputEntryProps) {
-  console.log({ tail: Ramda.tail(props.workingDirPath) });
   return (
     <TerminalLineContainer>
       <ArrowWrapper>➜</ArrowWrapper>

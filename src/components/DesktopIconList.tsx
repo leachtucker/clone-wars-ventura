@@ -1,7 +1,7 @@
 import React from 'react';
 
 import DesktopIcon from './DesktopIcon';
-import { ApplicationName, desktopIconsMaps } from './apps';
+import { ApplicationName, desktopIconsMaps } from './apps/app-config-mappings';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 import { RndDragCallback } from 'react-rnd';
 

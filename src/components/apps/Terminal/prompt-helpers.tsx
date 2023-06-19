@@ -4,8 +4,12 @@ import * as Ramda from 'ramda';
 import { ActorRefFrom } from 'xstate';
 
 import { DesktopMachine } from '../../../machines/desktop.machine';
-import { ApplicationName, applicationComponentMap } from '..';
+
 import { Directory, FILE_SYSTEM_DIRECTORY } from '../../../shared/file-system';
+import {
+  ApplicationName,
+  applicationComponentMap,
+} from '../app-config-mappings';
 
 export function handleOpenCommand(
   service: ActorRefFrom<DesktopMachine>,
@@ -41,8 +45,6 @@ export function usePromptPath() {
       goBack();
       return;
     }
-
-    // Todo: Add validation to ensure requested path is not a file or app
 
     const requestedSubdirectoryPathArr = requestedPath
       .split('/')

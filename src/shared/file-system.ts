@@ -1,4 +1,4 @@
-import type { ApplicationName } from '../components/apps';
+import type { ApplicationName } from '../components/apps/app-config-mappings';
 
 import chromeIconImg from '../assets/icon-apps/chrome-icon.png';
 import terminalIconImg from '../assets/icon-apps/terminal-icon.png';

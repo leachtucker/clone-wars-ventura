@@ -7,7 +7,7 @@ import {
   ApplicationName,
   applicationDockIconMap,
   applicationMinimizedImgMap,
-} from './apps';
+} from './apps/app-config-mappings';
 import Button from './primitives/Button';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 

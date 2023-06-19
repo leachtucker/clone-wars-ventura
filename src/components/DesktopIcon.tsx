@@ -3,7 +3,7 @@ import { Rnd, RndDragCallback } from 'react-rnd';
 import styled, { css } from 'styled-components';
 import Color from 'color';
 
-import { ApplicationName } from './apps';
+import { ApplicationName } from './apps/app-config-mappings';
 import { DockIconButton } from './Dock';
 import themes from '../shared/config/themes';
 

@@ -3,7 +3,7 @@ import * as Ramda from 'ramda';
 
 import { loginMachine } from './login.machine';
 import { ThemeName } from '../shared/config/themes';
-import { ApplicationName } from '../components/apps';
+import { ApplicationName } from '../components/apps/app-config-mappings';
 
 export type Window = {
   zIndex: number;

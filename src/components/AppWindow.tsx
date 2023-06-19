@@ -7,7 +7,7 @@ import {
   ApplicationName,
   applicationComponentMap,
   applicationRndMap,
-} from './apps';
+} from './apps/app-config-mappings';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 
 export type ApplicationComponentProps = {
