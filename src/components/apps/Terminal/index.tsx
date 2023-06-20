@@ -70,6 +70,8 @@ function Terminal(props: TerminalProps) {
         const fileExtension = Ramda.last(split);
         const fileName = Ramda.init(split).join('.');
 
+        // todo: file may already exist
+
         console.log({ fileExtension, fileName });
 
         const newDirectoryEntry = {
@@ -82,7 +84,7 @@ function Terminal(props: TerminalProps) {
         desktopService.send({
           type: 'FILE_SYSTEM.CREATE',
           entry: newDirectoryEntry,
-          path: promptPath.currentPath,
+          path: [...promptPath.currentPath, fileName],
         });
 
         break;

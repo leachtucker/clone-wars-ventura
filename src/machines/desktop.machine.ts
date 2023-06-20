@@ -51,7 +51,7 @@ type WindowEvent =
 
 type CreateDirectoryEntryEvent = {
   type: 'FILE_SYSTEM.CREATE';
-  entry: LeafDirectoryEntry;
+  entry: LeafDirectoryEntry | Directory;
   path: string[];
 };
 
@@ -136,6 +136,11 @@ export const desktopMachine =
         },
 
         'FILE_SYSTEM.CREATE': {
+          cond: (context, event) => {
+            const entryExists =
+              Ramda.path(event.path, context.fileSystem) != undefined;
+            return !entryExists;
+          },
           actions: ['createDirectoryEntry'],
         },
       },
@@ -207,15 +212,13 @@ export const desktopMachine =
 
         createDirectoryEntry: assign((context, event) => {
           const newFileSystem = Ramda.assocPath(
-            [...event.path, event.entry.name],
+            event.path,
             event.entry,
-            {}
+            context.fileSystem
           );
 
-          console.log({ event, newFileSystem });
-
           return {
-            fileSystem: Ramda.mergeDeepLeft(context.fileSystem, newFileSystem),
+            fileSystem: newFileSystem,
           };
         }),
 
