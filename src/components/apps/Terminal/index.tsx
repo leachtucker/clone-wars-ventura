@@ -8,6 +8,7 @@ import { AppWrapper } from '../AppWrapper';
 import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
 import { handleOpenCommand, usePromptPath } from './prompt-helpers';
 import { FileDirectoryEntry } from '../../../shared/file-system';
+import { isNotEmpty } from '../../../shared/utils/fp';
 
 type TerminalProps = { isFocused: boolean };
 
@@ -67,6 +68,9 @@ function Terminal(props: TerminalProps) {
         if (fullFileName.search(/[^[a-zA-Z0-9.]/g) != -1) {
           terminalHistoryEntry.output = `zsh: invalid file name: ${fullFileName}`;
           break;
+        } else if (Ramda.isEmpty(fullFileName)) {
+          terminalHistoryEntry.output = `zsh: touch command needs a file name arg`;
+          break;
         }
 
         const split = fullFileName.split('.');
@@ -95,6 +99,42 @@ function Terminal(props: TerminalProps) {
         desktopService.send({
           type: 'FILE_SYSTEM.CREATE_DIRECTORY_ENTRY',
           entry: newDirectoryEntry,
+          path: requestedPath,
+        });
+
+        break;
+      }
+      case 'mkdir': {
+        const [path] = args;
+        const requestedRelativePath = path.split('/').filter(isNotEmpty);
+        const requestedPath = [
+          ...promptPath.currentPath,
+          ...requestedRelativePath,
+        ];
+
+        if (Ramda.isEmpty(requestedRelativePath)) {
+          terminalHistoryEntry.output = `zsh: invalid directory`;
+          break;
+        }
+
+        desktopService.send({
+          type: 'FILE_SYSTEM.CREATE_DIRECTORY_ENTRY',
+          entry: {},
+          path: requestedPath,
+        });
+
+        break;
+      }
+      case 'rm': {
+        const [path] = args;
+        const requestedRelativePath = path.split('/').filter(isNotEmpty);
+        const requestedPath = [
+          ...promptPath.currentPath,
+          ...requestedRelativePath,
+        ];
+
+        desktopService.send({
+          type: 'FILE_SYSTEM.REMOVE_DIRECTORY_ENTRY',
           path: requestedPath,
         });
 

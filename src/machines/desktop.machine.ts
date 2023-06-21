@@ -55,7 +55,12 @@ type CreateDirectoryEntryEvent = {
   path: string[];
 };
 
-type FileSystemEvent = CreateDirectoryEntryEvent;
+type RemoveDirectoryEntryEvent = {
+  type: 'FILE_SYSTEM.REMOVE_DIRECTORY_ENTRY';
+  path: string[];
+};
+
+type FileSystemEvent = CreateDirectoryEntryEvent | RemoveDirectoryEntryEvent;
 
 type MachineEvent =
   | LogoutEvent
@@ -139,9 +144,14 @@ export const desktopMachine =
           cond: (context, event) => {
             const entryExists =
               Ramda.path(event.path, context.fileSystem) != undefined;
+
             return !entryExists;
           },
           actions: ['createDirectoryEntry'],
+        },
+
+        'FILE_SYSTEM.REMOVE_DIRECTORY_ENTRY': {
+          actions: ['removeDirectoryEntry'],
         },
       },
     },
@@ -211,9 +221,21 @@ export const desktopMachine =
         }),
 
         createDirectoryEntry: assign((context, event) => {
+          console.log({ event });
           const newFileSystem = Ramda.assocPath(
             event.path,
             event.entry,
+            context.fileSystem
+          );
+
+          return {
+            fileSystem: newFileSystem,
+          };
+        }),
+
+        removeDirectoryEntry: assign((context, event) => {
+          const newFileSystem = Ramda.dissocPath<Directory>(
+            event.path,
             context.fileSystem
           );
 
