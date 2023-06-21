@@ -86,9 +86,7 @@ export function usePromptPath() {
       return [];
     }
 
-    return Object.entries(currentDirectoryRecord).map(
-      transformDirectoryEntryWithKey
-    );
+    return Object.keys(currentDirectoryRecord);
   };
 
   return {

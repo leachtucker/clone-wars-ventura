@@ -50,7 +50,7 @@ type WindowEvent =
   | ReopenWindow;
 
 type CreateDirectoryEntryEvent = {
-  type: 'FILE_SYSTEM.CREATE';
+  type: 'FILE_SYSTEM.CREATE_DIRECTORY_ENTRY';
   entry: LeafDirectoryEntry | Directory;
   path: string[];
 };
@@ -135,7 +135,7 @@ export const desktopMachine =
           actions: ['reopenWindow', 'setWindowZIndexToTop'],
         },
 
-        'FILE_SYSTEM.CREATE': {
+        'FILE_SYSTEM.CREATE_DIRECTORY_ENTRY': {
           cond: (context, event) => {
             const entryExists =
               Ramda.path(event.path, context.fileSystem) != undefined;

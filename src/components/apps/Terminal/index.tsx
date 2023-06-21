@@ -63,28 +63,39 @@ function Terminal(props: TerminalProps) {
       case 'touch': {
         const [fullFileName] = args;
 
-        // Todo: add input validation
-        const split = fullFileName.split('.');
+        // validate filename
+        if (fullFileName.search(/[^[a-zA-Z0-9.]/g) != -1) {
+          terminalHistoryEntry.output = `zsh: invalid file name: ${fullFileName}`;
+          break;
+        }
 
-        // todo: file may not have extension
+        const split = fullFileName.split('.');
         const fileExtension = Ramda.last(split);
         const fileName = Ramda.init(split).join('.');
 
-        // todo: file may already exist
+        const requestedPath = [...promptPath.currentPath, fullFileName];
 
-        console.log({ fileExtension, fileName });
+        // check if file already exists
+        const currentFileSystemState =
+          desktopService.getSnapshot().context.fileSystem;
+
+        if (Ramda.path(requestedPath, currentFileSystemState)) {
+          terminalHistoryEntry.output = `zsh: file already exists: ${fullFileName}`;
+          break;
+        }
 
         const newDirectoryEntry = {
           type: 'file',
           name: fileName,
-          fileExtension: fileExtension as string,
+          fileExtension,
           icon: 'ds',
+          contents: '',
         } satisfies FileDirectoryEntry;
 
         desktopService.send({
-          type: 'FILE_SYSTEM.CREATE',
+          type: 'FILE_SYSTEM.CREATE_DIRECTORY_ENTRY',
           entry: newDirectoryEntry,
-          path: [...promptPath.currentPath, fileName],
+          path: requestedPath,
         });
 
         break;

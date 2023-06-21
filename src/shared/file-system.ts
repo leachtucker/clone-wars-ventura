@@ -12,7 +12,8 @@ export type ApplicationDirectoryEntry = {
 
 export type FileDirectoryEntry = {
   type: 'file';
-  fileExtension: string;
+  fileExtension?: string;
+  contents: string;
 } & BaseDirectoryEntry;
 
 export type LeafDirectoryEntry =
@@ -42,12 +43,13 @@ export const FILE_SYSTEM_DIRECTORY = {
     },
 
     downloads: {
-      helloworld: {
-        type: 'file',
-        fileExtension: 'js',
+      'helloworld.js': {
         name: 'helloworld',
         // Todo: find blank page icon for generic files
         icon: 'ds',
+        type: 'file',
+        fileExtension: 'js',
+        contents: 'console.log(hello world!)',
       },
     },
   },
