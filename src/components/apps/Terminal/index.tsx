@@ -9,6 +9,8 @@ import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvi
 import { handleOpenCommand, usePromptPath } from './prompt-helpers';
 import { FileDirectoryEntry } from '../../../shared/file-system';
 import { isNotEmpty } from '../../../shared/utils/fp';
+import { Show } from '../../primitives/Show';
+import Vim from './Vim';
 
 type TerminalProps = { isFocused: boolean };
 
@@ -20,6 +22,8 @@ function Terminal(props: TerminalProps) {
     TerminalHistoryEntry[]
   >([]);
   const [currentInputLine, setCurrentInputLine] = React.useState<string>('');
+
+  const [isVimModeActive, setIsVimModeActive] = React.useState(false);
 
   // * File system state
   const promptPath = usePromptPath();
@@ -33,6 +37,11 @@ function Terminal(props: TerminalProps) {
     };
 
     switch (command) {
+      case 'nvim': {
+        setIsVimModeActive(true);
+
+        break;
+      }
       case 'open': {
         const [appName] = args;
         try {
@@ -171,43 +180,55 @@ function Terminal(props: TerminalProps) {
     setCurrentInputLine(e.target.value);
   };
 
+  function handleVimQuit(savedOutput: string) {
+    console.log({ savedOutput });
+  }
+
   return (
     <AppWrapper
       isFocused={props.isFocused}
       onClick={() => inputRef.current?.focus()}
     >
       <TopBar />
-      <TerminalPrompt>
-        {terminalHistory.map((entry, idx) => (
-          <React.Fragment key={idx}>
-            <TerminalInputEntry
-              input={entry.input}
-              workingDirPath={entry.workingDirPath}
+      <Show when={isVimModeActive}>
+        <TerminalContentContainer>
+          <Vim onQuit={handleVimQuit} />
+        </TerminalContentContainer>
+      </Show>
+
+      <Show when={!isVimModeActive}>
+        <TerminalPromptContainer>
+          {terminalHistory.map((entry, idx) => (
+            <React.Fragment key={idx}>
+              <TerminalInputEntry
+                input={entry.input}
+                workingDirPath={entry.workingDirPath}
+              />
+
+              {entry.output && (
+                <TerminalLineContainer style={{ marginTop: '0.1rem' }}>
+                  {entry.output}
+                </TerminalLineContainer>
+              )}
+            </React.Fragment>
+          ))}
+
+          <TerminalLineContainer style={{ marginTop: '0.2rem' }}>
+            <ArrowWrapper>➜</ArrowWrapper>
+            <DirectoryWrapper>
+              {Ramda.last(promptPath.currentPath) ?? '~'}
+            </DirectoryWrapper>
+            <TerminalInput
+              onChange={handleInputChange}
+              value={currentInputLine}
+              onKeyDown={handleKeyDown}
+              className="interactable"
+              autoFocus
+              ref={inputRef}
             />
-
-            {entry.output && (
-              <TerminalLineContainer style={{ marginTop: '0.1rem' }}>
-                {entry.output}
-              </TerminalLineContainer>
-            )}
-          </React.Fragment>
-        ))}
-
-        <TerminalLineContainer style={{ marginTop: '0.2rem' }}>
-          <ArrowWrapper>➜</ArrowWrapper>
-          <DirectoryWrapper>
-            {Ramda.last(promptPath.currentPath) ?? '~'}
-          </DirectoryWrapper>
-          <TerminalInput
-            onChange={handleInputChange}
-            value={currentInputLine}
-            onKeyDown={handleKeyDown}
-            className="interactable"
-            autoFocus
-            ref={inputRef}
-          />
-        </TerminalLineContainer>
-      </TerminalPrompt>
+          </TerminalLineContainer>
+        </TerminalPromptContainer>
+      </Show>
     </AppWrapper>
   );
 }
@@ -231,11 +252,13 @@ const TopBar = styled.div`
   background-color: ${({ theme }) => theme.colors.terminalTopBarBackground};
 `;
 
-const TerminalPrompt = styled.div`
+const TerminalContentContainer = styled.div`
   height: calc(100% - 3.1rem);
-  padding: 0.8rem;
-
   overflow-y: auto;
+`;
+
+const TerminalPromptContainer = styled(TerminalContentContainer)`
+  padding: 0.8rem;
 
   background-color: ${({ theme }) => theme.colors.terminalBackground};
   color: ${({ theme }) => theme.colors.primary};
