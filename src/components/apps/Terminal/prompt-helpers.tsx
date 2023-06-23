@@ -98,16 +98,3 @@ export function usePromptPath() {
 }
 
 const isNotEmpty = Ramda.compose(Ramda.not, Ramda.isEmpty);
-
-function transformDirectoryEntryWithKey([key, entry]: [
-  string,
-  Directory | LeafDirectoryEntry
-]): string {
-  if (entry.type == 'file') {
-    return `${entry.name}.${entry.fileExtension}`;
-  } else if (entry.type == 'app') {
-    return entry.name;
-  }
-
-  return key;
-}
