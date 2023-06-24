@@ -13,7 +13,7 @@ export type ApplicationDirectoryEntry = {
 export type FileDirectoryEntry = {
   type: 'file';
   fileExtension?: string;
-  contents: string;
+  content: string;
 } & BaseDirectoryEntry;
 
 export type LeafDirectoryEntry =
@@ -24,6 +24,8 @@ export type LeafDirectoryEntry =
 export type Directory = {
   [key: string]: LeafDirectoryEntry | Directory;
 };
+
+export type DirectoryEntry = Directory | LeafDirectoryEntry;
 
 export const FILE_SYSTEM_DIRECTORY = {
   home: {
@@ -49,7 +51,7 @@ export const FILE_SYSTEM_DIRECTORY = {
         icon: 'ds',
         type: 'file',
         fileExtension: 'js',
-        contents: 'console.log(hello world!)',
+        content: 'console.log(hello world!)',
       },
     },
   },

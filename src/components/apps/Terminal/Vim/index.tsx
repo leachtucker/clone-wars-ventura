@@ -7,14 +7,23 @@ import { vim, Vim as VimExtension } from '@replit/codemirror-vim';
 
 type VimProps = {
   initialValue?: string;
-  onQuit: (value: string) => void;
+  onQuit?: (value: string) => void;
+  onWriteQuit?: (value: string) => void;
 };
 
 function Vim(props: VimProps) {
   const [value, setValue] = React.useState(props.initialValue ?? '');
 
   React.useEffect(() => {
-    VimExtension.defineEx('quit', 'q', props.onQuit(value));
+    if (props.onQuit) {
+      VimExtension.defineEx('quit', 'q', () => props.onQuit?.(value));
+    }
+
+    if (props.onWriteQuit) {
+      VimExtension.defineEx('wq', 'wq', () =>
+        props.onWriteQuit?.(value)
+      );
+    }
   });
 
   return (

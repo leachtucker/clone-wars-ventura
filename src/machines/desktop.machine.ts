@@ -6,7 +6,10 @@ import { ThemeName } from '../shared/config/themes';
 import type { ApplicationName } from '../components/apps/app-config-mappings';
 
 import type { Directory, LeafDirectoryEntry } from '../shared/file-system';
-import { FILE_SYSTEM_DIRECTORY } from '../shared/file-system';
+import {
+  FILE_SYSTEM_DIRECTORY,
+  FileDirectoryEntry,
+} from '../shared/file-system';
 
 export type Window = {
   zIndex: number;
@@ -60,7 +63,16 @@ type RemoveDirectoryEntryEvent = {
   path: string[];
 };
 
-type FileSystemEvent = CreateDirectoryEntryEvent | RemoveDirectoryEntryEvent;
+type ModifyDirectoryEntryFileContent = {
+  type: 'FILE_SYSTEM.MODIFY_DIRECTORY_ENTRY_FILE_CONTENT';
+  path: string[];
+  content: string;
+};
+
+type FileSystemEvent =
+  | CreateDirectoryEntryEvent
+  | RemoveDirectoryEntryEvent
+  | ModifyDirectoryEntryFileContent;
 
 type MachineEvent =
   | LogoutEvent
@@ -153,6 +165,18 @@ export const desktopMachine =
         'FILE_SYSTEM.REMOVE_DIRECTORY_ENTRY': {
           actions: ['removeDirectoryEntry'],
         },
+
+        'FILE_SYSTEM.MODIFY_DIRECTORY_ENTRY_FILE_CONTENT': {
+          cond: (context, event) => {
+            const entry = Ramda.path<Directory | LeafDirectoryEntry>(
+              event.path,
+              context.fileSystem
+            );
+            const isDirectoryEntry = entry?.type == 'file';
+            return isDirectoryEntry;
+          },
+          actions: ['modifyFileContent'],
+        },
       },
     },
     {
@@ -221,7 +245,6 @@ export const desktopMachine =
         }),
 
         createDirectoryEntry: assign((context, event) => {
-          console.log({ event });
           const newFileSystem = Ramda.assocPath(
             event.path,
             event.entry,
@@ -236,6 +259,26 @@ export const desktopMachine =
         removeDirectoryEntry: assign((context, event) => {
           const newFileSystem = Ramda.dissocPath<Directory>(
             event.path,
+            context.fileSystem
+          );
+
+          return {
+            fileSystem: newFileSystem,
+          };
+        }),
+
+        modifyFileContent: assign((context, event) => {
+          const existingEntry = Ramda.path(event.path)(
+            context.fileSystem
+          ) as FileDirectoryEntry;
+          const newDirEntry = {
+            ...existingEntry,
+            content: event.content,
+          } satisfies FileDirectoryEntry;
+
+          const newFileSystem = Ramda.assocPath(
+            event.path,
+            newDirEntry,
             context.fileSystem
           );
 

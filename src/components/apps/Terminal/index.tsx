@@ -7,7 +7,10 @@ import * as Ramda from 'ramda';
 import { AppWrapper } from '../AppWrapper';
 import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
 import { handleOpenCommand, usePromptPath } from './prompt-helpers';
-import { FileDirectoryEntry } from '../../../shared/file-system';
+import {
+  DirectoryEntry,
+  FileDirectoryEntry,
+} from '../../../shared/file-system';
 import { isNotEmpty } from '../../../shared/utils/fp';
 import { Show } from '../../primitives/Show';
 import Vim from './Vim';
@@ -23,7 +26,8 @@ function Terminal(props: TerminalProps) {
   >([]);
   const [currentInputLine, setCurrentInputLine] = React.useState<string>('');
 
-  const [isVimModeActive, setIsVimModeActive] = React.useState(false);
+  const [vimMode, setVimMode] =
+    React.useState<VimModeState>(initialVimModeState);
 
   // * File system state
   const promptPath = usePromptPath();
@@ -38,7 +42,29 @@ function Terminal(props: TerminalProps) {
 
     switch (command) {
       case 'nvim': {
-        setIsVimModeActive(true);
+        const [fileName] = args;
+        if (!fileName) {
+          terminalHistoryEntry.output = `zsh: missing file name argument`;
+          break;
+        }
+
+        const filePath = [...promptPath.currentPath, fileName];
+
+        const fileSystem = desktopService.getSnapshot().context.fileSystem;
+        const fileDirectoryEntry = Ramda.path<DirectoryEntry>(
+          filePath,
+          fileSystem
+        );
+
+        if (!fileDirectoryEntry || fileDirectoryEntry?.type != 'file') {
+          terminalHistoryEntry.output = `zsh: invalid file name: ${fileName}`;
+          break;
+        }
+
+        setVimMode({
+          isActive: true,
+          currentFile: { path: filePath, content: fileDirectoryEntry.content },
+        });
 
         break;
       }
@@ -102,7 +128,7 @@ function Terminal(props: TerminalProps) {
           name: fileName,
           fileExtension,
           icon: 'ds',
-          contents: '',
+          content: '',
         } satisfies FileDirectoryEntry;
 
         desktopService.send({
@@ -180,8 +206,19 @@ function Terminal(props: TerminalProps) {
     setCurrentInputLine(e.target.value);
   };
 
-  function handleVimQuit(savedOutput: string) {
-    console.log({ savedOutput });
+  function handleVimQuit() {
+    setVimMode(initialVimModeState);
+  }
+
+  function handleVimWriteQuit(savedOutput: string) {
+    if (vimMode.currentFile) {
+      desktopService.send({
+        type: 'FILE_SYSTEM.MODIFY_DIRECTORY_ENTRY_FILE_CONTENT',
+        path: vimMode.currentFile.path,
+        content: savedOutput,
+      });
+    }
+    setVimMode(initialVimModeState);
   }
 
   return (
@@ -190,13 +227,17 @@ function Terminal(props: TerminalProps) {
       onClick={() => inputRef.current?.focus()}
     >
       <TopBar />
-      <Show when={isVimModeActive}>
+      <Show when={vimMode.isActive}>
         <TerminalContentContainer>
-          <Vim onQuit={handleVimQuit} />
+          <Vim
+            onQuit={handleVimQuit}
+            onWriteQuit={handleVimWriteQuit}
+            initialValue={vimMode.currentFile?.content ?? ''}
+          />
         </TerminalContentContainer>
       </Show>
 
-      <Show when={!isVimModeActive}>
+      <Show when={!vimMode.isActive}>
         <TerminalPromptContainer>
           {terminalHistory.map((entry, idx) => (
             <React.Fragment key={idx}>
@@ -218,6 +259,7 @@ function Terminal(props: TerminalProps) {
             <DirectoryWrapper>
               {Ramda.last(promptPath.currentPath) ?? '~'}
             </DirectoryWrapper>
+
             <TerminalInput
               onChange={handleInputChange}
               value={currentInputLine}
@@ -332,3 +374,13 @@ type TerminalHistoryEntry = {
   output: string | undefined;
   workingDirPath: string[];
 };
+
+type VimModeState = {
+  isActive: boolean;
+  currentFile: { path: string[]; content: string } | null | null;
+};
+
+const initialVimModeState = {
+  isActive: false,
+  currentFile: null,
+} satisfies VimModeState;
