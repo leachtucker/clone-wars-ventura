@@ -16,6 +16,8 @@ export type ThemeMapping = {
 
     terminalTopBarBackground: string;
     terminalBackground: string;
+
+    finderSideBarSelection: string;
   } & typeof colors;
 };
 
@@ -51,6 +53,7 @@ const light: DefaultTheme = {
     chromeTopBarTabBackground: colors.white,
     terminalTopBarBackground: colors.almostWhite,
     terminalBackground: colors.terminalAlmostWhite,
+    finderSideBarSelection: Color(colors.almostBlack).alpha(0.15).toString(),
   },
 };
 
@@ -68,6 +71,7 @@ const dark: DefaultTheme = {
     chromeTopBarTabBackground: colors.chromeDarkGrey,
     terminalTopBarBackground: colors.almostBlack,
     terminalBackground: colors.terminalAlmostBlack,
+    finderSideBarSelection: Color(colors.almostWhite).alpha(0.15).toString(),
   },
 };
 

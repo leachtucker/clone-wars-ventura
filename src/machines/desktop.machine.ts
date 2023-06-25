@@ -11,7 +11,7 @@ import type {
   LeafDirectoryEntry,
 } from '../shared/file-system';
 import {
-  FILE_SYSTEM_DIRECTORY,
+  INITIAL_FILE_SYSTEM_DIRECTORY,
   FileDirectoryEntry,
 } from '../shared/file-system';
 
@@ -34,7 +34,7 @@ const initialContext: MachineContext = {
   theme: 'light',
   windows: [],
   currentZIndexMaximum: 0,
-  fileSystem: Ramda.clone(FILE_SYSTEM_DIRECTORY),
+  fileSystem: Ramda.clone(INITIAL_FILE_SYSTEM_DIRECTORY),
 };
 
 type LogoutEvent = { type: 'AUTHENTICATION.LOGOUT' };

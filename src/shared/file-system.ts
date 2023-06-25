@@ -22,12 +22,12 @@ export type LeafDirectoryEntry =
   | Record<string, never>;
 
 export type Directory = {
-  [key: string]: LeafDirectoryEntry | Directory;
+  [key: string]: LeafDirectoryEntry | Directory | undefined;
 };
 
 export type DirectoryEntry = Directory | LeafDirectoryEntry;
 
-export const FILE_SYSTEM_DIRECTORY = {
+export const INITIAL_FILE_SYSTEM_DIRECTORY = {
   home: {
     desktop: {
       chrome: {
@@ -51,7 +51,7 @@ export const FILE_SYSTEM_DIRECTORY = {
         icon: 'ds',
         type: 'file',
         fileExtension: 'js',
-        content: 'console.log(hello world!)',
+        content: 'console.log(hello world!);',
       },
     },
   },
