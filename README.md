@@ -22,5 +22,5 @@ macOS Ventura clone built with React &amp; xState
   - Implement `rm` command ✅
   - Implement `help` command
   - Implement up/down arrow command history
-- Finder app
-- Ensure windows styling compatibility
+- Finder app 🚧
+- Optimize images and use CSS animations for polish
