@@ -132,7 +132,7 @@ function Terminal(props: TerminalProps) {
         } satisfies FileDirectoryEntry;
 
         desktopService.send({
-          type: 'FILE_SYSTEM.CREATE_DIRECTORY_ENTRY',
+          type: 'FILE_SYSTEM.DIRECTORY_ENTRY.CREATE',
           entry: newDirectoryEntry,
           path: requestedPath,
         });
@@ -153,7 +153,7 @@ function Terminal(props: TerminalProps) {
         }
 
         desktopService.send({
-          type: 'FILE_SYSTEM.CREATE_DIRECTORY_ENTRY',
+          type: 'FILE_SYSTEM.DIRECTORY_ENTRY.CREATE',
           entry: {},
           path: requestedPath,
         });
@@ -169,7 +169,7 @@ function Terminal(props: TerminalProps) {
         ];
 
         desktopService.send({
-          type: 'FILE_SYSTEM.REMOVE_DIRECTORY_ENTRY',
+          type: 'FILE_SYSTEM.DIRECTORY_ENTRY.REMOVE',
           path: requestedPath,
         });
 
@@ -213,7 +213,7 @@ function Terminal(props: TerminalProps) {
   function handleVimWriteQuit(savedOutput: string) {
     if (vimMode.currentFile) {
       desktopService.send({
-        type: 'FILE_SYSTEM.MODIFY_DIRECTORY_ENTRY_FILE_CONTENT',
+        type: 'FILE_SYSTEM.DIRECTORY_ENTRY.MODIFY_CONTENT',
         path: vimMode.currentFile.path,
         content: savedOutput,
       });

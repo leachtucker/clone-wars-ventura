@@ -5,7 +5,11 @@ import { loginMachine } from './login.machine';
 import { ThemeName } from '../shared/config/themes';
 import type { ApplicationName } from '../components/apps/app-config-mappings';
 
-import type { Directory, LeafDirectoryEntry } from '../shared/file-system';
+import type {
+  Directory,
+  DirectoryEntry,
+  LeafDirectoryEntry,
+} from '../shared/file-system';
 import {
   FILE_SYSTEM_DIRECTORY,
   FileDirectoryEntry,
@@ -53,18 +57,18 @@ type WindowEvent =
   | ReopenWindow;
 
 type CreateDirectoryEntryEvent = {
-  type: 'FILE_SYSTEM.CREATE_DIRECTORY_ENTRY';
-  entry: LeafDirectoryEntry | Directory;
+  type: 'FILE_SYSTEM.DIRECTORY_ENTRY.CREATE';
+  entry: DirectoryEntry;
   path: string[];
 };
 
 type RemoveDirectoryEntryEvent = {
-  type: 'FILE_SYSTEM.REMOVE_DIRECTORY_ENTRY';
+  type: 'FILE_SYSTEM.DIRECTORY_ENTRY.REMOVE';
   path: string[];
 };
 
 type ModifyDirectoryEntryFileContent = {
-  type: 'FILE_SYSTEM.MODIFY_DIRECTORY_ENTRY_FILE_CONTENT';
+  type: 'FILE_SYSTEM.DIRECTORY_ENTRY.MODIFY_CONTENT';
   path: string[];
   content: string;
 };
@@ -152,7 +156,7 @@ export const desktopMachine =
           actions: ['reopenWindow', 'setWindowZIndexToTop'],
         },
 
-        'FILE_SYSTEM.CREATE_DIRECTORY_ENTRY': {
+        'FILE_SYSTEM.DIRECTORY_ENTRY.CREATE': {
           cond: (context, event) => {
             const entryExists =
               Ramda.path(event.path, context.fileSystem) != undefined;
@@ -162,11 +166,11 @@ export const desktopMachine =
           actions: ['createDirectoryEntry'],
         },
 
-        'FILE_SYSTEM.REMOVE_DIRECTORY_ENTRY': {
+        'FILE_SYSTEM.DIRECTORY_ENTRY.REMOVE': {
           actions: ['removeDirectoryEntry'],
         },
 
-        'FILE_SYSTEM.MODIFY_DIRECTORY_ENTRY_FILE_CONTENT': {
+        'FILE_SYSTEM.DIRECTORY_ENTRY.MODIFY_CONTENT': {
           cond: (context, event) => {
             const entry = Ramda.path<Directory | LeafDirectoryEntry>(
               event.path,
