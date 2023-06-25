@@ -14,6 +14,7 @@ import {
 import { isNotEmpty } from '../../../shared/utils/fp';
 import { Show } from '../../primitives/Show';
 import Vim from './Vim';
+import { getWindowStartingPosition } from '../app-config-mappings';
 
 type TerminalProps = { isFocused: boolean };
 
@@ -283,8 +284,7 @@ export const Terminal_RND_CONFIG = {
   default: {
     width: 570,
     height: 360,
-    x: 100,
-    y: 100,
+    ...getWindowStartingPosition(570, 360),
   },
   enableResizing: true,
 } satisfies Partial<React.ComponentProps<typeof Rnd>>;

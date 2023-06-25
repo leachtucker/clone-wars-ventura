@@ -3,6 +3,7 @@ import { Rnd } from 'react-rnd';
 
 import { AppWrapper } from '../AppWrapper';
 import styled from 'styled-components';
+import { getWindowStartingPosition } from '../app-config-mappings';
 
 type FinderProps = {
   isFocused: boolean;
@@ -20,13 +21,12 @@ function Finder(props: FinderProps) {
 export default Finder;
 
 export const FINDER_RND_CONFIG = {
-  minWidth: 160,
-  minHeight: 100,
+  minWidth: 500,
+  minHeight: 290,
   default: {
-    width: 570,
-    height: 360,
-    x: 100,
-    y: 100,
+    width: 640,
+    height: 370,
+    ...getWindowStartingPosition(640, 370),
   },
   enableResizing: true,
 } satisfies Partial<React.ComponentProps<typeof Rnd>>;

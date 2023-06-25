@@ -9,6 +9,7 @@ import { AppWrapper } from '../AppWrapper';
 import Button from '../../primitives/Button';
 import { AiFillGithub, AiOutlineGoogle } from 'react-icons/ai';
 import { RiNetflixFill } from 'react-icons/ri';
+import { getWindowStartingPosition } from '../app-config-mappings';
 
 type ChromeProps = { isFocused: boolean };
 
@@ -121,8 +122,7 @@ export const Chrome_RND_CONFIG = {
   default: {
     width: 700,
     height: 700,
-    x: 100,
-    y: 100,
+    ...getWindowStartingPosition(700, 700),
   },
   enableResizing: true,
 } satisfies Partial<React.ComponentProps<typeof Rnd>>;

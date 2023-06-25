@@ -92,3 +92,13 @@ export const desktopIconsMaps = {
     },
   },
 } as const satisfies Partial<Record<ApplicationName, IconConfig>>;
+
+export function getWindowStartingPosition(width: number, height: number) {
+  const windowCenterX = window.innerWidth / 2;
+  const windowCenterY = window.innerHeight / 2;
+
+  return {
+    x: windowCenterX - width / 2,
+    y: windowCenterY - 50 - height / 2,
+  };
+}
