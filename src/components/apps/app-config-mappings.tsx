@@ -17,7 +17,9 @@ import chromeMinimizedImg from '../../assets/minimized-apps/chrome.png';
 
 import Terminal, { Terminal_RND_CONFIG } from './Terminal';
 import terminalIconImg from '../../assets/icon-apps/terminal-icon.png';
+
 import Finder, { FINDER_RND_CONFIG } from './Finder';
+import finderIconImg from '../../assets/icon-apps/finder-icon.png';
 
 export type ApplicationName =
   | 'aboutThisMac'
@@ -53,15 +55,13 @@ export const applicationMinimizedImgMap = {
   aboutThisEngineer: aboutThisEngineerMinimizedImg,
   chrome: chromeMinimizedImg,
   terminal: terminalIconImg,
-  // todo: update img
-  finder: terminalIconImg,
+  finder: finderIconImg,
 } as const satisfies Record<ApplicationName, string>;
 
 export const applicationDockIconMap = {
   chrome: chromeDockIconImg,
   terminal: terminalIconImg,
-  // todo: update img
-  finder: terminalIconImg,
+  finder: finderIconImg,
 } as const satisfies Partial<Record<ApplicationName, string>>;
 
 export const desktopIconsMaps = {
@@ -85,8 +85,7 @@ export const desktopIconsMaps = {
 
   finder: {
     iconName: 'Finder',
-    // todo: update img
-    imageSrc: terminalIconImg,
+    imageSrc: finderIconImg,
     position: {
       x: window.innerWidth - 80,
       y: 190,
