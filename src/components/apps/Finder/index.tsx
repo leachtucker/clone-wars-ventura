@@ -7,9 +7,10 @@ import { AppWrapper } from '../AppWrapper';
 import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
 import { fileSystemSelector } from '../../../machines/desktop.machine';
 import { Directory } from '../../../shared/file-system';
-import { capitalize } from '../../../shared/utils/fp';
 
 import { VscFolder } from 'react-icons/vsc';
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import RoundIconButton from '../../primitives/RoundIconButton';
 
 type FinderProps = {
   isFocused: boolean;
@@ -28,6 +29,11 @@ function Finder(props: FinderProps) {
     };
   };
 
+  const handleBackArrowClick = () => {
+    // @ts-expect-error testing
+    setActivePath((prevPath) => prevPath?.slice(0, -1));
+  };
+
   return (
     <AppWrapper isFocused={props.isFocused} style={{ display: 'flex' }}>
       <SideBarContainer>
@@ -41,14 +47,25 @@ function Finder(props: FinderProps) {
               onClick={createSideBarItemClickHandler(dirEntryName)}
             >
               <SideBarFolderIcon />
-              {capitalize(dirEntryName)}
+              <CapitalizeText>{dirEntryName}</CapitalizeText>
             </SideBarCategoryItem>
           ))}
         </SideBarCategoryList>
       </SideBarContainer>
 
       <ActiveDirectoryContainer>
-        <ActiveDirectoryTopBar />
+        <ActiveDirectoryTopBar>
+          <NavigationArrowsContainer>
+            <IconButton onClick={handleBackArrowClick}>
+              <IoIosArrowBack />
+            </IconButton>
+
+            <IconButton>
+              <IoIosArrowForward />
+            </IconButton>
+          </NavigationArrowsContainer>
+          <ActiveDirectoryHeader>{activePath?.at(-1)}</ActiveDirectoryHeader>
+        </ActiveDirectoryTopBar>
         <ActiveDirectoryEntriesContainer />
       </ActiveDirectoryContainer>
     </AppWrapper>
@@ -121,10 +138,46 @@ const ActiveDirectoryContainer = styled.div`
 const ActiveDirectoryTopBar = styled.div`
   height: 5.5rem;
   background-color: ${({ theme }) => theme.colors.finderTopBarBackground};
+
+  display: flex;
+  align-items: center;
+
+  padding: 1rem 2rem;
 `;
 
 const ActiveDirectoryEntriesContainer = styled.div`
   height: calc(100% - 5.5rem);
   background-color: ${({ theme }) => theme.colors.finderBackground};
   box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.2);
+`;
+
+const CapitalizeText = styled.span`
+  text-transform: capitalize;
+`;
+
+const ActiveDirectoryHeader = styled(CapitalizeText)`
+  font-size: 1.3rem;
+  font-weight: 500;
+  -webkit-text-stroke-width: 0.3px;
+
+  color: ${({ theme }) => theme.colors.secondary};
+`;
+
+const NavigationArrowsContainer = styled.div`
+  font-size: 2.1rem;
+  display: flex;
+  align-items: center;
+
+  margin-right: 1.5rem;
+`;
+
+const IconButton = styled(RoundIconButton)`
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+
+  color: grey;
+
+  :hover {
+    background-color: ${({ theme }) => theme.colors.finderSideBarSelection};
+  }
 `;
