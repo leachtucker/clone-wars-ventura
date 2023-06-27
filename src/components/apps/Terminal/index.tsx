@@ -278,17 +278,6 @@ function Terminal(props: TerminalProps) {
 
 export default Terminal;
 
-export const Terminal_RND_CONFIG = {
-  minWidth: 160,
-  minHeight: 100,
-  default: {
-    width: 570,
-    height: 360,
-    ...getWindowStartingPosition(570, 360),
-  },
-  enableResizing: true,
-} satisfies Partial<React.ComponentProps<typeof Rnd>>;
-
 const TopBar = styled.div`
   height: 3.1rem;
   background-color: ${({ theme }) => theme.colors.terminalTopBarBackground};

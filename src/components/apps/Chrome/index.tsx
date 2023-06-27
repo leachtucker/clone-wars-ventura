@@ -116,17 +116,6 @@ function Chrome(props: ChromeProps) {
 
 export default Chrome;
 
-export const Chrome_RND_CONFIG = {
-  minHeight: 400,
-  minWidth: 400,
-  default: {
-    width: 700,
-    height: 700,
-    ...getWindowStartingPosition(700, 700),
-  },
-  enableResizing: true,
-} satisfies Partial<React.ComponentProps<typeof Rnd>>;
-
 const TopBar = styled.div`
   height: 4rem;
   background-color: ${({ theme }) => theme.colors.chromeTopBarBackground};

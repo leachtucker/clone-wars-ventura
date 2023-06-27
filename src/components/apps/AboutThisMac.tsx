@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Rnd } from 'react-rnd';
 
 import { AppWrapper } from './AppWrapper';
 import macbookImg from '../../assets/macbook.png';
@@ -53,16 +52,6 @@ function AboutThisMac(props: AboutThisMacProps) {
 }
 
 export default AboutThisMac;
-
-export const AboutThisMac_RND_CONFIG = {
-  default: {
-    width: 280,
-    height: 450,
-    x: 250,
-    y: 200,
-  },
-  enableResizing: false,
-} satisfies Partial<React.ComponentProps<typeof Rnd>>;
 
 const Container = styled.div`
   display: flex;

@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Rnd } from 'react-rnd';
 
 import { AppWrapper } from './AppWrapper';
 import avatarImg from '../../assets/avatar.png';
@@ -53,16 +52,6 @@ function AboutThisEngineer(props: AboutThisEngineerProps) {
 }
 
 export default AboutThisEngineer;
-
-export const AboutThisEngineer_RND_CONFIG = {
-  default: {
-    width: 280,
-    height: 350,
-    x: 250,
-    y: 200,
-  },
-  enableResizing: false,
-} satisfies Partial<React.ComponentProps<typeof Rnd>>;
 
 const Container = styled.div`
   display: flex;
