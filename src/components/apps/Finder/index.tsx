@@ -1,11 +1,9 @@
 import React from 'react';
 import { useSelector } from '@xstate/react';
-import { Rnd } from 'react-rnd';
 import Color from 'color';
 import styled, { css } from 'styled-components';
 
 import { AppWrapper } from '../AppWrapper';
-import { getWindowStartingPosition } from '../app-config-mappings';
 import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
 import { fileSystemSelector } from '../../../machines/desktop.machine';
 import { Directory } from '../../../shared/file-system';
@@ -31,7 +29,7 @@ function Finder(props: FinderProps) {
   };
 
   return (
-    <AppWrapper isFocused={props.isFocused}>
+    <AppWrapper isFocused={props.isFocused} style={{ display: 'flex' }}>
       <SideBarContainer>
         <SideBarCategoryHeader>Favorites</SideBarCategoryHeader>
 
@@ -48,27 +46,20 @@ function Finder(props: FinderProps) {
           ))}
         </SideBarCategoryList>
       </SideBarContainer>
-      Finder
+
+      <ActiveDirectoryContainer>
+        <ActiveDirectoryTopBar />
+        <ActiveDirectoryEntriesContainer />
+      </ActiveDirectoryContainer>
     </AppWrapper>
   );
 }
 
 export default Finder;
 
-export const FINDER_RND_CONFIG = {
-  minWidth: 500,
-  minHeight: 290,
-  default: {
-    width: 700,
-    height: 380,
-    ...getWindowStartingPosition(700, 380),
-  },
-  enableResizing: true,
-} satisfies Partial<React.ComponentProps<typeof Rnd>>;
-
 const SideBarContainer = styled.div`
   height: 100%;
-  width: 17rem;
+  width: 16rem;
 
   padding: 0 1.5rem;
   padding-top: 5rem;
@@ -120,4 +111,20 @@ const SideBarFolderIcon = styled(VscFolder)`
   height: auto;
 
   margin-right: 0.6rem;
+`;
+
+const ActiveDirectoryContainer = styled.div`
+  width: calc(100% - 16rem);
+  height: 100%;
+`;
+
+const ActiveDirectoryTopBar = styled.div`
+  height: 5.5rem;
+  background-color: ${({ theme }) => theme.colors.finderTopBarBackground};
+`;
+
+const ActiveDirectoryEntriesContainer = styled.div`
+  height: calc(100% - 5.5rem);
+  background-color: ${({ theme }) => theme.colors.finderBackground};
+  box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.2);
 `;

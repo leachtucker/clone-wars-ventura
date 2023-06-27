@@ -18,6 +18,8 @@ export type ThemeMapping = {
     terminalBackground: string;
 
     finderSideBarSelection: string;
+    finderTopBarBackground: string;
+    finderBackground: string;
   } & typeof colors;
 };
 
@@ -54,6 +56,8 @@ const light: DefaultTheme = {
     terminalTopBarBackground: colors.almostWhite,
     terminalBackground: colors.terminalAlmostWhite,
     finderSideBarSelection: Color(colors.almostBlack).alpha(0.15).toString(),
+    finderTopBarBackground: 'rgb(249, 243, 241)',
+    finderBackground: 'rgb(255, 255, 255)',
   },
 };
 
@@ -72,6 +76,8 @@ const dark: DefaultTheme = {
     terminalTopBarBackground: colors.almostBlack,
     terminalBackground: colors.terminalAlmostBlack,
     finderSideBarSelection: Color(colors.almostWhite).alpha(0.15).toString(),
+    finderTopBarBackground: 'rgb(63, 53, 50)',
+    finderBackground: 'rgb(47, 32, 27)',
   },
 };
 
