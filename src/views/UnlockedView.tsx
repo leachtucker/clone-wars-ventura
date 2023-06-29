@@ -57,6 +57,7 @@ function UnlockedView() {
 
             <DesktopIconList resetIconPositions={resetIconPositions} />
           </WindowsContainer>
+
           <Dock
             minimizedWindows={minimizedWindows}
             onMinimizedWindowClick={reopenWindow}

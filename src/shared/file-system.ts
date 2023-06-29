@@ -48,7 +48,7 @@ export const INITIAL_FILE_SYSTEM_DIRECTORY = {
       'helloworld.js': {
         name: 'helloworld',
         // Todo: find blank page icon for generic files
-        icon: 'ds',
+        icon: terminalIconImg,
         type: 'file',
         fileExtension: 'js',
         content: 'console.log(hello world!);',

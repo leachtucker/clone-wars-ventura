@@ -4,7 +4,8 @@ import styled, { css } from 'styled-components';
 import Color from 'color';
 
 import { ApplicationName } from './apps/app-config-mappings';
-import { DockIconButton } from './Dock';
+import { DockIconButton } from './shared/DockIconButton';
+
 import themes from '../shared/config/themes';
 
 type DesktopIconProps = {

@@ -5,7 +5,7 @@ import AppleMenu from './AppleMenu';
 
 import themes from '../shared/config/themes';
 import ControlPanelDropdown from './ControlPanelDropdown';
-import SimpleDate from './primitives/SimpleDate';
+import SimpleDate from './shared/SimpleDate';
 import useCurrentDate from '../hooks/useCurrentDate';
 import Button from './primitives/Button';
 

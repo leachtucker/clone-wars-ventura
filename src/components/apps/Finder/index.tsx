@@ -12,6 +12,7 @@ import { Directory } from '../../../shared/file-system';
 import { VscFolder } from 'react-icons/vsc';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import RoundIconButton from '../../primitives/RoundIconButton';
+import DesktopIconList from '../../DesktopIconList';
 
 type FinderProps = {
   isFocused: boolean;
@@ -25,6 +26,10 @@ function Finder(props: FinderProps) {
   const [pathHistory, setPathHistory] = React.useState<PathHistory>(
     INITIAL_PATH_HISTORY_STATE
   );
+
+  const activePathEntry = pathHistory.entries[pathHistory.activeIdx];
+  const isOnLatestPathEntry =
+    pathHistory.activeIdx == pathHistory.entries.length - 1;
 
   const createDirectoryClickHandler = (
     itemName: string,
@@ -71,9 +76,10 @@ function Finder(props: FinderProps) {
     }));
   };
 
-  const activePath = pathHistory.entries[pathHistory.activeIdx];
-  const isOnLatestPath =
-    pathHistory.activeIdx == pathHistory.entries.length - 1;
+  const activeDirectory = Ramda.path<Directory>(
+    ['home', ...activePathEntry],
+    fileSystem
+  );
 
   return (
     <AppWrapper isFocused={props.isFocused} style={{ display: 'flex' }}>
@@ -84,7 +90,7 @@ function Finder(props: FinderProps) {
           {Object.keys(homeDirectory).map((dirEntryName) => (
             <SideBarCategoryItem
               key={dirEntryName}
-              isActive={activePath[0] == dirEntryName}
+              isActive={activePathEntry[0] == dirEntryName}
               onClick={createDirectoryClickHandler(dirEntryName, true)}
             >
               <SideBarFolderIcon />
@@ -106,14 +112,20 @@ function Finder(props: FinderProps) {
 
             <IconButton
               onClick={handleForwardArrowClick}
-              disabled={isOnLatestPath}
+              disabled={isOnLatestPathEntry}
             >
               <IoIosArrowForward />
             </IconButton>
           </NavigationArrowsContainer>
-          <ActiveDirectoryHeader>{activePath.at(-1)}</ActiveDirectoryHeader>
+
+          <ActiveDirectoryHeader>
+            {activePathEntry.at(-1)}
+          </ActiveDirectoryHeader>
         </ActiveDirectoryTopBar>
-        <ActiveDirectoryEntriesContainer />
+
+        <ActiveDirectoryEntriesContainer>
+          {activeDirectory && <DesktopIconList resetIconPositions={false} />}
+        </ActiveDirectoryEntriesContainer>
       </ActiveDirectoryContainer>
     </AppWrapper>
   );
@@ -131,6 +143,28 @@ const INITIAL_PATH_HISTORY_STATE = {
   activeIdx: 0,
   entries: [['desktop']],
 } satisfies PathHistory;
+
+// type DirectoryEntryProps = {
+//   entry: DirectoryEntry;
+// };
+
+// function DirectoryEntry(props: DirectoryEntryProps) {
+//   if (props.entry.type == 'app') {
+//     return (
+//       <DesktopIcon
+//         icon={{ iconName: props.entry.name, imageSrc: props.entry.icon }}
+//         appName={props.entry.appName}
+//         // isSelected={appName == selectedIcon}
+//         onClick={(e) => e.stopPropagation()}
+//         // onDoubleClick={createIconDoubleClickHandler(
+//         //   appName as ApplicationName
+//         // )}
+//         // resetPosition={props.resetIconPositions}
+//         // onDragStart={createDragStartHandler(appName as ApplicationName)}
+//       />
+//     );
+//   }
+// }
 
 const SideBarContainer = styled.div`
   height: 100%;

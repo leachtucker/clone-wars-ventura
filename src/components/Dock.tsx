@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
+
 import Trash from './icons/Trash';
+import { DockIconButton } from './shared/DockIconButton';
 
 import type { Window } from '../machines/desktop.machine';
 import {
@@ -8,7 +10,7 @@ import {
   applicationDockIconMap,
   applicationMinimizedImgMap,
 } from './apps/app-config-mappings';
-import Button from './primitives/Button';
+
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 
 type DockProps = {
@@ -122,20 +124,4 @@ const Separator = styled.div`
   height: 100%;
   width: 1px;
   background: rgba(255, 255, 255, 0.3);
-`;
-
-export const DockIconButton = styled(Button)`
-  display: block;
-  padding: 0;
-  height: 100%;
-
-  & > img {
-    height: 100%;
-    width: auto;
-  }
-
-  &:active {
-    filter: brightness(80%);
-    transform: scale3d(0.97, 0.97, 1);
-  }
 `;
