@@ -21,7 +21,7 @@ function Finder(props: FinderProps) {
   const fileSystem = useSelector(desktopService, fileSystemSelector);
   const homeDirectory = fileSystem.home as Directory;
 
-  const [activePath, setActivePath] = React.useState<string[] | null>(null);
+  const [activePath, setActivePath] = React.useState<string[]>(['desktop']);
 
   const createSideBarItemClickHandler = (itemName: string) => {
     return () => {
@@ -30,7 +30,6 @@ function Finder(props: FinderProps) {
   };
 
   const handleBackArrowClick = () => {
-    // @ts-expect-error testing
     setActivePath((prevPath) => prevPath?.slice(0, -1));
   };
 
@@ -56,7 +55,7 @@ function Finder(props: FinderProps) {
       <ActiveDirectoryContainer>
         <ActiveDirectoryTopBar>
           <NavigationArrowsContainer>
-            <IconButton onClick={handleBackArrowClick}>
+            <IconButton onClick={handleBackArrowClick} disabled>
               <IoIosArrowBack />
             </IconButton>
 
@@ -138,6 +137,7 @@ const ActiveDirectoryContainer = styled.div`
 const ActiveDirectoryTopBar = styled.div`
   height: 5.5rem;
   background-color: ${({ theme }) => theme.colors.finderTopBarBackground};
+  color: ${({ theme }) => theme.colors.finderTextColor};
 
   display: flex;
   align-items: center;
@@ -158,9 +158,6 @@ const CapitalizeText = styled.span`
 const ActiveDirectoryHeader = styled(CapitalizeText)`
   font-size: 1.3rem;
   font-weight: 500;
-  -webkit-text-stroke-width: 0.3px;
-
-  color: ${({ theme }) => theme.colors.secondary};
 `;
 
 const NavigationArrowsContainer = styled.div`
@@ -168,16 +165,21 @@ const NavigationArrowsContainer = styled.div`
   display: flex;
   align-items: center;
 
-  margin-right: 1.5rem;
+  margin-right: 0.8rem;
 `;
 
 const IconButton = styled(RoundIconButton)`
-  padding: 0.25rem 0.6rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 5px;
+  background-color: inherit;
 
-  color: grey;
+  color: ${({ theme }) => theme.colors.finderTextColor};
 
-  :hover {
+  :disabled {
+    opacity: 0.1;
+  }
+
+  :hover:not(:disabled) {
     background-color: ${({ theme }) => theme.colors.finderSideBarSelection};
   }
 `;

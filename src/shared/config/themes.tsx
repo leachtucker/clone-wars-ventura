@@ -20,6 +20,7 @@ export type ThemeMapping = {
     finderSideBarSelection: string;
     finderTopBarBackground: string;
     finderBackground: string;
+    finderTextColor: string;
   } & typeof colors;
 };
 
@@ -58,6 +59,7 @@ const light: DefaultTheme = {
     finderSideBarSelection: Color(colors.almostBlack).alpha(0.15).toString(),
     finderTopBarBackground: 'rgb(249, 243, 241)',
     finderBackground: 'rgb(255, 255, 255)',
+    finderTextColor: 'rgb(75, 72, 72)',
   },
 };
 
@@ -78,6 +80,7 @@ const dark: DefaultTheme = {
     finderSideBarSelection: Color(colors.almostWhite).alpha(0.15).toString(),
     finderTopBarBackground: 'rgb(63, 53, 50)',
     finderBackground: 'rgb(47, 32, 27)',
+    finderTextColor: 'rgb(239, 236, 234)',
   },
 };
 
