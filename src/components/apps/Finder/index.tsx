@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from '@xstate/react';
 import Color from 'color';
 import styled, { css } from 'styled-components';
+import * as Ramda from 'ramda';
 
 import { AppWrapper } from '../AppWrapper';
 import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
@@ -21,17 +22,58 @@ function Finder(props: FinderProps) {
   const fileSystem = useSelector(desktopService, fileSystemSelector);
   const homeDirectory = fileSystem.home as Directory;
 
-  const [activePath, setActivePath] = React.useState<string[]>(['desktop']);
+  const [pathHistory, setPathHistory] = React.useState<PathHistory>(
+    INITIAL_PATH_HISTORY_STATE
+  );
 
-  const createSideBarItemClickHandler = (itemName: string) => {
-    return () => {
-      setActivePath([itemName]);
+  const createDirectoryClickHandler = (
+    itemName: string,
+    isAbsolute: boolean
+  ) => {
+    return function handleDirectoryClick() {
+      setPathHistory((prevState) => {
+        let newHistoryEntry: Path;
+
+        if (isAbsolute) {
+          newHistoryEntry = [itemName];
+        } else {
+          const prevStateActivePath = prevState.entries[prevState.activeIdx];
+          newHistoryEntry = [...prevStateActivePath, itemName];
+        }
+
+        const entriesUpToActiveIdx = prevState.entries.slice(
+          0,
+          prevState.activeIdx + 1
+        );
+
+        const nextEntries = [...entriesUpToActiveIdx, newHistoryEntry];
+        const nextActiveIdx = nextEntries.length - 1;
+
+        return {
+          activeIdx: nextActiveIdx,
+          entries: nextEntries,
+        };
+      });
     };
   };
 
   const handleBackArrowClick = () => {
-    setActivePath((prevPath) => prevPath?.slice(0, -1));
+    setPathHistory((prevState) => ({
+      ...prevState,
+      activeIdx: Ramda.dec(prevState.activeIdx),
+    }));
   };
+
+  const handleForwardArrowClick = () => {
+    setPathHistory((prevState) => ({
+      ...prevState,
+      activeIdx: Ramda.inc(prevState.activeIdx),
+    }));
+  };
+
+  const activePath = pathHistory.entries[pathHistory.activeIdx];
+  const isOnLatestPath =
+    pathHistory.activeIdx == pathHistory.entries.length - 1;
 
   return (
     <AppWrapper isFocused={props.isFocused} style={{ display: 'flex' }}>
@@ -42,8 +84,8 @@ function Finder(props: FinderProps) {
           {Object.keys(homeDirectory).map((dirEntryName) => (
             <SideBarCategoryItem
               key={dirEntryName}
-              isActive={activePath?.[0] == dirEntryName}
-              onClick={createSideBarItemClickHandler(dirEntryName)}
+              isActive={activePath[0] == dirEntryName}
+              onClick={createDirectoryClickHandler(dirEntryName, true)}
             >
               <SideBarFolderIcon />
               <CapitalizeText>{dirEntryName}</CapitalizeText>
@@ -55,15 +97,21 @@ function Finder(props: FinderProps) {
       <ActiveDirectoryContainer>
         <ActiveDirectoryTopBar>
           <NavigationArrowsContainer>
-            <IconButton onClick={handleBackArrowClick} disabled>
+            <IconButton
+              onClick={handleBackArrowClick}
+              disabled={pathHistory.activeIdx <= 0}
+            >
               <IoIosArrowBack />
             </IconButton>
 
-            <IconButton>
+            <IconButton
+              onClick={handleForwardArrowClick}
+              disabled={isOnLatestPath}
+            >
               <IoIosArrowForward />
             </IconButton>
           </NavigationArrowsContainer>
-          <ActiveDirectoryHeader>{activePath?.at(-1)}</ActiveDirectoryHeader>
+          <ActiveDirectoryHeader>{activePath.at(-1)}</ActiveDirectoryHeader>
         </ActiveDirectoryTopBar>
         <ActiveDirectoryEntriesContainer />
       </ActiveDirectoryContainer>
@@ -72,6 +120,17 @@ function Finder(props: FinderProps) {
 }
 
 export default Finder;
+
+type Path = string[];
+type PathHistory = {
+  activeIdx: number;
+  entries: Path[];
+};
+
+const INITIAL_PATH_HISTORY_STATE = {
+  activeIdx: 0,
+  entries: [['desktop']],
+} satisfies PathHistory;
 
 const SideBarContainer = styled.div`
   height: 100%;
