@@ -7,12 +7,19 @@ import * as Ramda from 'ramda';
 import { AppWrapper } from '../AppWrapper';
 import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
 import { fileSystemSelector } from '../../../machines/desktop.machine';
-import { Directory } from '../../../shared/file-system';
+import {
+  ApplicationDirectoryEntry,
+  Directory,
+  FileDirectoryEntry,
+} from '../../../shared/file-system';
 
-import { VscFolder } from 'react-icons/vsc';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { VscFolder } from 'react-icons/vsc';
+import finderIconImg from '../../../assets/icon-apps/finder-icon.png';
+
 import RoundIconButton from '../../primitives/RoundIconButton';
 import DesktopIconList from '../../DesktopIconList';
+import { IconConfig } from '../../DesktopIcon';
 
 type FinderProps = {
   isFocused: boolean;
@@ -76,10 +83,40 @@ function Finder(props: FinderProps) {
     }));
   };
 
-  const activeDirectory = Ramda.path<Directory>(
-    ['home', ...activePathEntry],
-    fileSystem
+  const activeDirectory = React.useMemo(
+    () => Ramda.path<Directory>(['home', ...activePathEntry], fileSystem),
+    [fileSystem, activePathEntry]
   );
+
+  const [activeDirectoryIcons, setActiveDirectoryIcons] = React.useState<
+    IconConfig[]
+  >([]);
+
+  const dirEntriesContainerRef = React.useRef<HTMLDivElement>(null);
+  React.useLayoutEffect(() => {
+    setActiveDirectoryIcons(() => {
+      if (activeDirectory && dirEntriesContainerRef.current) {
+        const spaceBetweenX = 10;
+        const spaceBetweenY = 10;
+        const xPosOffset = 60 + spaceBetweenX;
+        const yPosOffset = 60 + spaceBetweenY;
+        const containerStartXPos = dirEntriesContainerRef.current.offsetLeft;
+        const containerStartYPos = dirEntriesContainerRef.current.offsetTop;
+        const containerWidth = dirEntriesContainerRef.current.offsetWidth;
+
+        return transformDirEntriesToIconConfigs({
+          directory: activeDirectory,
+          initialXPos: containerStartXPos + 6,
+          initialYPos: containerStartYPos,
+          offsetX: xPosOffset,
+          offsetY: yPosOffset,
+          boundsX: containerWidth,
+        });
+      }
+
+      return [];
+    });
+  }, [activeDirectory]);
 
   return (
     <AppWrapper isFocused={props.isFocused} style={{ display: 'flex' }}>
@@ -123,8 +160,13 @@ function Finder(props: FinderProps) {
           </ActiveDirectoryHeader>
         </ActiveDirectoryTopBar>
 
-        <ActiveDirectoryEntriesContainer>
-          {activeDirectory && <DesktopIconList resetIconPositions={false} />}
+        <ActiveDirectoryEntriesContainer ref={dirEntriesContainerRef}>
+          {activeDirectoryIcons.length && (
+            <DesktopIconList
+              resetIconPositions={false}
+              icons={activeDirectoryIcons}
+            />
+          )}
         </ActiveDirectoryEntriesContainer>
       </ActiveDirectoryContainer>
     </AppWrapper>
@@ -143,28 +185,6 @@ const INITIAL_PATH_HISTORY_STATE = {
   activeIdx: 0,
   entries: [['desktop']],
 } satisfies PathHistory;
-
-// type DirectoryEntryProps = {
-//   entry: DirectoryEntry;
-// };
-
-// function DirectoryEntry(props: DirectoryEntryProps) {
-//   if (props.entry.type == 'app') {
-//     return (
-//       <DesktopIcon
-//         icon={{ iconName: props.entry.name, imageSrc: props.entry.icon }}
-//         appName={props.entry.appName}
-//         // isSelected={appName == selectedIcon}
-//         onClick={(e) => e.stopPropagation()}
-//         // onDoubleClick={createIconDoubleClickHandler(
-//         //   appName as ApplicationName
-//         // )}
-//         // resetPosition={props.resetIconPositions}
-//         // onDragStart={createDragStartHandler(appName as ApplicationName)}
-//       />
-//     );
-//   }
-// }
 
 const SideBarContainer = styled.div`
   height: 100%;
@@ -276,3 +296,58 @@ const IconButton = styled(RoundIconButton)`
     background-color: ${({ theme }) => theme.colors.finderSideBarSelection};
   }
 `;
+
+type TransformDirEntriesToIconConfigsArgs = {
+  directory: Directory;
+  initialXPos: number;
+  initialYPos: number;
+  offsetX: number;
+  offsetY: number;
+  boundsX: number;
+};
+
+function transformDirEntriesToIconConfigs({
+  directory,
+  initialXPos,
+  initialYPos,
+  offsetX,
+  offsetY,
+  boundsX,
+}: TransformDirEntriesToIconConfigsArgs): IconConfig[] {
+  let currentInitialXPos = initialXPos;
+  let currentInitialYPos = initialYPos;
+
+  return Object.entries(directory).map(([key, dirEntry]) => {
+    const position = {
+      x: currentInitialXPos,
+      y: currentInitialYPos,
+    };
+
+    // increment position (considering row-wrap)
+    if (currentInitialXPos + offsetX <= boundsX) {
+      currentInitialXPos += offsetX;
+    } else {
+      currentInitialXPos = initialXPos;
+      currentInitialYPos += offsetY;
+    }
+
+    const isDirectory = dirEntry?.type != 'app' && dirEntry?.type != 'file';
+    if (!isDirectory) {
+      dirEntry as ApplicationDirectoryEntry | FileDirectoryEntry;
+
+      return {
+        key,
+        position,
+        imageSrc: dirEntry.icon,
+        iconName: dirEntry.name,
+      } satisfies IconConfig;
+    } else {
+      return {
+        key,
+        position,
+        imageSrc: finderIconImg,
+        iconName: key,
+      } satisfies IconConfig;
+    }
+  });
+}

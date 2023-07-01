@@ -117,6 +117,7 @@ export const applicationDockIconMap = {
 
 export const desktopIconsMaps = {
   chrome: {
+    key: 'chrome',
     iconName: 'Chrome',
     imageSrc: chromeDockIconImg,
     position: {
@@ -126,6 +127,7 @@ export const desktopIconsMaps = {
   },
 
   terminal: {
+    key: 'terminal',
     iconName: 'Terminal',
     imageSrc: terminalIconImg,
     position: {
@@ -135,6 +137,7 @@ export const desktopIconsMaps = {
   },
 
   finder: {
+    key: 'finder',
     iconName: 'Finder',
     imageSrc: finderIconImg,
     position: {

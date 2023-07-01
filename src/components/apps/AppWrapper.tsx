@@ -8,6 +8,8 @@ export const AppWrapper = styled.div<{ isFocused: boolean }>`
   background-color: ${({ theme }) => theme.colors.background};
   border-radius: inherit;
 
+  cursor: default;
+
   ${(props) =>
     props.isFocused &&
     css`

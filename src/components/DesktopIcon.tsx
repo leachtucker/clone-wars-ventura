@@ -3,7 +3,6 @@ import { Rnd, RndDragCallback } from 'react-rnd';
 import styled, { css } from 'styled-components';
 import Color from 'color';
 
-import { ApplicationName } from './apps/app-config-mappings';
 import { DockIconButton } from './shared/DockIconButton';
 
 import themes from '../shared/config/themes';
@@ -11,7 +10,6 @@ import themes from '../shared/config/themes';
 type DesktopIconProps = {
   icon: IconConfig;
   isSelected: boolean;
-  appName: ApplicationName;
   resetPosition: boolean;
   onClick: MouseEventHandler;
   onDoubleClick: MouseEventHandler;
@@ -54,6 +52,7 @@ function DesktopIcon(props: DesktopIconProps) {
 export default DesktopIcon;
 
 export type IconConfig = {
+  key: string;
   iconName: string;
   imageSrc: string;
   position: { x: number; y: number };

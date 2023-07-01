@@ -1,33 +1,30 @@
 import React from 'react';
-
-import DesktopIcon from './DesktopIcon';
-import { ApplicationName, desktopIconsMaps } from './apps/app-config-mappings';
-import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
 import { RndDragCallback } from 'react-rnd';
+
+import DesktopIcon, { IconConfig } from './DesktopIcon';
 
 type DesktopIconListProps = {
   resetIconPositions: boolean;
+  onIconDoubleClick?: (iconKey: string) => void;
+  icons: IconConfig[];
 };
 
 function DesktopIconList(props: DesktopIconListProps) {
-  const { desktopService } = useGlobalServices();
-
-  const [selectedIcon, setSelectedIcon] =
-    React.useState<ApplicationName | null>(null);
+  const [selectedIcon, setSelectedIcon] = React.useState<string | null>(null);
 
   const resetSelectedIcon = () => setSelectedIcon(null);
 
-  function createIconDoubleClickHandler(appName: ApplicationName) {
+  function createIconDoubleClickHandler(iconKey: string) {
     return function handleIconDoubleClick(e: React.MouseEvent) {
       e.stopPropagation();
-      desktopService.send({ type: 'WINDOW.OPEN', name: appName });
+      props.onIconDoubleClick?.(iconKey);
     };
   }
 
-  function createDragStartHandler(appName: ApplicationName) {
+  function createDragStartHandler(iconKey: string) {
     const handleDragStart: RndDragCallback = (e) => {
       e.stopPropagation();
-      setSelectedIcon(appName);
+      setSelectedIcon(iconKey);
     };
 
     return handleDragStart;
@@ -37,18 +34,15 @@ function DesktopIconList(props: DesktopIconListProps) {
 
   return (
     <div style={{ width: '100%', height: '99%' }} onClick={resetSelectedIcon}>
-      {Object.entries(desktopIconsMaps).map(([appName, iconConfig]) => (
+      {props.icons.map((iconConfig) => (
         <DesktopIcon
-          key={appName}
+          key={iconConfig.key}
           icon={iconConfig}
-          appName={appName as ApplicationName}
-          isSelected={appName == selectedIcon}
+          isSelected={iconConfig.key == selectedIcon}
           onClick={(e) => e.stopPropagation()}
-          onDoubleClick={createIconDoubleClickHandler(
-            appName as ApplicationName
-          )}
+          onDoubleClick={createIconDoubleClickHandler(iconConfig.key)}
+          onDragStart={createDragStartHandler(iconConfig.key)}
           resetPosition={props.resetIconPositions}
-          onDragStart={createDragStartHandler(appName as ApplicationName)}
         />
       ))}
     </div>

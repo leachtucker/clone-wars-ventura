@@ -2,12 +2,13 @@ import { useInterpret } from '@xstate/react';
 import React from 'react';
 import { DesktopMachine, desktopMachine } from '../../machines/desktop.machine';
 import { InterpreterFrom } from 'xstate';
-import { inspect } from '@xstate/inspect';
+// import { inspect } from '@xstate/inspect';
 
 if (import.meta.env.DEV) {
-  inspect({
-    iframe: false, // open in new window
-  });
+  // * Launch XState Browser Dev Tool
+  // inspect({
+  //   iframe: false, // open in new window
+  // });
 }
 
 type Context = {

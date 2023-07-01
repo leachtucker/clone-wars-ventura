@@ -23,4 +23,5 @@ macOS Ventura clone built with React &amp; xState
   - Implement `help` command
   - Implement up/down arrow command history
 - Finder app 🚧
+- Standardize app icon image padding
 - Optimize images and use CSS animations for polish

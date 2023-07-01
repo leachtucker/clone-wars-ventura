@@ -16,6 +16,10 @@ import TopBar, { TOPBAR_HEIGHT_PX } from '../components/TopBar';
 import Dock from '../components/Dock';
 import AppWindow from '../components/AppWindow';
 import DesktopIconList from '../components/DesktopIconList';
+import {
+  ApplicationName,
+  desktopIconsMaps,
+} from '../components/apps/app-config-mappings';
 
 function UnlockedView() {
   const { desktopService } = useGlobalServices();
@@ -40,6 +44,10 @@ function UnlockedView() {
     setResetIconPositions(Ramda.not);
   };
 
+  const handleIconDoubleClick = (name: string) => {
+    desktopService.send({ type: 'WINDOW.OPEN', name: name as ApplicationName });
+  };
+
   console.count('rerender');
   return (
     <>
@@ -55,7 +63,11 @@ function UnlockedView() {
               />
             ))}
 
-            <DesktopIconList resetIconPositions={resetIconPositions} />
+            <DesktopIconList
+              resetIconPositions={resetIconPositions}
+              onIconDoubleClick={handleIconDoubleClick}
+              icons={Object.values(desktopIconsMaps)}
+            />
           </WindowsContainer>
 
           <Dock
