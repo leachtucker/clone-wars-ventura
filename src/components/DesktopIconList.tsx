@@ -1,12 +1,16 @@
 import React from 'react';
 import { RndDragCallback } from 'react-rnd';
 
-import DesktopIcon, { IconConfig } from './DesktopIcon';
+import DesktopIcon, {
+  type IconButtonComponent,
+  type IconConfig,
+} from './DesktopIcon';
 
 type DesktopIconListProps = {
   resetIconPositions: boolean;
   onIconDoubleClick?: (iconKey: string) => void;
   icons: IconConfig[];
+  IconButtonComponent?: IconButtonComponent;
 };
 
 function DesktopIconList(props: DesktopIconListProps) {
@@ -43,6 +47,7 @@ function DesktopIconList(props: DesktopIconListProps) {
           onDoubleClick={createIconDoubleClickHandler(iconConfig.key)}
           onDragStart={createDragStartHandler(iconConfig.key)}
           resetPosition={props.resetIconPositions}
+          IconButtonComponent={props.IconButtonComponent}
         />
       ))}
     </div>

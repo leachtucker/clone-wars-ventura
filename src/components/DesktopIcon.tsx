@@ -14,15 +14,19 @@ type DesktopIconProps = {
   onClick: MouseEventHandler;
   onDoubleClick: MouseEventHandler;
   onDragStart: RndDragCallback;
+  IconButtonComponent?: IconButtonComponent;
 };
 
-function DesktopIcon(props: DesktopIconProps) {
+function DesktopIcon({ IconButtonComponent, ...props }: DesktopIconProps) {
   const ref = React.useRef<Rnd>();
 
   React.useEffect(() => {
     ref.current?.updatePosition(props.icon.position);
   }, [props.resetPosition]);
 
+  const DesktopIconButton = IconButtonComponent
+    ? IconButtonComponent
+    : IconWithName;
   return (
     <Rnd
       ref={(c) => (ref.current = c as Rnd)}
@@ -36,7 +40,7 @@ function DesktopIcon(props: DesktopIconProps) {
       }}
       onDragStart={props.onDragStart}
     >
-      <IconWithName
+      <DesktopIconButton
         aria-label={props.icon.iconName}
         onDoubleClick={props.onDoubleClick}
         onClick={props.onClick}
@@ -44,7 +48,7 @@ function DesktopIcon(props: DesktopIconProps) {
       >
         <img src={props.icon.imageSrc} draggable={false} />
         <span>{props.icon.iconName}</span>
-      </IconWithName>
+      </DesktopIconButton>
     </Rnd>
   );
 }
@@ -76,7 +80,7 @@ const IconButton = styled(DockIconButton)<{ isSelected: boolean }>`
     `}
 `;
 
-const IconWithName = styled(IconButton)`
+export const IconWithName = styled(IconButton)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -85,8 +89,8 @@ const IconWithName = styled(IconButton)`
     position: absolute;
     top: 105%;
 
-    padding: 2px;
-    border-radius: 4px;
+    padding: 2px 3px;
+    border-radius: 2px;
 
     font-weight: 600;
     font-size: 1.2rem;
@@ -99,3 +103,7 @@ const IconWithName = styled(IconButton)`
       `}
   }
 `;
+
+export type IconButtonComponent = React.ComponentType<
+  React.ComponentProps<typeof IconWithName>
+>;

@@ -19,7 +19,7 @@ import folderIconImg from '../../../assets/folder-icon.png';
 
 import RoundIconButton from '../../primitives/RoundIconButton';
 import DesktopIconList from '../../DesktopIconList';
-import { IconConfig } from '../../DesktopIcon';
+import { IconConfig, IconWithName } from '../../DesktopIcon';
 
 type FinderProps = {
   isFocused: boolean;
@@ -107,7 +107,7 @@ function Finder(props: FinderProps) {
         return transformDirEntriesToIconConfigs({
           directory: activeDirectory,
           initialXPos: containerStartXPos + 6,
-          initialYPos: containerStartYPos,
+          initialYPos: containerStartYPos + 6,
           offsetX: xPosOffset,
           offsetY: yPosOffset,
           boundsX: containerWidth,
@@ -165,6 +165,7 @@ function Finder(props: FinderProps) {
             <DesktopIconList
               resetIconPositions={false}
               icons={activeDirectoryIcons}
+              IconButtonComponent={DirectoryEntryIcon}
             />
           )}
         </ActiveDirectoryEntriesContainer>
@@ -294,6 +295,19 @@ const IconButton = styled(RoundIconButton)`
 
   :hover:not(:disabled) {
     background-color: ${({ theme }) => theme.colors.finderSideBarSelection};
+  }
+`;
+
+const DirectoryEntryIcon = styled(IconWithName)`
+  & > span {
+    font-weight: 400;
+    color: ${(props) => props.theme.colors.primary};
+    ${(props) =>
+      props.isSelected &&
+      css`
+        background-color: ${props.theme.colors.blue};
+        color: ${props.theme.colors.white};
+      `}
   }
 `;
 
