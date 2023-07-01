@@ -2,6 +2,7 @@ import type { ApplicationName } from '../components/apps/app-config-mappings';
 
 import chromeIconImg from '../assets/icon-apps/chrome-icon.png';
 import terminalIconImg from '../assets/icon-apps/terminal-icon.png';
+import textIconImg from '../assets/text-icon.png';
 
 type BaseDirectoryEntry = { type: 'file' | 'app'; name: string; icon: string };
 
@@ -47,8 +48,7 @@ export const INITIAL_FILE_SYSTEM_DIRECTORY = {
     downloads: {
       'helloworld.js': {
         name: 'helloworld',
-        // Todo: find blank page icon for generic files
-        icon: terminalIconImg,
+        icon: textIconImg,
         type: 'file',
         fileExtension: 'js',
         content: 'console.log(hello world!);',

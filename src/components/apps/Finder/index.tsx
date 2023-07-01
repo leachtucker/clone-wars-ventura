@@ -15,7 +15,7 @@ import {
 
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { VscFolder } from 'react-icons/vsc';
-import finderIconImg from '../../../assets/icon-apps/finder-icon.png';
+import folderIconImg from '../../../assets/folder-icon.png';
 
 import RoundIconButton from '../../primitives/RoundIconButton';
 import DesktopIconList from '../../DesktopIconList';
@@ -345,7 +345,7 @@ function transformDirEntriesToIconConfigs({
       return {
         key,
         position,
-        imageSrc: finderIconImg,
+        imageSrc: folderIconImg,
         iconName: key,
       } satisfies IconConfig;
     }

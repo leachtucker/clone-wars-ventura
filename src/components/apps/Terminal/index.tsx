@@ -1,10 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Rnd } from 'react-rnd';
 import Color from 'color';
 import * as Ramda from 'ramda';
 
-import { AppWrapper } from '../AppWrapper';
 import { useGlobalServices } from '../../../shared/providers/GlobalServicesProvider';
 import { handleOpenCommand, usePromptPath } from './prompt-helpers';
 import {
@@ -12,9 +10,12 @@ import {
   FileDirectoryEntry,
 } from '../../../shared/file-system';
 import { isNotEmpty } from '../../../shared/utils/fp';
+
 import { Show } from '../../primitives/Show';
+import { AppWrapper } from '../AppWrapper';
 import Vim from './Vim';
-import { getWindowStartingPosition } from '../app-config-mappings';
+
+import textFileIconImg from '../../../assets/text-icon.png';
 
 type TerminalProps = { isFocused: boolean };
 
@@ -128,7 +129,7 @@ function Terminal(props: TerminalProps) {
           type: 'file',
           name: fileName,
           fileExtension,
-          icon: 'ds',
+          icon: textFileIconImg,
           content: '',
         } satisfies FileDirectoryEntry;
 
