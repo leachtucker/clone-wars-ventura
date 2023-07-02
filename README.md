@@ -2,7 +2,7 @@
 
 macOS Ventura clone built with React &amp; xState
 
-### TODO:
+### Features:
 
 - ~~Context Menu~~ ✅
 - ~~Desktop Icons~~ ✅
@@ -22,6 +22,16 @@ macOS Ventura clone built with React &amp; xState
   - Implement `rm` command ✅
   - Implement `help` command
   - Implement up/down arrow command history
-- Finder app 🚧
-- Standardize app icon image padding
+  - Start users within `/home` subdirectory
+  - Fix issue where `nvim` command is opening the vim editor without file's current content
+- Finder app 🏗️
+  - Edit text files with Vim ✅
+  - Open applications ✅
+  - Implement context menu
+    - Create new folders & files
+    - Icon clean up
+  - Fix issue where favorites bar renders new entries under the home subdirectory
+  - Remove _Desktop_ favorite
+- Vim App
+- Standardize icons image assets padding
 - Optimize images and use CSS animations for polish
