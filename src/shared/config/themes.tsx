@@ -59,7 +59,7 @@ const light: DefaultTheme = {
     finderSideBarSelection: Color(colors.almostBlack).alpha(0.15).toString(),
     finderTopBarBackground: 'rgb(249, 243, 241)',
     finderBackground: 'rgb(255, 255, 255)',
-    finderTextColor: 'rgb(75, 72, 72)',
+    finderTextColor: 'rgb(65, 65, 65)',
   },
 };
 
@@ -80,7 +80,7 @@ const dark: DefaultTheme = {
     finderSideBarSelection: Color(colors.almostWhite).alpha(0.15).toString(),
     finderTopBarBackground: 'rgb(63, 53, 50)',
     finderBackground: 'rgb(47, 32, 27)',
-    finderTextColor: 'rgb(239, 236, 234)',
+    finderTextColor: 'rgb(243, 242, 241)',
   },
 };
 

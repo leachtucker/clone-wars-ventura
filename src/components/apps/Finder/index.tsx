@@ -161,7 +161,7 @@ function Finder(props: FinderProps) {
         </ActiveDirectoryTopBar>
 
         <ActiveDirectoryEntriesContainer ref={dirEntriesContainerRef}>
-          {activeDirectoryIcons.length && (
+          {Boolean(activeDirectoryIcons.length) && (
             <DesktopIconList
               resetIconPositions={false}
               icons={activeDirectoryIcons}
