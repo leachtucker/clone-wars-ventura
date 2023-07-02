@@ -20,6 +20,7 @@ import folderIconImg from '../../../assets/folder-icon.png';
 import RoundIconButton from '../../primitives/RoundIconButton';
 import DesktopIconList from '../../DesktopIconList';
 import { IconConfig, IconWithName } from '../../DesktopIcon';
+import { ApplicationName } from '../app-config-mappings';
 
 type FinderProps = {
   isFocused: boolean;
@@ -92,6 +93,25 @@ function Finder(props: FinderProps) {
     IconConfig[]
   >([]);
 
+  const handleDirIconDoubleClick = (iconKey: string) => {
+    const clickedDirEntry = activeDirectory?.[iconKey];
+
+    if (clickedDirEntry?.type == 'app') {
+      desktopService.send({
+        type: 'WINDOW.OPEN',
+        name: iconKey as ApplicationName,
+      });
+    } else if (clickedDirEntry?.type == 'file') {
+      desktopService.send({
+        type: 'WINDOW.OPEN_WITH_DATA',
+        name: 'vim',
+        data: { fileDirectoryPath: ['home', ...activePathEntry, iconKey] },
+      });
+    } else {
+      createDirectoryClickHandler(iconKey, false)();
+    }
+  };
+
   const dirEntriesContainerRef = React.useRef<HTMLDivElement>(null);
   React.useLayoutEffect(() => {
     setActiveDirectoryIcons(() => {
@@ -118,6 +138,7 @@ function Finder(props: FinderProps) {
     });
   }, [activeDirectory]);
 
+  const activeSubdirectory = activePathEntry.at(-1);
   return (
     <AppWrapper isFocused={props.isFocused} style={{ display: 'flex' }}>
       <SideBarContainer>
@@ -155,9 +176,7 @@ function Finder(props: FinderProps) {
             </IconButton>
           </NavigationArrowsContainer>
 
-          <ActiveDirectoryHeader>
-            {activePathEntry.at(-1)}
-          </ActiveDirectoryHeader>
+          <ActiveDirectoryHeader>{activeSubdirectory}</ActiveDirectoryHeader>
         </ActiveDirectoryTopBar>
 
         <ActiveDirectoryEntriesContainer ref={dirEntriesContainerRef}>
@@ -166,6 +185,7 @@ function Finder(props: FinderProps) {
               resetIconPositions={false}
               icons={activeDirectoryIcons}
               IconButtonComponent={DirectoryEntryIcon}
+              onIconDoubleClick={handleDirIconDoubleClick}
             />
           )}
         </ActiveDirectoryEntriesContainer>

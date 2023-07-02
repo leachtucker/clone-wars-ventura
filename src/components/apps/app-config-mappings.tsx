@@ -19,6 +19,9 @@ import terminalIconImg from '../../assets/icon-apps/terminal-icon.png';
 import Finder from './Finder';
 import finderIconImg from '../../assets/icon-apps/finder-icon.png';
 
+import Vim from '../apps/Vim';
+import vimIconImg from '../../assets/icon-apps/vim-icon.png';
+
 export const AboutThisMac_RND_CONFIG = {
   default: {
     width: 280,
@@ -72,12 +75,23 @@ const FINDER_RND_CONFIG = {
   enableResizing: true,
 } satisfies Partial<React.ComponentProps<typeof Rnd>>;
 
+const VIM_RND_CONFIG = {
+  minWidth: 160,
+  minHeight: 100,
+  default: {
+    width: 570,
+    height: 360,
+    ...getWindowStartingPosition(570, 380),
+  },
+} satisfies Partial<React.ComponentProps<typeof Rnd>>;
+
 export type ApplicationName =
   | 'aboutThisMac'
   | 'aboutThisEngineer'
   | 'chrome'
   | 'terminal'
-  | 'finder';
+  | 'finder'
+  | 'vim';
 
 export const applicationComponentMap = {
   aboutThisMac: AboutThisMac,
@@ -85,9 +99,10 @@ export const applicationComponentMap = {
   chrome: Chrome,
   terminal: Terminal,
   finder: Finder,
+  vim: Vim,
 } as const satisfies Record<
   ApplicationName,
-  React.FC<ApplicationComponentProps>
+  React.ComponentType<ApplicationComponentProps>
 >;
 
 export const applicationRndMap = {
@@ -96,6 +111,7 @@ export const applicationRndMap = {
   chrome: Chrome_RND_CONFIG,
   terminal: Terminal_RND_CONFIG,
   finder: FINDER_RND_CONFIG,
+  vim: VIM_RND_CONFIG,
 } as const satisfies Record<
   ApplicationName,
   Partial<React.ComponentProps<typeof Rnd>>
@@ -107,12 +123,14 @@ export const applicationMinimizedImgMap = {
   chrome: chromeMinimizedImg,
   terminal: terminalIconImg,
   finder: finderIconImg,
+  vim: vimIconImg,
 } as const satisfies Record<ApplicationName, string>;
 
 export const applicationDockIconMap = {
   chrome: chromeDockIconImg,
   terminal: terminalIconImg,
   finder: finderIconImg,
+  // vim: vimIconImg,
 } as const satisfies Partial<Record<ApplicationName, string>>;
 
 export const desktopIconsMaps = {

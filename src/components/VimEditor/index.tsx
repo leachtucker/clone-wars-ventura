@@ -5,13 +5,13 @@ import { basicSetup } from '@uiw/react-codemirror';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 import { vim, Vim as VimExtension } from '@replit/codemirror-vim';
 
-type VimProps = {
+type VimEditorProps = {
   initialValue?: string;
   onQuit?: (value: string) => void;
   onWriteQuit?: (value: string) => void;
 };
 
-function Vim(props: VimProps) {
+function VimEditor(props: VimEditorProps) {
   const [value, setValue] = React.useState(props.initialValue ?? '');
 
   React.useEffect(() => {
@@ -20,9 +20,7 @@ function Vim(props: VimProps) {
     }
 
     if (props.onWriteQuit) {
-      VimExtension.defineEx('wq', 'wq', () =>
-        props.onWriteQuit?.(value)
-      );
+      VimExtension.defineEx('wq', 'wq', () => props.onWriteQuit?.(value));
     }
   });
 
@@ -40,4 +38,4 @@ function Vim(props: VimProps) {
   );
 }
 
-export default Vim;
+export default VimEditor;

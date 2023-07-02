@@ -15,12 +15,15 @@ import {
   FileDirectoryEntry,
 } from '../shared/file-system';
 
+export type WindowAppData = any;
+
 export type Window = {
   zIndex: number;
   id: string;
   name: ApplicationName;
   isFocused: boolean;
   isMinimized: boolean;
+  appData?: WindowAppData;
 };
 
 type MachineContext = {
@@ -44,6 +47,11 @@ type ToggleThemeEvent = { type: 'THEME.TOGGLE' };
 type AuthenticationToggleEvent = { type: 'AUTHENTICATION.TOGGLE' };
 
 type OpenWindow = { type: 'WINDOW.OPEN'; name: ApplicationName };
+type OpenWindowWithData = {
+  type: 'WINDOW.OPEN_WITH_DATA';
+  name: ApplicationName;
+  data: WindowAppData;
+};
 type FocusWindow = { type: 'WINDOW.FOCUS'; id: string };
 type CloseWindow = { type: 'WINDOW.CLOSE'; id: string };
 type MinimizeWindow = { type: 'WINDOW.MINIMIZE'; id: string };
@@ -51,6 +59,7 @@ type ReopenWindow = { type: 'WINDOW.REOPEN'; id: string };
 
 type WindowEvent =
   | OpenWindow
+  | OpenWindowWithData
   | FocusWindow
   | CloseWindow
   | MinimizeWindow
@@ -140,6 +149,10 @@ export const desktopMachine =
           actions: 'openWindow',
         },
 
+        'WINDOW.OPEN_WITH_DATA': {
+          actions: 'openWindowWithData',
+        },
+
         'WINDOW.FOCUS': {
           actions: ['setWindowZIndexToTop'],
         },
@@ -176,8 +189,9 @@ export const desktopMachine =
               event.path,
               context.fileSystem
             );
-            const isDirectoryEntry = entry?.type == 'file';
-            return isDirectoryEntry;
+
+            const isFileDirectoryEntry = entry?.type == 'file';
+            return isFileDirectoryEntry;
           },
           actions: ['modifyFileContent'],
         },
@@ -193,13 +207,33 @@ export const desktopMachine =
           const uid = self.crypto.randomUUID();
           const nextZIndex = context.currentZIndexMaximum + 1;
 
-          const newWindow: Window = {
+          const newWindow = {
             id: uid,
             name: event.name,
             zIndex: nextZIndex,
             isFocused: true,
             isMinimized: false,
+            appData: {},
+          } satisfies Window;
+
+          return {
+            windows: [...context.windows, newWindow],
+            currentZIndexMaximum: nextZIndex,
           };
+        }),
+
+        openWindowWithData: assign((context, event) => {
+          const uid = self.crypto.randomUUID();
+          const nextZIndex = context.currentZIndexMaximum + 1;
+
+          const newWindow = {
+            id: uid,
+            name: event.name,
+            zIndex: nextZIndex,
+            isFocused: true,
+            isMinimized: false,
+            appData: event.data,
+          } satisfies Window;
 
           return {
             windows: [...context.windows, newWindow],
@@ -275,6 +309,7 @@ export const desktopMachine =
           const existingEntry = Ramda.path(event.path)(
             context.fileSystem
           ) as FileDirectoryEntry;
+
           const newDirEntry = {
             ...existingEntry,
             content: event.content,

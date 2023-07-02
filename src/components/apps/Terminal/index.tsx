@@ -13,7 +13,7 @@ import { isNotEmpty } from '../../../shared/utils/fp';
 
 import { Show } from '../../primitives/Show';
 import { AppWrapper } from '../AppWrapper';
-import Vim from './Vim';
+import Vim from '../../VimEditor';
 
 import textFileIconImg from '../../../assets/text-icon.png';
 

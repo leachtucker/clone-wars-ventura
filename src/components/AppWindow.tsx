@@ -9,9 +9,12 @@ import {
   applicationRndMap,
 } from './apps/app-config-mappings';
 import { useGlobalServices } from '../shared/providers/GlobalServicesProvider';
+import { WindowAppData } from '../machines/desktop.machine';
 
 export type ApplicationComponentProps = {
   isFocused: boolean;
+  id: string;
+  appData: WindowAppData;
 };
 
 type AppWindowProps = {
@@ -20,6 +23,7 @@ type AppWindowProps = {
   isFocused: boolean;
   zIndex: number;
   id: string;
+  appData?: WindowAppData;
   pushWindowToTop: () => void;
 };
 
@@ -55,7 +59,11 @@ function AppWindow(props: React.PropsWithChildren<AppWindowProps>) {
         isFocused={props.isFocused}
         onClick={props.pushWindowToTop}
       >
-        <ApplicationComponent isFocused={props.isFocused} />
+        <ApplicationComponent
+          isFocused={props.isFocused}
+          id={props.id}
+          appData={props.appData}
+        />
         <AppWindowMenu
           onCloseClick={() => handleAppCloseClick(props.id)}
           onMinimizeClick={() => handleAppMinimizeClick(props.id)}
