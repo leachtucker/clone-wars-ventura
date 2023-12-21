@@ -2,14 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import * as Ramda from 'ramda';
 
-import { Rnd } from 'react-rnd';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import { IoMdRefresh } from 'react-icons/io';
 import { AppWrapper } from '../AppWrapper';
 import Button from '../../primitives/Button';
-import { AiFillGithub, AiOutlineGoogle } from 'react-icons/ai';
+import { AiFillGithub, AiOutlineGoogle, AiFillBook } from 'react-icons/ai';
 import { RiNetflixFill } from 'react-icons/ri';
-import { getWindowStartingPosition } from '../app-config-mappings';
 
 type ChromeProps = { isFocused: boolean };
 
@@ -100,6 +98,16 @@ function Chrome(props: ChromeProps) {
         >
           <AiFillGithub />
           OS Clone
+        </BookmarkButton>
+
+        <BookmarkButton
+          onClick={createHandleBookmarkClick(
+            'https://resume.tuckerleach.com',
+            'Resume'
+          )}
+        >
+          <AiFillBook style={{ fontSize: '1.6rem' }} />
+          Resume
         </BookmarkButton>
       </BookmarksBarContainer>
 
