@@ -2,11 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 import * as Ramda from 'ramda';
 
-import { BiLeftArrowAlt, BiRightArrowAlt, BiLinkExternal } from 'react-icons/bi';
+import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import { IoMdRefresh } from 'react-icons/io';
 import { AppWrapper } from '../AppWrapper';
 import Button from '../../primitives/Button';
-import { AiFillGithub, AiOutlineGoogle, AiFillBook } from 'react-icons/ai';
+import {
+  AiFillGithub,
+  AiOutlineGlobal,
+  AiOutlineGoogle,
+  AiFillBook,
+} from 'react-icons/ai';
 import { RiNetflixFill } from 'react-icons/ri';
 
 type ChromeProps = { isFocused: boolean };
@@ -22,7 +27,11 @@ function Chrome(props: ChromeProps) {
       ? ''
       : currentState.displayUrl ?? currentState.url;
   const isHome = currentState.url === HOME_URL;
-  const blockedHost = isHome ? null : getBlockedHost(currentState.url);
+  const isProxied =
+    !isHome &&
+    (currentState.viaProxy !== undefined
+      ? currentState.viaProxy
+      : needsProxy(displayUrl));
 
   React.useEffect(() => {
     setAddressValue(displayUrl);
@@ -40,9 +49,9 @@ function Chrome(props: ChromeProps) {
     }
   };
 
-  const handleOpenExternal = () => {
+  const handleToggleProxy = () => {
     if (!isHome) {
-      window.open(displayUrl, '_blank', 'noopener,noreferrer');
+      navigation.goTo({ ...currentState, viaProxy: !isProxied });
     }
   };
 
@@ -85,12 +94,20 @@ function Chrome(props: ChromeProps) {
           </NavButton>
 
           <NavButton
-            style={{ fontSize: '1.7rem', marginLeft: '0.3rem' }}
-            onClick={handleOpenExternal}
+            style={{
+              fontSize: '1.7rem',
+              marginLeft: '0.3rem',
+              opacity: isProxied ? 1 : 0.45,
+            }}
+            onClick={handleToggleProxy}
             disabled={isHome}
-            title="Open in a real browser tab"
+            title={
+              isProxied
+                ? 'Loading through the built-in proxy (tap to load directly)'
+                : 'Load through the built-in proxy (fixes "refused to connect")'
+            }
           >
-            <BiLinkExternal />
+            <AiOutlineGlobal />
           </NavButton>
         </NavigationButtonsContainer>
 
@@ -125,18 +142,10 @@ function Chrome(props: ChromeProps) {
               createHandleBookmarkClick(bookmark)()
             }
           />
-        ) : blockedHost ? (
-          <BlockedPage
-            key={iframeKey}
-            host={blockedHost}
-            url={displayUrl}
-            onOpenExternal={handleOpenExternal}
-            onGoHome={() => navigation.goTo(HOME_NAV)}
-          />
         ) : (
           <iframe
             key={iframeKey}
-            src={currentState.url}
+            src={iframeSrcFor(currentState)}
             title={currentState.pageTitle}
             style={{ height: '100%', width: '100%', border: 'none' }}
           />
@@ -196,46 +205,16 @@ function HomePage(props: {
 
         <HomeNote>
           Some sites (GitHub, Netflix, and most sign-in pages) forbid being
-          shown inside another page, so they open in a real browser tab
-          instead of loading here.
+          shown inside another page. Those load through this browser's
+          built-in proxy instead, so they stay in this window — though
+          signing in and video playback still won't work through it.
         </HomeNote>
       </HomeContent>
     </ScrollablePage>
   );
 }
 
-function BlockedPage(props: {
-  host: string;
-  url: string;
-  onOpenExternal: () => void;
-  onGoHome: () => void;
-}) {
-  return (
-    <ScrollablePage>
-      <BlockedContent>
-        <BlockedTitle>{props.host} refused to connect</BlockedTitle>
-        <BlockedBody>
-          This site tells browsers not to display it inside another page
-          (via its <code>X-Frame-Options</code> /{' '}
-          <code>frame-ancestors</code> headers). That block comes from{' '}
-          {props.host} itself, so no embedded browser can load it — but it
-          works fine in a real tab.
-          {props.host.includes('netflix') &&
-            ' Netflix also needs a signed-in, DRM-enabled real browser for playback.'}
-        </BlockedBody>
-        <BlockedActions>
-          <PrimaryButton onClick={props.onOpenExternal}>
-            <BiLinkExternal style={{ fontSize: '1.7rem' }} />
-            Open {props.host} in a new tab
-          </PrimaryButton>
-          <SecondaryButton onClick={props.onGoHome}>
-            Back to home
-          </SecondaryButton>
-        </BlockedActions>
-      </BlockedContent>
-    </ScrollablePage>
-  );
-}
+
 
 /* ------------------------------------------------------------------ */
 /*  Bookmarks & navigation helpers                                     */
@@ -283,13 +262,14 @@ const BOOKMARKS: Bookmark[] = [
 
 /**
  * Hosts that are known to forbid framing via X-Frame-Options: DENY or a
- * Content-Security-Policy frame-ancestors directive. Verified against the
- * live response headers of each site — an <iframe> pointed at any of them
- * renders the browser's "refused to connect" error page.
+ * Content-Security-Policy frame-ancestors directive (verified against the
+ * live response headers of each site). They are loaded through the
+ * built-in proxy (/api/proxy) instead, which fetches the page
+ * server-side, strips the anti-framing headers, and keeps navigation
+ * inside this window. Keep in sync with the allowlist in api/proxy.js.
  */
-const BLOCKED_HOSTS = new Set([
+const PROXY_HOSTS = [
   'github.com',
-  'gist.github.com',
   'netflix.com',
   'facebook.com',
   'instagram.com',
@@ -297,10 +277,9 @@ const BLOCKED_HOSTS = new Set([
   'x.com',
   'amazon.com',
   'youtube.com',
-  'm.youtube.com',
   'linkedin.com',
   'twitch.tv',
-]);
+];
 
 function getHost(url: string): string {
   try {
@@ -310,25 +289,29 @@ function getHost(url: string): string {
   }
 }
 
-/**
- * Returns the host if this URL is known to refuse being framed, else null.
- * Google is special-cased: only its igu=1 search view may be framed.
- */
-function getBlockedHost(url: string): string | null {
-  let parsed: URL;
+/** True when this URL's host forbids framing and needs the proxy. */
+function needsProxy(url: string): boolean {
+  let host: string;
   try {
-    parsed = new URL(url);
+    host = new URL(url).hostname.toLowerCase();
   } catch (error) {
-    return null;
+    return false;
   }
+  return PROXY_HOSTS.some(
+    (allowed) => host === allowed || host.endsWith(`.${allowed}`)
+  );
+}
 
-  const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+function proxyUrl(url: string): string {
+  return `/api/proxy?url=${encodeURIComponent(url)}`;
+}
 
-  if (host === 'google.com') {
-    return parsed.searchParams.get('igu') === '1' ? null : host;
-  }
-
-  return BLOCKED_HOSTS.has(host) ? host : null;
+/** The URL the iframe should actually load for a navigation state. */
+function iframeSrcFor(state: NavState): string {
+  const logicalUrl = state.displayUrl ?? state.url;
+  const proxied =
+    state.viaProxy !== undefined ? state.viaProxy : needsProxy(logicalUrl);
+  return proxied ? proxyUrl(logicalUrl) : state.url;
 }
 
 function googleSearchState(query: string): NavState {
@@ -354,6 +337,25 @@ function navigationStateFromInput(rawInput: string): NavState {
   }
 
   const url = /^https?:\/\//i.test(input) ? input : `https://${input}`;
+
+  // Google forbids framing except its igu=1 search view — rewrite any
+  // typed google.com address to that view, keeping the typed URL in the
+  // address bar.
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+    if (host === 'google.com' && parsed.searchParams.get('igu') !== '1') {
+      parsed.searchParams.set('igu', '1');
+      return {
+        url: parsed.toString(),
+        displayUrl: url,
+        pageTitle: 'Google',
+      };
+    }
+  } catch (error) {
+    // fall through to the plain state
+  }
+
   return { url, pageTitle: getHost(url).replace(/^www\./, '') || url };
 }
 
@@ -453,6 +455,17 @@ const BookmarksBarContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 0.4rem;
+
+  /* The five bookmarks are wider than a phone — scroll them sideways
+     instead of clipping the ends. */
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  & > * {
+    flex-shrink: 0;
+  }
 `;
 
 const BookmarkButton = styled(Button)`
@@ -590,78 +603,18 @@ const HomeNote = styled.p`
   max-width: 44rem;
 `;
 
-const BlockedContent = styled.div`
-  max-width: 52rem;
-  margin: 0 auto;
-  padding: 5rem 2rem;
-
-  display: flex;
-  flex-direction: column;
-  gap: 1.6rem;
-`;
-
-const BlockedTitle = styled.h1`
-  font-size: 2.2rem;
-  font-weight: 600;
-`;
-
-const BlockedBody = styled.p`
-  font-size: 1.35rem;
-  line-height: 1.7;
-  color: ${({ theme }) => theme.colors.secondary};
-
-  & > code {
-    font-family: monospace;
-    font-size: 1.2rem;
-  }
-`;
-
-const BlockedActions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-`;
-
-const PrimaryButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-
-  padding: 0.9rem 1.6rem;
-  border: none;
-  border-radius: 999px;
-
-  background-color: ${({ theme }) => theme.colors.highlightBlue};
-  color: white;
-  font-size: 1.3rem;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 0.9;
-  }
-`;
-
-const SecondaryButton = styled.button`
-  padding: 0.9rem 1.6rem;
-  border: 1px solid ${({ theme }) => theme.colors.transparentGrey};
-  border-radius: 999px;
-
-  background: none;
-  color: inherit;
-  font-size: 1.3rem;
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.transparentGrey};
-  }
-`;
-
 /* ------------------------------------------------------------------ */
 /*  Navigation state                                                   */
 /* ------------------------------------------------------------------ */
 
-type NavState = { url: string; displayUrl?: string; pageTitle: string };
+type NavState = {
+  url: string;
+  displayUrl?: string;
+  pageTitle: string;
+  /** Force loading through the built-in proxy (or force direct when a
+      known blocked host would proxy automatically). */
+  viaProxy?: boolean;
+};
 
 const HOME_URL = 'clonewars://home';
 const HOME_NAV: NavState = { url: HOME_URL, pageTitle: 'New Tab' };
