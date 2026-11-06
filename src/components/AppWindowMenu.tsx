@@ -40,6 +40,16 @@ const AppWindowActionIcon = styled(BsFillCircleFill)<{ disabled?: boolean }>`
   border-radius: 50%;
   filter: drop-shadow(0px 0px 0.2px #3e3b3bde);
 
+  /* Touch: 12px traffic lights are near-untappable. Grow the visible
+     dot a little and pad the hit area out to ~28px without shifting
+     the layout (negative margin compensates the padding). */
+  @media (pointer: coarse) {
+    font-size: 1.7rem;
+    padding: 0.5rem;
+    margin: -0.5rem;
+    box-sizing: content-box;
+  }
+
   ${({ disabled }) =>
     disabled &&
     css`

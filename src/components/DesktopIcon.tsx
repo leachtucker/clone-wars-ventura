@@ -14,6 +14,7 @@ type DesktopIconProps = {
   onClick: MouseEventHandler;
   onDoubleClick: MouseEventHandler;
   onDragStart: RndDragCallback;
+  disableDragging?: boolean;
   IconButtonComponent?: IconButtonComponent;
 };
 
@@ -32,6 +33,7 @@ function DesktopIcon({ IconButtonComponent, ...props }: DesktopIconProps) {
       ref={(c) => (ref.current = c as Rnd)}
       bounds="parent"
       enableResizing={false}
+      disableDragging={props.disableDragging}
       enableUserSelectHack
       default={{
         ...props.icon.position,

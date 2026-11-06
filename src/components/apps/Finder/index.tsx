@@ -211,6 +211,12 @@ const SideBarContainer = styled.div`
   height: 100%;
   width: 16rem;
 
+  @media (max-width: 768px) {
+    width: 11rem;
+    padding: 0 0.8rem;
+    padding-top: 5rem;
+  }
+
   padding: 0 1.5rem;
   padding-top: 5rem;
 
@@ -266,6 +272,10 @@ const SideBarFolderIcon = styled(VscFolder)`
 const ActiveDirectoryContainer = styled.div`
   width: calc(100% - 16rem);
   height: 100%;
+
+  @media (max-width: 768px) {
+    width: calc(100% - 11rem);
+  }
 `;
 
 const ActiveDirectoryTopBar = styled.div`

@@ -69,6 +69,25 @@ const GlobalStyling = createGlobalStyle`
   body {
     font-family: -apple-system,BlinkMacSystemFont,'Inter','Helvetica Neue','Helvetica','Arial',sans-serif;
   }
+
+  /* Mobile / iOS */
+  html, body {
+    overscroll-behavior: none;
+  }
+  body {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  /* dvh = the visible viewport once mobile browser chrome collapses;
+     plain 100% above stays as the fallback for older browsers. */
+  #root { height: 100dvh }
+  @media (max-width: 768px) {
+    /* iOS Safari auto-zooms (and stays zoomed) when a focused input's
+       font-size is under 16px — most of this UI sits at 11-14px. */
+    input, textarea {
+      font-size: 16px !important;
+    }
+  }
 `;
 
 export default GlobalStyling;

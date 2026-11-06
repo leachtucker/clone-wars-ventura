@@ -9,6 +9,10 @@ import DesktopIcon, {
 type DesktopIconListProps = {
   resetIconPositions: boolean;
   onIconDoubleClick?: (iconKey: string) => void;
+  /** When set (touch layouts), a single tap opens the app. */
+  onIconClick?: (iconKey: string) => void;
+  /** When true (touch layouts), icons stay put instead of dragging. */
+  disableIconDragging?: boolean;
   icons: IconConfig[];
   IconButtonComponent?: IconButtonComponent;
 };
@@ -22,6 +26,14 @@ function DesktopIconList(props: DesktopIconListProps) {
     return function handleIconDoubleClick(e: React.MouseEvent) {
       e.stopPropagation();
       props.onIconDoubleClick?.(iconKey);
+    };
+  }
+
+  function createIconClickHandler(iconKey: string) {
+    return function handleIconClick(e: React.MouseEvent) {
+      e.stopPropagation();
+      setSelectedIcon(iconKey);
+      props.onIconClick?.(iconKey);
     };
   }
 
@@ -43,9 +55,10 @@ function DesktopIconList(props: DesktopIconListProps) {
           key={iconConfig.key}
           icon={iconConfig}
           isSelected={iconConfig.key == selectedIcon}
-          onClick={(e) => e.stopPropagation()}
+          onClick={createIconClickHandler(iconConfig.key)}
           onDoubleClick={createIconDoubleClickHandler(iconConfig.key)}
           onDragStart={createDragStartHandler(iconConfig.key)}
+          disableDragging={props.disableIconDragging}
           resetPosition={props.resetIconPositions}
           IconButtonComponent={props.IconButtonComponent}
         />

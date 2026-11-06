@@ -12,6 +12,7 @@ import {
 } from '../machines/desktop.machine';
 
 import ContextMenu from '../components/ContextMenu';
+import { useIsMobile } from '../hooks/useIsMobile';
 import TopBar, { TOPBAR_HEIGHT_PX } from '../components/TopBar';
 import Dock from '../components/Dock';
 import AppWindow from '../components/AppWindow';
@@ -23,6 +24,7 @@ import {
 
 function UnlockedView() {
   const { desktopService } = useGlobalServices();
+  const isMobile = useIsMobile();
   const windows = useSelector(desktopService, windowsSelector);
   const minimizedWindows = useSelector(
     desktopService,
@@ -66,6 +68,8 @@ function UnlockedView() {
             <DesktopIconList
               resetIconPositions={resetIconPositions}
               onIconDoubleClick={handleIconDoubleClick}
+              onIconClick={isMobile ? handleIconDoubleClick : undefined}
+              disableIconDragging={isMobile}
               icons={Object.values(desktopIconsMaps)}
             />
           </WindowsContainer>
@@ -90,6 +94,13 @@ const WindowsContainer = styled.div`
   position: relative;
 
   height: calc(100vh - ${TOPBAR_HEIGHT_PX}px - 1rem);
+  /* dvh tracks the *visible* viewport on mobile Safari/Chrome, whose
+     URL bar otherwise leaves 100vh taller than what is on screen. */
+  height: calc(100dvh - ${TOPBAR_HEIGHT_PX}px - 1rem);
   /* Necessary for not allowing windows to be dragged out of the viewport */
   margin: 0 1rem;
+
+  @media (max-width: 768px) {
+    margin: 0;
+  }
 `;

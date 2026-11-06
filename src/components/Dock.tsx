@@ -79,7 +79,8 @@ export default Dock;
 const Container = styled.div`
   width: 100%;
   position: absolute;
-  bottom: 6px;
+  /* Keep the dock clear of the iPhone home indicator. */
+  bottom: max(6px, env(safe-area-inset-bottom, 0px));
 
   display: flex;
   justify-content: center;
@@ -98,6 +99,20 @@ const Wrapper = styled.div`
 
   padding: 0 1rem;
   border-radius: 20px;
+
+  /* Phones: cap the dock at the screen width and let it scroll
+     horizontally once minimized windows pile up. */
+  max-width: calc(100vw - 12px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    height: 68px;
+    border-radius: 18px;
+  }
 `;
 
 const IconsGutter = styled.div`
